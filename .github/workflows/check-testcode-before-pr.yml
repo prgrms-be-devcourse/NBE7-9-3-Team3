@@ -1,0 +1,42 @@
+name: check testcode before PR
+on:
+  pull_request:
+    paths:
+      - "backend/src/main/**"
+    branches:
+      - main
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # PR 올린 레포지토리로 체크아웃
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # JDK 설치
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      # Gradle 캐시
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper/
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: gradle-${{ runner.os }}-
+          
+      # 실행 권한 부여
+      - name: Grant execute permission for gradlew
+        working-directory: ./backend
+        run: chmod +x gradlew
+
+      # 빌드 및 테스트
+      - name: Build and run tests
+        working-directory: ./backend
+        run: ./gradlew clean test
