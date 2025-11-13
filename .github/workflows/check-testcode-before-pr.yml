@@ -1,12 +1,13 @@
 name: check testcode before PR
 on:
   pull_request:
+    types: [opened, reopened]  
     paths:
       - "backend/src/main/**"
     branches:
       - main
 jobs:
-  build-and-test:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -37,6 +38,6 @@ jobs:
         run: chmod +x gradlew
 
       # 빌드 및 테스트
-      - name: Build and run tests
+      - name: Run tests
         working-directory: ./backend
         run: ./gradlew clean test
