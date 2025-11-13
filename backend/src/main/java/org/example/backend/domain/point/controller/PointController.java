@@ -29,7 +29,7 @@ public class PointController implements PointControllerSpec {
     }
 
     @Override
-    @GetMapping("/members/{id}/history")
+    @GetMapping("/members/history")
     public ApiResponse<List<PointHistoryResponseDto>> getPointHistory(
         @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long memberId = userDetails.getId();
