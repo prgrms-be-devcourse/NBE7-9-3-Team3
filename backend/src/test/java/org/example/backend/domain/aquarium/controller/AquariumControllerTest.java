@@ -97,7 +97,10 @@ public class AquariumControllerTest {
                                 """)
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("어항이 생성되었습니다."));
+                .andExpect(jsonPath("$.msg").value("어항이 생성되었습니다."))
+                .andExpect(jsonPath("$.data.aquariumId").isNumber())
+                .andExpect(jsonPath("$.data.aquariumName").value("test"))
+                .andExpect(jsonPath("$.data.createDate").exists());
     }
 
     @Test
@@ -108,7 +111,15 @@ public class AquariumControllerTest {
         mvc.perform(get("/api/aquarium")
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("어항 목록이 조회되었습니다."));
+                .andExpect(jsonPath("$.msg").value("어항 목록이 조회되었습니다."))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data.length()").value(1))
+                .andExpect(jsonPath("$.data[0].aquariumId").isNumber())
+                .andExpect(jsonPath("$.data[0].aquariumName").value("test"))
+                .andExpect(jsonPath("$.data[0].createDate").exists())
+                .andExpect(jsonPath("$.data[0].notifyCycleDate").isNumber())
+                .andExpect(jsonPath("$.data[0].lastNotifyDate").doesNotExist())
+                .andExpect(jsonPath("$.data[0].nextNotifyDate").doesNotExist());
     }
 
     @Test
@@ -119,11 +130,21 @@ public class AquariumControllerTest {
         mvc.perform(get("/api/aquarium/{id}", aquarium.getId())
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("어항이 조회되었습니다."));
+                .andExpect(jsonPath("$.msg").value("어항이 조회되었습니다."))
+                .andExpect(jsonPath("$.data.aquariumId").isNumber())
+                .andExpect(jsonPath("$.data.aquariumName").value("test"));
     }
 
     @Test
-    @DisplayName("t4: 어항 이름 수정")
+    @DisplayName("t4: 어항 단건 조회 실패 - 존재하지 않는 어항 조회")
+    void getAquariumFail() throws Exception {
+        mvc.perform(get("/api/aquarium/{id}", 1)
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    @DisplayName("t5: 어항 이름 수정")
     void updateAquariumName() throws Exception {
         Aquarium aquarium = aquariumRepository.save(new Aquarium(testMember, "test"));
 
@@ -134,7 +155,9 @@ public class AquariumControllerTest {
                                 """)
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("어항이 수정되었습니다."));
+                .andExpect(jsonPath("$.msg").value("어항이 수정되었습니다."))
+                .andExpect(jsonPath("$.data.aquariumId").isNumber())
+                .andExpect(jsonPath("$.data.aquariumName").value("newName"));
 
         // 어항 이름을 "내가 키운 물고기"로 변경하려할 경우
         mvc.perform(put("/api/aquarium/{id}", aquarium.getId())
@@ -148,7 +171,19 @@ public class AquariumControllerTest {
     }
 
     @Test
-    @DisplayName("t5: 삭제 전, 어항 속 물고기 존재 여부 확인")
+    @DisplayName("t6: 어항 이름 수정 실패 - 존재하지 않는 어항 수정")
+    void updateAquariumNameFail() throws Exception {
+        mvc.perform(put("/api/aquarium/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                 {"aquariumName": "newName"}
+                                """)
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    @DisplayName("t7: 삭제 전, 어항 속 물고기 존재 여부 확인")
     void checkFishInAquarium() throws Exception {
         Aquarium aquarium = aquariumRepository.save(new Aquarium(testMember, "test"));
 
@@ -171,7 +206,7 @@ public class AquariumControllerTest {
     }
 
     @Test
-    @DisplayName("t6: 어항 속 물고기들을 '내가 키운 물고기' 어항으로 이동")
+    @DisplayName("t8: 어항 속 물고기들을 '내가 키운 물고기' 어항으로 이동")
     void moveFishToOwnedAquarium() throws Exception {
         Aquarium aquarium = aquariumRepository.save(new Aquarium(testMember, "test"));
         Fish fish = new Fish(aquarium, "test", "test");
@@ -185,7 +220,7 @@ public class AquariumControllerTest {
     }
 
     @Test
-    @DisplayName("t7: 빈 어항 삭제")
+    @DisplayName("t9: 빈 어항 삭제")
     void deleteAquarium() throws Exception {
         Aquarium aquarium = aquariumRepository.save(new Aquarium(testMember, "test"));
 
@@ -196,7 +231,7 @@ public class AquariumControllerTest {
     }
 
     @Test
-    @DisplayName("t8: 어항 관리 알림 주기 설정")
+    @DisplayName("t10: 어항 관리 알림 주기 설정")
     void scheduleSetting() throws Exception {
         Aquarium aquarium = aquariumRepository.save(new Aquarium(testMember, "test"));
 
@@ -207,6 +242,9 @@ public class AquariumControllerTest {
                                 """)
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("물갈이&어항세척 스케줄 알림이 설정되었습니다."));
+                .andExpect(jsonPath("$.msg").value("물갈이&어항세척 스케줄 알림이 설정되었습니다."))
+                .andExpect(jsonPath("$.data.aquariumId").isNumber())
+                .andExpect(jsonPath("$.data.aquariumName").value("test"))
+                .andExpect(jsonPath("$.data.notifyCycleDate").value(21));
     }
 }
