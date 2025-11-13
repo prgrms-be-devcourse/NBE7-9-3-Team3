@@ -5,6 +5,7 @@ on:
       - "backend/src/main/**"
     branches:
       - main
+      - ci/check-testcode-before-pr
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
