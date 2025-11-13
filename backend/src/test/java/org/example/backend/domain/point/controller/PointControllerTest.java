@@ -5,6 +5,9 @@ import org.example.backend.domain.member.repository.MemberRepository;
 import org.example.backend.domain.member.service.AuthTokenService;
 import org.example.backend.domain.point.entity.Point;
 import org.example.backend.domain.point.repository.PointRepository;
+import org.example.backend.domain.trade.entity.Trade;
+import org.example.backend.domain.trade.enums.BoardType;
+import org.example.backend.domain.trade.enums.TradeStatus;
 import org.example.backend.domain.trade.repository.TradeRepository;
 import org.example.backend.global.LoginUtil;
 import org.junit.jupiter.api.BeforeAll;
@@ -14,10 +17,13 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -60,22 +66,24 @@ public class PointControllerTest {
     }
 
     @Test
-    @DisplayName("t1: 포인트 충전")
+    @DisplayName("t1: 포인트 충전 성공")
     void chargePoint() throws Exception {
         mvc.perform(post("/api/points/members/charge/{amount}", 5000)
                 .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value(200))
                 .andExpect(jsonPath("$.msg").value("포인트 충전 완료"));
     }
 
     @Test
-    @DisplayName("t2: 포인트 내역 조회")
+    @DisplayName("t2: 포인트 내역 조회 성공")
     void getPointHistory() throws Exception {
         pointRepository.save(Point.create(testMember, 5000L, 5000L));
 
         mvc.perform(get("/api/points/members/history")
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value(200))
                 .andExpect(jsonPath("$.msg").value("포인트 조회 완료"))
                 .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data.length()").value(1))
@@ -83,6 +91,49 @@ public class PointControllerTest {
                 .andExpect(jsonPath("$.data[0].points").value(5000))
                 .andExpect(jsonPath("$.data[0].afterPoint").value(5000))
                 .andExpect(jsonPath("$.data[0].date").exists());
+    }
+
+    @Test
+    @DisplayName("t3: 포인트로 상품 결제 성공")
+    void purchaseItem() throws Exception {
+        // 판매자 생성
+        Member seller = memberRepository.save(new Member(
+                "seller@test.com",
+                "seller1234",
+                "seller",
+                "")
+        );
+        // 판매글 생성
+        Trade trade = tradeRepository.save(new Trade(
+                seller,
+                BoardType.FISH,
+                "테스트 제목",
+                "테스트 설명",
+                5000L,
+                TradeStatus.SELLING,
+                null,
+                LocalDateTime.now())
+        );
+
+        // 구매자 포인트 충전
+        testMember.updatePoints(10000L);
+        memberRepository.save(testMember);
+
+        String requestBody = """
+        {
+            "sellerId": %d,
+            "amount" : 5000,
+            "tradeId" : %d
+        }
+        """.formatted(seller.getMemberId(), trade.getTradeId());
+
+        mvc.perform(post("/api/points/members/purchase")
+                .header("Authorization", "Bearer " + jwtToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value(200))
+                .andExpect(jsonPath("$.msg").value("포인트 결제 완료"));
     }
 }
 
