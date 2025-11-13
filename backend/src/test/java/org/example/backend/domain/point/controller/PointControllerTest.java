@@ -3,6 +3,7 @@ package org.example.backend.domain.point.controller;
 import org.example.backend.domain.member.entity.Member;
 import org.example.backend.domain.member.repository.MemberRepository;
 import org.example.backend.domain.member.service.AuthTokenService;
+import org.example.backend.domain.point.entity.Point;
 import org.example.backend.domain.point.repository.PointRepository;
 import org.example.backend.domain.trade.repository.TradeRepository;
 import org.example.backend.global.LoginUtil;
@@ -18,6 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -64,6 +66,23 @@ public class PointControllerTest {
                 .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("포인트 충전 완료"));
+    }
+
+    @Test
+    @DisplayName("t2: 포인트 내역 조회")
+    void getPointHistory() throws Exception {
+        pointRepository.save(Point.create(testMember, 5000L, 5000L));
+
+        mvc.perform(get("/api/points/members/history")
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.msg").value("포인트 조회 완료"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data.length()").value(1))
+                .andExpect(jsonPath("$.data[0].type").value("CHARGE"))
+                .andExpect(jsonPath("$.data[0].points").value(5000))
+                .andExpect(jsonPath("$.data[0].afterPoint").value(5000))
+                .andExpect(jsonPath("$.data[0].date").exists());
     }
 }
 
