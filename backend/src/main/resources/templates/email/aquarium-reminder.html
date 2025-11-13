@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>어항 관리 알림</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        .header .emoji {
+            font-size: 40px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .content {
+            padding: 30px 20px;
+            background-color: #ffffff;
+        }
+        .greeting {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        .aquarium-info {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #4CAF50;
+        }
+        .aquarium-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .cycle-info {
+            color: #666;
+            margin: 5px 0;
+        }
+        .next-date {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .action-section {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .button {
+            display: inline-block;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 16px;
+            transition: transform 0.2s ease;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+        .tips {
+            background-color: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #4CAF50;
+        }
+        .tips-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .tips-list {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .tips-list li {
+            margin: 5px 0;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span class="emoji">🐠</span>
+            <h1>어항 관리 알림</h1>
+        </div>
+        
+        <div class="content">
+            <div class="greeting">
+                안녕하세요, <strong>{{memberName}}</strong>님!
+            </div>
+            
+            <div class="aquarium-info">
+                <div class="aquarium-name">{{aquariumName}}</div>
+                <div class="cycle-info">관리주기: <strong>{{cycleDate}}일</strong>마다</div>
+                <div class="cycle-info">다음 관리일: <span class="next-date">{{nextDate}}</span></div>
+            </div>
+            
+            <p><strong>물갈이와 어항세척</strong>이 필요한 시점입니다! 아래 체크리스트를 참고하여 체계적으로 관리해주세요.</p>
+            
+            <div class="tips">
+                <div class="tips-title">🔧 주요 관리 작업 (물갈이 & 어항세척)</div>
+                <ul class="tips-list">
+                    <li>물갈이</li>
+                    <li>어항 세척</li>
+                </ul>
+            </div>
+            
+            <div class="tips" style="background-color: #ffffff; border-left: none;">
+                <div class="tips-title">📋 추가 관리 체크리스트</div>
+                <ul class="tips-list">
+                    <li>수질 확인</li>
+                    <li>물고기 상태 점검</li>
+                    <li>사료 급여량 조절</li>
+                    <li>온도 확인</li>
+                </ul>
+            </div>
+            
+            <div class="action-section">
+                <a href="http://localhost:3000/aquarium/{{aquariumId}}" class="button">
+                    어항 관리하러 가기
+                </a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>이 알림은 어항 관리주기에 따라 자동으로 발송됩니다.</p>
+            <p>알림 설정을 변경하려면 어항 설정에서 수정하세요.</p>
+        </div>
+    </div>
+</body>
+</html>
+
