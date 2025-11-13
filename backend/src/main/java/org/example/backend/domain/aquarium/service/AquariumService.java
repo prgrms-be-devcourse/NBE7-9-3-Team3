@@ -29,6 +29,10 @@ public class AquariumService {
   private final MemberRepository memberRepository;
   private final FishRepository fishRepository;
 
+  public long count() {
+    return aquariumRepository.count();
+  }
+
   public AquariumListResponseDto create(CustomUserDetails userDetails, AquariumRequestDto requestDto) {
     Long memberId = userDetails.getId(); // JWT 토큰을 이용해 로그인한 member의 id를 가져옴
     String aquariumName = requestDto.aquariumName();
