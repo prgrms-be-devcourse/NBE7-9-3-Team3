@@ -47,12 +47,10 @@ public class FollowControllerTest {
         String followerEmail = "follower@test.com";
         String followeeEmail = "followee@test.com";
 
-        String followerToken = loginUtil.createMemberAndGetToken(followerEmail, "password123",
-            "follower", "");
-        String followeeToken = loginUtil.createMemberAndGetToken(followeeEmail, "password123",
-            "followee", "");
+        Member follower = loginUtil.createMember(followerEmail, "password123", "follower", "");
+        Member followee = loginUtil.createMember(followeeEmail, "password123", "followee", "");
+        String followerToken = authTokenService.genAccessToken(follower);
 
-        Member followee = loginUtil.getMemberByEmail(followeeEmail);
         Long followeeId = followee.getMemberId();
 
         mvc.perform(post("/api/follows/{followeeId}", followeeId)
@@ -67,8 +65,8 @@ public class FollowControllerTest {
     @DisplayName("t2: 팔로우 실패 - 자기 자신 팔로우")
     void t2() throws Exception {
         String email = "self@test.com";
-        String token = loginUtil.createMemberAndGetToken(email, "password123", "selfuser", "");
-        Member member = loginUtil.getMemberByEmail(email);
+        Member member = loginUtil.createMember(email, "password123", "selfuser", "");
+        String token = authTokenService.genAccessToken(member);
         Long memberId = member.getMemberId();
 
         mvc.perform(post("/api/follows/{followeeId}", memberId)
@@ -84,12 +82,10 @@ public class FollowControllerTest {
         String followerEmail = "follower2@test.com";
         String followeeEmail = "followee2@test.com";
 
-        String followerToken = loginUtil.createMemberAndGetToken(followerEmail, "password123",
-            "follower2", "");
-        String followeeToken = loginUtil.createMemberAndGetToken(followeeEmail, "password123",
-            "followee2", "");
+        Member follower = loginUtil.createMember(followerEmail, "password123", "follower2", "");
+        Member followee = loginUtil.createMember(followeeEmail, "password123", "followee2", "");
+        String followerToken = authTokenService.genAccessToken(follower);
 
-        Member followee = loginUtil.getMemberByEmail(followeeEmail);
         Long followeeId = followee.getMemberId();
 
         mvc.perform(post("/api/follows/{followeeId}", followeeId)
@@ -109,12 +105,10 @@ public class FollowControllerTest {
         String followerEmail = "unfollow1@test.com";
         String followeeEmail = "unfollow2@test.com";
 
-        String followerToken = loginUtil.createMemberAndGetToken(followerEmail, "password123",
-            "unfollow1", "");
-        String followeeToken = loginUtil.createMemberAndGetToken(followeeEmail, "password123",
-            "unfollow2", "");
+        Member follower = loginUtil.createMember(followerEmail, "password123", "unfollow1", "");
+        Member followee = loginUtil.createMember(followeeEmail, "password123", "unfollow2", "");
+        String followerToken = authTokenService.genAccessToken(follower);
 
-        Member followee = loginUtil.getMemberByEmail(followeeEmail);
         Long followeeId = followee.getMemberId();
 
         mvc.perform(post("/api/follows/{followeeId}", followeeId)
@@ -135,14 +129,13 @@ public class FollowControllerTest {
         String follower1Email = "follower3@test.com";
         String follower2Email = "follower4@test.com";
 
-        String followeeToken = loginUtil.createMemberAndGetToken(followeeEmail, "password123",
-            "followee3", "");
-        String follower1Token = loginUtil.createMemberAndGetToken(follower1Email, "password123",
-            "follower3", "");
-        String follower2Token = loginUtil.createMemberAndGetToken(follower2Email, "password123",
-            "follower4", "");
+        Member followee = loginUtil.createMember(followeeEmail, "password123", "followee3", "");
+        Member follower1 = loginUtil.createMember(follower1Email, "password123", "follower3", "");
+        Member follower2 = loginUtil.createMember(follower2Email, "password123", "follower4", "");
+        String followeeToken = authTokenService.genAccessToken(followee);
+        String follower1Token = authTokenService.genAccessToken(follower1);
+        String follower2Token = authTokenService.genAccessToken(follower2);
 
-        Member followee = loginUtil.getMemberByEmail(followeeEmail);
         Long followeeId = followee.getMemberId();
 
         mvc.perform(post("/api/follows/{followeeId}", followeeId)
@@ -170,15 +163,11 @@ public class FollowControllerTest {
         String followee1Email = "followee4@test.com";
         String followee2Email = "followee5@test.com";
 
-        String followerToken = loginUtil.createMemberAndGetToken(followerEmail, "password123",
-            "follower5", "");
-        String followee1Token = loginUtil.createMemberAndGetToken(followee1Email, "password123",
-            "followee4", "");
-        String followee2Token = loginUtil.createMemberAndGetToken(followee2Email, "password123",
-            "followee5", "");
+        Member follower = loginUtil.createMember(followerEmail, "password123", "follower5", "");
+        Member followee1 = loginUtil.createMember(followee1Email, "password123", "followee4", "");
+        Member followee2 = loginUtil.createMember(followee2Email, "password123", "followee5", "");
+        String followerToken = authTokenService.genAccessToken(follower);
 
-        Member followee1 = loginUtil.getMemberByEmail(followee1Email);
-        Member followee2 = loginUtil.getMemberByEmail(followee2Email);
         Long followee1Id = followee1.getMemberId();
         Long followee2Id = followee2.getMemberId();
 
@@ -190,7 +179,6 @@ public class FollowControllerTest {
                 .header("Authorization", "Bearer " + followerToken))
             .andExpect(status().isOk());
 
-        Member follower = loginUtil.getMemberByEmail(followerEmail);
         Long followerId = follower.getMemberId();
         mvc.perform(get("/api/follows/{memberId}/followings", followerId)
                 .header("Authorization", "Bearer " + followerToken))
@@ -206,7 +194,8 @@ public class FollowControllerTest {
     @DisplayName("t7: 팔로우 실패 - 존재하지 않는 회원")
     void t7() throws Exception {
         String email = "notfound@test.com";
-        String token = loginUtil.createMemberAndGetToken(email, "password123", "notfound", "");
+        Member member = loginUtil.createMember(email, "password123", "notfound", "");
+        String token = authTokenService.genAccessToken(member);
 
         mvc.perform(post("/api/follows/{followeeId}", 99999L)
                 .header("Authorization", "Bearer " + token))
