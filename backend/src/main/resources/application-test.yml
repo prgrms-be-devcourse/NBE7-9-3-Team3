@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:db_dev;MODE=MySQL
+
+  h2:
+  console:
+  enabled: true
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+cloud:
+  aws:
+    s3:
+      bucket: nbe7-9-2-team03
+    region:
+      static: ap-northeast-2
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    stack:
+      auto: false

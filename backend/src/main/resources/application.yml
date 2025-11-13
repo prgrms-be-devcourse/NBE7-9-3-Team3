@@ -1,0 +1,64 @@
+spring:
+  profiles:
+    active: test,init-data
+    # init-data 프로파일을 추가하려면: active: test,init-data
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+  datasource:
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 30000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 25MB
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:dnjsals114@gmail.com}
+    password: ${MAIL_PASSWORD:sqht upmb qzxd xesu}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: alpha
+    tags-sorter: alpha
+  api-docs:
+    path: /api-docs
+
+# JWT 설정
+custom:
+  jwt:
+    secretPattern: "mySecretKey123456789012345678901234567890"  # 32자 이상의 시크릿 키
+    expireSeconds: "#{60*60*24}"
+
+cloud:
+  aws:
+    s3:
+      bucket: nbe7-9-2-team03
+    region:
+      static: ap-northeast-2
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    stack:
+      auto: false
