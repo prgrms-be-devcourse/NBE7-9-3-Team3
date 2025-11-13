@@ -1,13 +1,13 @@
 package org.example.backend.domain.fish.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.backend.domain.aquarium.entity.Aquarium;
 import org.example.backend.domain.aquarium.repository.AquariumRepository;
 import org.example.backend.domain.fish.entity.Fish;
 import org.example.backend.domain.fish.repository.FishRepository;
 import org.example.backend.domain.member.entity.Member;
 import org.example.backend.domain.member.repository.MemberRepository;
+import org.example.backend.domain.member.service.AuthTokenService;
+import org.example.backend.global.LoginUtil;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,9 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -40,8 +40,12 @@ public class FishControllerTest {
     private AquariumRepository aquariumRepository;
     @Autowired
     private FishRepository fishRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private AuthTokenService authTokenService;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private LoginUtil loginUtil;
     private Member testMember;
     private Aquarium testAquarium;
     private String jwtToken;  // 테스트시 사용할 jwt 토큰
@@ -51,46 +55,12 @@ public class FishControllerTest {
     회원가입, 로그인, 어항 생성
      */
     @BeforeAll
-    void initRequiredProcess() throws Exception {
-        // 회원가입
-        testMember = memberRepository.findByEmail("test1@test.com")
-                .orElseGet(() -> {
-                    try {
-                        MvcResult result = mvc.perform(post("/api/members/join")
-                                        .contentType(MediaType.APPLICATION_JSON)
-                                        .content("""
-                                                {
-                                                  "email": "test1@test.com",
-                                                  "password": "test1234",
-                                                  "nickname": "test",
-                                                  "profileImage": null
-                                                }
-                                                """))
-                                .andExpect(status().isOk())
-                                .andReturn();
-
-                        // mvcResult -> Json -> Member 변환
-                        String responseBody = result.getResponse().getContentAsString();
-                        JsonNode dataNode = objectMapper.readTree(responseBody).get("data");
-                        return objectMapper.treeToValue(dataNode, Member.class);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-
-        // 로그인 → JWT 토큰 발급
-        MvcResult loginResult = mvc.perform(post("/api/members/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                   "email": "test1@test.com",
-                                   "password": "test1234"
-                                 }
-                                """))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        jwtToken = loginResult.getResponse().getCookie("accessToken").getValue();
+    void initRequiredProcess() {
+        loginUtil = new LoginUtil(memberRepository, passwordEncoder, authTokenService);
+        
+        // Repository를 직접 사용하여 빠르게 회원 생성 및 토큰 발급
+        jwtToken = loginUtil.createMemberAndGetToken("test1@test.com", "test1234", "test","");
+        testMember = loginUtil.getMemberByEmail("test1@test.com");
 
         // 어항 생성
         testAquarium = new Aquarium(testMember, "test");

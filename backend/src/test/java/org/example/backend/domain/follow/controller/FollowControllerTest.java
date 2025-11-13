@@ -4,17 +4,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.backend.domain.member.entity.Member;
+import org.example.backend.domain.member.repository.MemberRepository;
+import org.example.backend.domain.member.service.AuthTokenService;
+import org.example.backend.global.LoginUtil;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -25,8 +27,19 @@ public class FollowControllerTest {
 
     @Autowired
     private MockMvc mvc;
+    @Autowired
+    private MemberRepository memberRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private AuthTokenService authTokenService;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private LoginUtil loginUtil;
+
+    @BeforeEach
+    void setUp() {
+        loginUtil = new LoginUtil(memberRepository, passwordEncoder, authTokenService);
+    }
 
     @Test
     @DisplayName("t1: 팔로우 성공")
@@ -34,10 +47,11 @@ public class FollowControllerTest {
         String followerEmail = "follower@test.com";
         String followeeEmail = "followee@test.com";
         
-        String followerToken = createMemberAndGetToken(followerEmail, "password123", "follower");
-        String followeeToken = createMemberAndGetToken(followeeEmail, "password123", "followee");
+        String followerToken = loginUtil.createMemberAndGetToken(followerEmail, "password123", "follower", "");
+        String followeeToken = loginUtil.createMemberAndGetToken(followeeEmail, "password123", "followee", "");
         
-        Long followeeId = getMemberIdFromToken(followeeToken);
+        Member followee = loginUtil.getMemberByEmail(followeeEmail);
+        Long followeeId = followee.getMemberId();
 
         mvc.perform(post("/api/follows/{followeeId}", followeeId)
                 .header("Authorization", "Bearer " + followerToken))
@@ -51,8 +65,9 @@ public class FollowControllerTest {
     @DisplayName("t2: 팔로우 실패 - 자기 자신 팔로우")
     void t2() throws Exception {
         String email = "self@test.com";
-        String token = createMemberAndGetToken(email, "password123", "selfuser");
-        Long memberId = getMemberIdFromToken(token);
+        String token = loginUtil.createMemberAndGetToken(email, "password123", "selfuser", "");
+        Member member = loginUtil.getMemberByEmail(email);
+        Long memberId = member.getMemberId();
 
         mvc.perform(post("/api/follows/{followeeId}", memberId)
                 .header("Authorization", "Bearer " + token))
@@ -67,10 +82,11 @@ public class FollowControllerTest {
         String followerEmail = "follower2@test.com";
         String followeeEmail = "followee2@test.com";
         
-        String followerToken = createMemberAndGetToken(followerEmail, "password123", "follower2");
-        String followeeToken = createMemberAndGetToken(followeeEmail, "password123", "followee2");
+        String followerToken = loginUtil.createMemberAndGetToken(followerEmail, "password123", "follower2", "");
+        String followeeToken = loginUtil.createMemberAndGetToken(followeeEmail, "password123", "followee2", "");
         
-        Long followeeId = getMemberIdFromToken(followeeToken);
+        Member followee = loginUtil.getMemberByEmail(followeeEmail);
+        Long followeeId = followee.getMemberId();
 
         mvc.perform(post("/api/follows/{followeeId}", followeeId)
                 .header("Authorization", "Bearer " + followerToken))
@@ -89,10 +105,11 @@ public class FollowControllerTest {
         String followerEmail = "unfollow1@test.com";
         String followeeEmail = "unfollow2@test.com";
         
-        String followerToken = createMemberAndGetToken(followerEmail, "password123", "unfollow1");
-        String followeeToken = createMemberAndGetToken(followeeEmail, "password123", "unfollow2");
+        String followerToken = loginUtil.createMemberAndGetToken(followerEmail, "password123", "unfollow1", "");
+        String followeeToken = loginUtil.createMemberAndGetToken(followeeEmail, "password123", "unfollow2", "");
         
-        Long followeeId = getMemberIdFromToken(followeeToken);
+        Member followee = loginUtil.getMemberByEmail(followeeEmail);
+        Long followeeId = followee.getMemberId();
 
         mvc.perform(post("/api/follows/{followeeId}", followeeId)
                 .header("Authorization", "Bearer " + followerToken))
@@ -112,11 +129,12 @@ public class FollowControllerTest {
         String follower1Email = "follower3@test.com";
         String follower2Email = "follower4@test.com";
         
-        String followeeToken = createMemberAndGetToken(followeeEmail, "password123", "followee3");
-        String follower1Token = createMemberAndGetToken(follower1Email, "password123", "follower3");
-        String follower2Token = createMemberAndGetToken(follower2Email, "password123", "follower4");
+        String followeeToken = loginUtil.createMemberAndGetToken(followeeEmail, "password123", "followee3", "");
+        String follower1Token = loginUtil.createMemberAndGetToken(follower1Email, "password123", "follower3", "");
+        String follower2Token = loginUtil.createMemberAndGetToken(follower2Email, "password123", "follower4", "");
         
-        Long followeeId = getMemberIdFromToken(followeeToken);
+        Member followee = loginUtil.getMemberByEmail(followeeEmail);
+        Long followeeId = followee.getMemberId();
 
         mvc.perform(post("/api/follows/{followeeId}", followeeId)
                 .header("Authorization", "Bearer " + follower1Token))
@@ -143,12 +161,14 @@ public class FollowControllerTest {
         String followee1Email = "followee4@test.com";
         String followee2Email = "followee5@test.com";
         
-        String followerToken = createMemberAndGetToken(followerEmail, "password123", "follower5");
-        String followee1Token = createMemberAndGetToken(followee1Email, "password123", "followee4");
-        String followee2Token = createMemberAndGetToken(followee2Email, "password123", "followee5");
+        String followerToken = loginUtil.createMemberAndGetToken(followerEmail, "password123", "follower5", "");
+        String followee1Token = loginUtil.createMemberAndGetToken(followee1Email, "password123", "followee4", "");
+        String followee2Token = loginUtil.createMemberAndGetToken(followee2Email, "password123", "followee5", "");
         
-        Long followee1Id = getMemberIdFromToken(followee1Token);
-        Long followee2Id = getMemberIdFromToken(followee2Token);
+        Member followee1 = loginUtil.getMemberByEmail(followee1Email);
+        Member followee2 = loginUtil.getMemberByEmail(followee2Email);
+        Long followee1Id = followee1.getMemberId();
+        Long followee2Id = followee2.getMemberId();
 
         mvc.perform(post("/api/follows/{followeeId}", followee1Id)
                 .header("Authorization", "Bearer " + followerToken))
@@ -158,7 +178,8 @@ public class FollowControllerTest {
                 .header("Authorization", "Bearer " + followerToken))
             .andExpect(status().isOk());
 
-        Long followerId = getMemberIdFromToken(followerToken);
+        Member follower = loginUtil.getMemberByEmail(followerEmail);
+        Long followerId = follower.getMemberId();
         mvc.perform(get("/api/follows/{memberId}/followings", followerId)
                 .header("Authorization", "Bearer " + followerToken))
             .andExpect(status().isOk())
@@ -173,53 +194,12 @@ public class FollowControllerTest {
     @DisplayName("t7: 팔로우 실패 - 존재하지 않는 회원")
     void t7() throws Exception {
         String email = "notfound@test.com";
-        String token = createMemberAndGetToken(email, "password123", "notfound");
+        String token = loginUtil.createMemberAndGetToken(email, "password123", "notfound", "");
 
         mvc.perform(post("/api/follows/{followeeId}", 99999L)
                 .header("Authorization", "Bearer " + token))
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.resultCode").value("F004"));
-    }
-
-    /**
-     * 회원가입 및 로그인을 수행하고 JWT 토큰을 반환하는 헬퍼 메서드
-     */
-    private String createMemberAndGetToken(String email, String password, String nickname) throws Exception {
-        mvc.perform(post("/api/members/join")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                        "email": "%s",
-                        "password": "%s",
-                        "nickname": "%s",
-                        "profileImage": null
-                    }
-                    """.formatted(email, password, nickname)))
-            .andExpect(status().isOk());
-
-        MvcResult loginResult = mvc.perform(post("/api/members/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                        "email": "%s",
-                        "password": "%s"
-                    }
-                    """.formatted(email, password)))
-            .andExpect(status().isOk())
-            .andReturn();
-
-        return loginResult.getResponse().getCookie("accessToken").getValue();
-    }
-
-    private Long getMemberIdFromToken(String token) throws Exception {
-        MvcResult result = mvc.perform(get("/api/members/me")
-                .header("Authorization", "Bearer " + token))
-            .andExpect(status().isOk())
-            .andReturn();
-
-        String responseBody = result.getResponse().getContentAsString();
-        JsonNode jsonNode = objectMapper.readTree(responseBody);
-        return jsonNode.get("data").get("memberId").asLong();
     }
 }
 
