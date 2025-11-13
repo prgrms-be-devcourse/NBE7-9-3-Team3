@@ -67,7 +67,7 @@ public class PointControllerTest {
 
     @Test
     @DisplayName("t1: 포인트 충전 성공")
-    void chargePoint() throws Exception {
+    void t1() throws Exception {
         mvc.perform(post("/api/points/members/charge/{amount}", 5000)
                 .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
@@ -77,7 +77,7 @@ public class PointControllerTest {
 
     @Test
     @DisplayName("t2: 포인트 내역 조회 성공")
-    void getPointHistory() throws Exception {
+    void t2() throws Exception {
         pointRepository.save(Point.create(testMember, 5000L, 5000L));
 
         mvc.perform(get("/api/points/members/history")
@@ -94,38 +94,26 @@ public class PointControllerTest {
     }
 
     @Test
-    @DisplayName("t3: 포인트로 상품 결제 성공")
-    void purchaseItem() throws Exception {
-        // 판매자 생성
-        Member seller = memberRepository.save(new Member(
-                "seller@test.com",
-                "seller1234",
-                "seller",
-                "")
-        );
-        // 판매글 생성
-        Trade trade = tradeRepository.save(new Trade(
-                seller,
-                BoardType.FISH,
-                "테스트 제목",
-                "테스트 설명",
-                5000L,
-                TradeStatus.SELLING,
-                null,
-                LocalDateTime.now())
-        );
+    @DisplayName("t3: 포인트 내역 조회 실패 - 포인트 기록 없음")
+    void t3() throws Exception {
+        mvc.perform(get("/api/points/members/history")
+                .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.resultCode").value("P002"))
+                .andExpect(jsonPath("$.msg").value("포인트 내역이 존재하지 않습니다."));
+    }
+
+    @Test
+    @DisplayName("t4: 포인트로 상품 결제 성공")
+    void t4() throws Exception {
+        Member seller = createSeller();
+        Trade trade = createTrade(seller, 5000L);
 
         // 구매자 포인트 충전
         testMember.updatePoints(10000L);
         memberRepository.save(testMember);
 
-        String requestBody = """
-        {
-            "sellerId": %d,
-            "amount" : 5000,
-            "tradeId" : %d
-        }
-        """.formatted(seller.getMemberId(), trade.getTradeId());
+        String requestBody = purchaseRequest(seller, trade);
 
         mvc.perform(post("/api/points/members/purchase")
                 .header("Authorization", "Bearer " + jwtToken)
@@ -134,6 +122,41 @@ public class PointControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.resultCode").value(200))
                 .andExpect(jsonPath("$.msg").value("포인트 결제 완료"));
+    }
+
+    // ===중복 줄이기 위한 헬퍼 메서드===
+
+    // 판매자 생성
+    private Member createSeller() {
+        return memberRepository.save(new Member(
+                "seller@test.com",
+                "seller1234",
+                "seller",
+                ""
+        ));
+    }
+
+    // 판매글 생성
+    private Trade createTrade(Member seller, Long price) {
+        return tradeRepository.save(new Trade(
+                seller,
+                BoardType.FISH,
+                "테스트 제목",
+                "테스트 설명",
+                price,
+                TradeStatus.SELLING,
+                null,
+                LocalDateTime.now()));
+    }
+
+    private String purchaseRequest(Member seller, Trade trade) {
+        return """
+        {
+            "sellerId": %d,
+            "amount": %d,
+            "tradeId": %d
+        }
+        """.formatted(seller.getMemberId(), trade.getPrice(), trade.getTradeId());
     }
 }
 
