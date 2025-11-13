@@ -46,10 +46,12 @@ public class FollowControllerTest {
     void t1() throws Exception {
         String followerEmail = "follower@test.com";
         String followeeEmail = "followee@test.com";
-        
-        String followerToken = loginUtil.createMemberAndGetToken(followerEmail, "password123", "follower", "");
-        String followeeToken = loginUtil.createMemberAndGetToken(followeeEmail, "password123", "followee", "");
-        
+
+        String followerToken = loginUtil.createMemberAndGetToken(followerEmail, "password123",
+            "follower", "");
+        String followeeToken = loginUtil.createMemberAndGetToken(followeeEmail, "password123",
+            "followee", "");
+
         Member followee = loginUtil.getMemberByEmail(followeeEmail);
         Long followeeId = followee.getMemberId();
 
@@ -81,10 +83,12 @@ public class FollowControllerTest {
     void t3() throws Exception {
         String followerEmail = "follower2@test.com";
         String followeeEmail = "followee2@test.com";
-        
-        String followerToken = loginUtil.createMemberAndGetToken(followerEmail, "password123", "follower2", "");
-        String followeeToken = loginUtil.createMemberAndGetToken(followeeEmail, "password123", "followee2", "");
-        
+
+        String followerToken = loginUtil.createMemberAndGetToken(followerEmail, "password123",
+            "follower2", "");
+        String followeeToken = loginUtil.createMemberAndGetToken(followeeEmail, "password123",
+            "followee2", "");
+
         Member followee = loginUtil.getMemberByEmail(followeeEmail);
         Long followeeId = followee.getMemberId();
 
@@ -104,10 +108,12 @@ public class FollowControllerTest {
     void t4() throws Exception {
         String followerEmail = "unfollow1@test.com";
         String followeeEmail = "unfollow2@test.com";
-        
-        String followerToken = loginUtil.createMemberAndGetToken(followerEmail, "password123", "unfollow1", "");
-        String followeeToken = loginUtil.createMemberAndGetToken(followeeEmail, "password123", "unfollow2", "");
-        
+
+        String followerToken = loginUtil.createMemberAndGetToken(followerEmail, "password123",
+            "unfollow1", "");
+        String followeeToken = loginUtil.createMemberAndGetToken(followeeEmail, "password123",
+            "unfollow2", "");
+
         Member followee = loginUtil.getMemberByEmail(followeeEmail);
         Long followeeId = followee.getMemberId();
 
@@ -128,11 +134,14 @@ public class FollowControllerTest {
         String followeeEmail = "followee3@test.com";
         String follower1Email = "follower3@test.com";
         String follower2Email = "follower4@test.com";
-        
-        String followeeToken = loginUtil.createMemberAndGetToken(followeeEmail, "password123", "followee3", "");
-        String follower1Token = loginUtil.createMemberAndGetToken(follower1Email, "password123", "follower3", "");
-        String follower2Token = loginUtil.createMemberAndGetToken(follower2Email, "password123", "follower4", "");
-        
+
+        String followeeToken = loginUtil.createMemberAndGetToken(followeeEmail, "password123",
+            "followee3", "");
+        String follower1Token = loginUtil.createMemberAndGetToken(follower1Email, "password123",
+            "follower3", "");
+        String follower2Token = loginUtil.createMemberAndGetToken(follower2Email, "password123",
+            "follower4", "");
+
         Member followee = loginUtil.getMemberByEmail(followeeEmail);
         Long followeeId = followee.getMemberId();
 
@@ -160,11 +169,14 @@ public class FollowControllerTest {
         String followerEmail = "follower5@test.com";
         String followee1Email = "followee4@test.com";
         String followee2Email = "followee5@test.com";
-        
-        String followerToken = loginUtil.createMemberAndGetToken(followerEmail, "password123", "follower5", "");
-        String followee1Token = loginUtil.createMemberAndGetToken(followee1Email, "password123", "followee4", "");
-        String followee2Token = loginUtil.createMemberAndGetToken(followee2Email, "password123", "followee5", "");
-        
+
+        String followerToken = loginUtil.createMemberAndGetToken(followerEmail, "password123",
+            "follower5", "");
+        String followee1Token = loginUtil.createMemberAndGetToken(followee1Email, "password123",
+            "followee4", "");
+        String followee2Token = loginUtil.createMemberAndGetToken(followee2Email, "password123",
+            "followee5", "");
+
         Member followee1 = loginUtil.getMemberByEmail(followee1Email);
         Member followee2 = loginUtil.getMemberByEmail(followee2Email);
         Long followee1Id = followee1.getMemberId();
