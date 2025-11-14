@@ -56,7 +56,7 @@ public class TradeChatControllerTest {
     @BeforeEach
     void setUp() {
         loginUtil = new LoginUtil(memberRepository, passwordEncoder, authTokenService);
-        pointUtil = new PointUtil(tradeRepository);
+        pointUtil = new PointUtil(tradeRepository, memberRepository, passwordEncoder);
 
         jwtToken = loginUtil.createMemberAndGetToken(
                 "point@test.com",
@@ -70,12 +70,7 @@ public class TradeChatControllerTest {
     @Test
     @DisplayName("t1: 채팅방 생성 성공")
     void t1() throws Exception {
-        Member seller = loginUtil.createMember(
-                "seller@test.com",
-                "seller1234",
-                "seller",
-                ""
-        );
+        Member seller = pointUtil.createSeller();
         Trade trade = pointUtil.createTrade(seller, 5000L);
 
         mvc.perform(post("/api/chat/{tradeId}/room", trade.getTradeId())
@@ -88,12 +83,7 @@ public class TradeChatControllerTest {
     @Test
     @DisplayName("t2: 채팅방 상세 조회 성공")
     void t2() throws Exception {
-        Member seller = loginUtil.createMember(
-                "seller@test.com",
-                "seller1234",
-                "seller",
-                ""
-        );
+        Member seller = pointUtil.createSeller();
         Member buyer = testMember;
         Trade trade = pointUtil.createTrade(seller, 5000L);
 
@@ -122,12 +112,7 @@ public class TradeChatControllerTest {
     @Test
     @DisplayName("t3: 채팅방 상세 조회 실패 - 제 3자 접근")
     void t3() throws Exception {
-        Member seller = loginUtil.createMember(
-                "seller@test.com",
-                "seller1234",
-                "seller",
-                ""
-        );
+        Member seller = pointUtil.createSeller();
         Member buyer = testMember;
 
         // 제 3자 생성(관계없는)
@@ -160,12 +145,7 @@ public class TradeChatControllerTest {
     @Test
     @DisplayName("t4: 채팅방 내 메세지 내역 조회 성공")
     void t4() throws Exception {
-        Member seller = loginUtil.createMember(
-                "seller@test.com",
-                "seller1234",
-                "seller",
-                ""
-        );
+        Member seller = pointUtil.createSeller();
         Member buyer = testMember;
         Trade trade = pointUtil.createTrade(seller, 5000L);
 
@@ -191,12 +171,7 @@ public class TradeChatControllerTest {
     @Test
     @DisplayName("t5: 채팅방 내 메세지 내역 조회 실패 - 제 3자 접근")
     void t5() throws Exception {
-        Member seller = loginUtil.createMember(
-                "seller@test.com",
-                "seller1234",
-                "seller",
-                ""
-        );
+        Member seller = pointUtil.createSeller();
         Member buyer = testMember;
 
         // 제 3자 생성(관계없는)
@@ -229,12 +204,7 @@ public class TradeChatControllerTest {
     @Test
     @DisplayName("t6: 채팅방 목록 조회 성공")
     void t6() throws Exception {
-        Member seller = loginUtil.createMember(
-                "seller@test.com",
-                "seller1234",
-                "seller",
-                ""
-        );
+        Member seller = pointUtil.createSeller();
         Member buyer = testMember;
         Trade trade = pointUtil.createTrade(seller, 5000L);
 

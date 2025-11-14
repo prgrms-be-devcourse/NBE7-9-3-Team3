@@ -1,18 +1,39 @@
 package org.example.backend.global;
 
+import org.example.backend.domain.member.entity.Member;
+import org.example.backend.domain.member.repository.MemberRepository;
 import org.example.backend.domain.trade.entity.Trade;
 import org.example.backend.domain.trade.enums.BoardType;
 import org.example.backend.domain.trade.enums.TradeStatus;
 import org.example.backend.domain.trade.repository.TradeRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 
 public class PointUtil {
 
     private final TradeRepository tradeRepository;
+    private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public PointUtil(TradeRepository tradeRepository) {
+    public PointUtil(TradeRepository tradeRepository,
+                     MemberRepository memberRepository,
+                     PasswordEncoder passwordEncoder) {
         this.tradeRepository = tradeRepository;
+        this.memberRepository = memberRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    // 판매자 생성
+    public Member createSeller() {
+        Member seller = Member.builder()
+                .email("seller@test.com")
+                .password(passwordEncoder.encode("seller1234"))
+                .nickname("seller")
+                .profileImage("")
+                .build();
+
+        return memberRepository.save(seller);
     }
 
     // 거래 게시글 생성

@@ -47,7 +47,6 @@ public class PointControllerTest {
     @Autowired
     private AuthTokenService authTokenService;
 
-    private LoginUtil loginUtil;
     private PointUtil pointUtil;
 
     private Member testMember;
@@ -55,12 +54,12 @@ public class PointControllerTest {
 
     @BeforeEach
     void setUp() {
-        loginUtil = new LoginUtil(memberRepository, passwordEncoder, authTokenService);
-        pointUtil = new PointUtil(tradeRepository);
+        LoginUtil loginUtil = new LoginUtil(memberRepository, passwordEncoder, authTokenService);
+        pointUtil = new PointUtil(tradeRepository, memberRepository, passwordEncoder);
 
         jwtToken = loginUtil.createMemberAndGetToken(
                 "point@test.com",
-                "test1234",
+                passwordEncoder.encode("point1234"),
                 "point",
                 ""
         );
@@ -108,12 +107,7 @@ public class PointControllerTest {
     @Test
     @DisplayName("t4: 포인트로 상품 결제 성공")
     void t4() throws Exception {
-        Member seller = loginUtil.createMember(
-                "seller@test.com",
-                "seller1234",
-                "seller",
-                ""
-        );
+        Member seller = pointUtil.createSeller();
         Trade trade = pointUtil.createTrade(seller, 5000L);
 
         // 구매자 포인트 충전
@@ -138,12 +132,7 @@ public class PointControllerTest {
     @Test
     @DisplayName("t5: 포인트로 상품 결제 실패 - 이미 판매 완료된 상품")
     void t5() throws Exception {
-        Member seller = loginUtil.createMember(
-                "seller@test.com",
-                "seller1234",
-                "seller",
-                ""
-        );
+        Member seller = pointUtil.createSeller();
         Trade trade = pointUtil.createTrade(seller, 5000L);
 
         // 상품을 판매완료로 상태변경
@@ -171,12 +160,7 @@ public class PointControllerTest {
     @Test
     @DisplayName("t6: 포인트로 상품 결제 실패 - 포인트 부족")
     void t6() throws Exception {
-        Member seller = loginUtil.createMember(
-                "seller@test.com",
-                "seller1234",
-                "seller",
-                ""
-        );
+        Member seller = pointUtil.createSeller();
         Trade trade = pointUtil.createTrade(seller, 5000L);
 
         // 구매자 포인트 상품보다 적게 충전
