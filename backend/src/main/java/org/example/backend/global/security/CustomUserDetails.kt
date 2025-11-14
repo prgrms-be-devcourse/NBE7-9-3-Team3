@@ -1,44 +1,28 @@
-package org.example.backend.global.security;
+package org.example.backend.global.security
 
-import java.util.Collection;
-import java.util.List;
-import lombok.Getter;
-import org.example.backend.domain.member.entity.Member;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.example.backend.domain.member.entity.Member
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.userdetails.UserDetails
 
-@Getter
-public class CustomUserDetails implements UserDetails {
-  private final Member member;
+class CustomUserDetails(val member: Member) : UserDetails {
+    val id: Long?
+        get() = member.memberId
 
-  public CustomUserDetails(Member member) {
-    this.member = member;
-  }
+    val email: String
+        get() = member.email
 
-  public Long getId() {
-    return member.getMemberId();
-  }
+    val nickname: String
+        get() = member.nickname
 
-  public String getEmail() {
-    return member.getEmail();
-  }
+    override fun getAuthorities(): MutableCollection<out GrantedAuthority?> {
+        return mutableListOf<GrantedAuthority?>()
+    }
 
-  public String getNickname() {
-    return member.getNickname();
-  }
+    override fun getPassword(): String {
+        return member.password
+    }
 
-  @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
-    return List.of();
-  }
-
-  @Override
-  public String getPassword() {
-    return member.getPassword();
-  }
-
-  @Override
-  public String getUsername() {
-    return member.getEmail();
-  }
+    override fun getUsername(): String {
+        return member.email
+    }
 }

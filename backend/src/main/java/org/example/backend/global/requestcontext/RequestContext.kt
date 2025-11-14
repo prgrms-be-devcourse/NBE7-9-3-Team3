@@ -1,104 +1,102 @@
-package org.example.backend.global.requestcontext;
+package org.example.backend.global.requestcontext
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import java.util.Arrays;
-import java.util.Optional;
-import lombok.RequiredArgsConstructor;
-import org.example.backend.domain.member.entity.Member;
-import org.example.backend.domain.member.service.MemberService;
-import org.example.backend.global.exception.ServiceException;
-import org.example.backend.global.security.CustomUserDetails;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
+import jakarta.servlet.http.Cookie
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
+import org.example.backend.domain.member.entity.Member
+import org.example.backend.global.exception.ServiceException
+import org.example.backend.global.security.CustomUserDetails
+import org.springframework.http.HttpStatus
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.stereotype.Component
+import org.springframework.web.context.request.RequestContextHolder
+import org.springframework.web.context.request.ServletRequestAttributes
 
 @Component
-@RequiredArgsConstructor
-public class RequestContext {
-    private final MemberService memberService;
-    private final HttpServletRequest request;
-    private final HttpServletResponse response;
+class RequestContext {
+    private val request: HttpServletRequest?
+        get() = (RequestContextHolder.getRequestAttributes() as? ServletRequestAttributes)?.request
 
-    public void setHeader(String name, String value) {
-        response.setHeader(name, value);
+    private val response: HttpServletResponse?
+        get() = (RequestContextHolder.getRequestAttributes() as? ServletRequestAttributes)?.response
+
+    fun setHeader(name: String?, value: String?) {
+        response?.setHeader(name, value)
     }
 
-    public String getHeader(String name, String defaultValue) {
-        return Optional
-            .ofNullable(request.getHeader(name))
-            .filter(headerValue -> !headerValue.isBlank())
-            .orElse(defaultValue);
+    fun getHeader(name: String?, defaultValue: String?): String? {
+        val headerValue = request?.getHeader(name)
+        return if (headerValue != null && headerValue.isNotBlank()) {
+            headerValue
+        } else {
+            defaultValue
+        }
     }
 
-    public String getCookieValue(String name, String defaultValue) {
-        return Optional
-            .ofNullable(request.getCookies())
-            .flatMap(
-                cookies ->
-                    Arrays.stream(cookies)
-                        .filter(cookie -> cookie.getName().equals(name))
-                        .map(Cookie::getValue)
-                        .filter(value -> !value.isBlank())
-                        .findFirst()
-            )
-            .orElse(defaultValue);
+    fun getCookieValue(name: String?, defaultValue: String?): String? {
+        val cookies = request?.cookies ?: return defaultValue
+
+        return cookies
+            .firstOrNull { it.name == name }
+            ?.takeIf { it.value.isNotBlank() }
+            ?.value
+            ?: defaultValue
     }
 
-    public void setCookie(String name, String value) {
-        if (value == null) value = "";
-
-        Cookie cookie = new Cookie(name, value);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        cookie.setDomain("localhost");
-        cookie.setSecure(true);
-        cookie.setAttribute("SameSite", "Strict");
+    fun setCookie(name: String?, value: String?) {
+        val cookieValue = value ?: ""
+        val cookie = Cookie(name, cookieValue)
+        cookie.path = "/"
+        cookie.isHttpOnly = true
+        cookie.domain = "localhost"
+        cookie.secure = true
+        cookie.setAttribute("SameSite", "Strict")
 
         // 값이 없다면 해당 쿠키변수를 삭제하라는 뜻
-        if (value.isBlank()) {
-            cookie.setMaxAge(0);
+        if (cookieValue.isBlank()) {
+            cookie.maxAge = 0
         }
 
-        response.addCookie(cookie);
+        response?.addCookie(cookie)
     }
 
-    public void deleteCookie(String name) {
-        setCookie(name, null);
+    fun deleteCookie(name: String?) {
+        setCookie(name, null)
     }
 
-    // 현재 인증된 사용자 정보 가져오기
-    public Member getCurrentMember() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
-            throw new ServiceException("401", "인증되지 않은 사용자입니다.", org.springframework.http.HttpStatus.UNAUTHORIZED);
+    val currentMember: Member
+        // 현재 인증된 사용자 정보 가져오기
+        get() {
+            val authentication = SecurityContextHolder.getContext().authentication
+            if (authentication == null || authentication.principal !is CustomUserDetails) {
+                throw ServiceException(
+                    "401",
+                    "인증되지 않은 사용자입니다.",
+                    HttpStatus.UNAUTHORIZED
+                )
+            }
+
+            val userDetails = authentication.principal as CustomUserDetails
+            return userDetails.member
         }
-        
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        return userDetails.getMember();
-    }
 
-    // 편의 메서드들
-    public Long getCurrentMemberId() {
-        return getCurrentMember().getMemberId();
-    }
+    val currentMemberId: Long?
+        // 편의 메서드들
+        get() = currentMember.memberId
 
-    public String getCurrentMemberEmail() {
-        return getCurrentMember().getEmail();
-    }
+    val currentMemberEmail: String
+        get() = currentMember.email
 
-    public String getCurrentMemberNickname() {
-        return getCurrentMember().getNickname();
-    }
+    val currentMemberNickname: String
+        get() = currentMember.nickname
 
-    public boolean isAuthenticated() {
-        try {
-            getCurrentMember();
-            return true;
-        } catch (ServiceException e) {
-            return false;
+    val isAuthenticated: Boolean
+        get() {
+            return try {
+                currentMember
+                true
+            } catch (e: ServiceException) {
+                false
+            }
         }
-    }
-
 }
