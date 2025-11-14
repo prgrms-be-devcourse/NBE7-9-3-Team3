@@ -10,8 +10,6 @@ import org.example.backend.global.jpa.entity.BaseEntity
 import java.time.LocalDateTime
 
 @Entity
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 class Aquarium(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
