@@ -17,6 +17,11 @@ class ApiResponse<T>(
         }
 
         @JvmStatic
+        fun ok(message: String?): ApiResponse<Void?> {
+            return ApiResponse("200", message, null)
+        }
+
+        @JvmStatic
         fun <T> ok(message: String?, data: T?): ApiResponse<T?> {
             return ApiResponse("200", message, data)
         }
