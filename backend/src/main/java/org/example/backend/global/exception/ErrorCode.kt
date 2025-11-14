@@ -1,11 +1,12 @@
-package org.example.backend.global.exception;
+package org.example.backend.global.exception
 
-import lombok.Getter;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatus
 
-@Getter
-public enum ErrorCode {
-
+enum class ErrorCode(
+    val code: String,
+    val status: HttpStatus,
+    val message: String
+) {
     // ========== 공통 에러 ==========
     VALIDATION_FAILED("CMN001", HttpStatus.BAD_REQUEST, "입력값 검증에 실패했습니다."),
     INTERNAL_ERROR("CMN002", HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다."),
@@ -30,6 +31,7 @@ public enum ErrorCode {
     TRADE_BOARD_TYPE_MISMATCH("T003", HttpStatus.BAD_REQUEST, "해당 게시판의 게시글이 아닙니다."),
     TRADE_OWNER_MISMATCH("T004", HttpStatus.FORBIDDEN, "게시글 작성자만 수정/삭제할 수 있습니다."),
     TRADE_ALREADY_SOLD("T005", HttpStatus.BAD_REQUEST, "해당 물픔은 이미 판매되었습니다."),
+
     // ========== TradeComment 도메인 에러 ==========
     TRADE_COMMENT_NOT_FOUND("TC001", HttpStatus.NOT_FOUND, "존재하지 않는 댓글입니다."),
     TRADE_COMMENT_POST_MISMATCH("TC002", HttpStatus.BAD_REQUEST, "해당 게시글의 댓글이 아닙니다."),
@@ -64,7 +66,11 @@ public enum ErrorCode {
     IMAGE_FILE_EMPTY("I003", HttpStatus.BAD_REQUEST, "파일이 비어있습니다."),
     IMAGE_SIZE_EXCEEDED("I004", HttpStatus.BAD_REQUEST, "파일 크기는 5MB를 초과할 수 없습니다."),
     IMAGE_NAME_INVALID("I005", HttpStatus.BAD_REQUEST, "파일 이름이 유효하지 않습니다."),
-    IMAGE_EXTENSION_NOT_ALLOWED("I006", HttpStatus.BAD_REQUEST, "허용하지 않는 파일 형식입니다. (jpg, jpeg, png, gif, webp만 가능)"),
+    IMAGE_EXTENSION_NOT_ALLOWED(
+        "I006",
+        HttpStatus.BAD_REQUEST,
+        "허용하지 않는 파일 형식입니다. (jpg, jpeg, png, gif, webp만 가능)"
+    ),
     IMAGE_URL_NOT_ALLOWED("I007", HttpStatus.BAD_REQUEST, "허용되지 않은 URL입니다."),
     IMAGE_URL_INVALID("I008", HttpStatus.BAD_REQUEST, "유효하지 않은 S3 URL 형식입니다."),
 
@@ -75,15 +81,5 @@ public enum ErrorCode {
     TRADE_CHAT_BUYER_NOT_FOUND("TC004", HttpStatus.NOT_FOUND, "구매자가 존재하지 않습니다."),
 
     // ========== Post 도메인 에러 ==========
-    POST_FORBIDDEN_ACCESS("PS001", HttpStatus.FORBIDDEN, "비공개 글입니다.");
-
-    private final String code;
-    private final HttpStatus status;
-    private final String message;
-
-    ErrorCode(String code, HttpStatus status, String message) {
-        this.code = code;
-        this.status = status;
-        this.message = message;
-    }
+    POST_FORBIDDEN_ACCESS("PS001", HttpStatus.FORBIDDEN, "비공개 글입니다.")
 }
