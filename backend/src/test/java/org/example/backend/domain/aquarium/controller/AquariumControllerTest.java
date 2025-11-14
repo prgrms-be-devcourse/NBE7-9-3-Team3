@@ -15,10 +15,7 @@ import org.example.backend.domain.member.entity.Member;
 import org.example.backend.domain.member.repository.MemberRepository;
 import org.example.backend.domain.member.service.AuthTokenService;
 import org.example.backend.global.LoginUtil;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -51,14 +48,16 @@ public class AquariumControllerTest {
     private Member testMember;  // 어항 생성시 사용할 test member
     private String jwtToken;  // 테스트시 사용할 jwt 토큰
 
-    @BeforeAll
-    void initMemberAndLogin() throws Exception {
+    @BeforeEach
+    void setup() throws Exception {
         LoginUtil loginUtil = new LoginUtil(memberRepository, passwordEncoder, authTokenService);
 
         // Repository를 직접 사용하여 빠르게 회원 생성 및 토큰 발급
         jwtToken = loginUtil.createMemberAndGetToken("aquarium@test.com", "test1234", "aquarium",
             "");
         testMember = loginUtil.getMemberByEmail("aquarium@test.com");
+
+        aquariumRepository.deleteAll();
     }
 
     @Test

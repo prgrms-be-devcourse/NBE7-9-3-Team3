@@ -1,19 +1,17 @@
-package org.example.backend.domain.aquarium.dto;
+package org.example.backend.domain.aquarium.dto
 
-import java.time.LocalDateTime;
-import org.example.backend.domain.aquarium.entity.Aquarium;
+import org.example.backend.domain.aquarium.entity.Aquarium
+import java.time.LocalDateTime
 
-public record AquariumListResponseDto(
-    Long aquariumId,
-    String aquariumName,
-    LocalDateTime createDate
+@JvmRecord
+data class AquariumListResponseDto(
+    val aquariumId: Long,
+    val aquariumName: String,
+    val createDate: LocalDateTime
 ) {
-
-  public AquariumListResponseDto(Aquarium aquarium) {
-    this(
-        aquarium.getId(),
-        aquarium.getName(),
-        aquarium.getCreateDate()
-    );
-  }
+    constructor(aquarium: Aquarium) : this(
+        aquarium.id,
+        aquarium.name,
+        aquarium.createDate
+    )
 }

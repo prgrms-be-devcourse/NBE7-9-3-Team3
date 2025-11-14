@@ -15,10 +15,7 @@ import org.example.backend.domain.member.entity.Member;
 import org.example.backend.domain.member.repository.MemberRepository;
 import org.example.backend.domain.member.service.AuthTokenService;
 import org.example.backend.global.LoginUtil;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -55,8 +52,8 @@ public class FishControllerTest {
     FishController를 테스트하기 위해 필수로 진행되어야할
     회원가입, 로그인, 어항 생성
      */
-    @BeforeAll
-    void initRequiredProcess() {
+    @BeforeEach
+    void setup() {
         LoginUtil loginUtil = new LoginUtil(memberRepository, passwordEncoder, authTokenService);
 
         // Repository를 직접 사용하여 빠르게 회원 생성 및 토큰 발급
@@ -66,6 +63,8 @@ public class FishControllerTest {
         // 어항 생성
         testAquarium = new Aquarium(testMember, "test");
         aquariumRepository.save(testAquarium);
+
+        fishRepository.deleteAll();
     }
 
     @Test
