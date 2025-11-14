@@ -54,7 +54,7 @@ public class PointControllerTest {
     private String jwtToken;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         loginUtil = new LoginUtil(memberRepository, passwordEncoder, authTokenService);
         pointUtil = new PointUtil(tradeRepository);
 
