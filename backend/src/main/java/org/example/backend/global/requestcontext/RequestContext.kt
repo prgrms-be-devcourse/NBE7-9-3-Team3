@@ -83,20 +83,4 @@ class RequestContext {
     val currentMemberId: Long?
         // 편의 메서드들
         get() = currentMember.memberId
-
-    val currentMemberEmail: String
-        get() = currentMember.email
-
-    val currentMemberNickname: String
-        get() = currentMember.nickname
-
-    val isAuthenticated: Boolean
-        get() {
-            return try {
-                currentMember
-                true
-            } catch (e: ServiceException) {
-                false
-            }
-        }
 }
