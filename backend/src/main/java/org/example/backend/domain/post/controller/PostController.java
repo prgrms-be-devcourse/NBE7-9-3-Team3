@@ -7,6 +7,7 @@ import org.example.backend.domain.post.dto.MyPostReadResponseDto;
 import org.example.backend.domain.post.dto.PostListResponseDto;
 import org.example.backend.domain.post.dto.PostModifyRequestDto;
 import org.example.backend.domain.post.dto.PostReadResponseDto;
+import org.example.backend.domain.post.dto.PostResponseDto;
 import org.example.backend.domain.post.dto.PostWriteRequestDto;
 import org.example.backend.domain.post.entity.Post.BoardType;
 import org.example.backend.domain.post.entity.Post.Category;
@@ -93,28 +94,28 @@ public class PostController implements PostControllerSpec {
 
     @Override
     @PostMapping
-    public ApiResponse<Void> createPost(
+    public ApiResponse<PostResponseDto> createPost(
         @RequestBody PostWriteRequestDto reqBody,
         @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
 
-        postService.write(reqBody, userDetails.getMember());
+        PostResponseDto response = postService.write(reqBody, userDetails.getMember());
 
-        return ApiResponse.ok("게시글 생성");
+        return ApiResponse.ok("게시글 생성",response);
 
     }
 
     @Override
     @PatchMapping("/{id}")
-    public ApiResponse<Void> modifyPost(
+    public ApiResponse<PostResponseDto> modifyPost(
         @PathVariable Long id,
         @RequestBody PostModifyRequestDto reqBody,
         @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
 
-        postService.modify(id, reqBody, userDetails.getMember());
+        PostResponseDto response = postService.modify(id, reqBody, userDetails.getMember());
 
-        return ApiResponse.ok("%d번 게시글 수정".formatted(id));
+        return ApiResponse.ok("%d번 게시글 수정".formatted(id),response);
     }
 
 }
