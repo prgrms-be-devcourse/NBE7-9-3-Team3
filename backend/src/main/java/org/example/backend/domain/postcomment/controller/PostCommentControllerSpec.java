@@ -2,17 +2,17 @@ package org.example.backend.domain.postcomment.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import org.example.backend.domain.postcomment.dto.MyPostCommentReadResponseDto;
 import org.example.backend.domain.postcomment.dto.PostCommentCreateRequestDto;
 import org.example.backend.domain.postcomment.dto.PostCommentModifyRequestDto;
 import org.example.backend.domain.postcomment.dto.PostCommentReadResponseDto;
+import org.example.backend.domain.postcomment.dto.PostCommentResponseDto;
 import org.example.backend.global.response.ApiResponse;
 import org.example.backend.global.security.CustomUserDetails;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-
-import java.util.List;
 
 @Tag(name = "PostComment", description = "질문/자랑 게시판 댓글 관리 API")
 public interface PostCommentControllerSpec {
@@ -35,13 +35,13 @@ public interface PostCommentControllerSpec {
     );
 
     @Operation(summary = "댓글 생성", description = "새로운 댓글을 생성합니다.")
-    ApiResponse<Void> createPostComment(
+    ApiResponse<PostCommentResponseDto> createPostComment(
             @RequestBody PostCommentCreateRequestDto reqBody,
             @AuthenticationPrincipal CustomUserDetails userDetails
     );
 
     @Operation(summary = "댓글 수정", description = "기존 댓글을 수정합니다.")
-    ApiResponse<Void> modifyItem(
+    ApiResponse<PostCommentResponseDto> modifyPostComment(
             @PathVariable Long commentId,
             @RequestBody PostCommentModifyRequestDto reqBody,
             @AuthenticationPrincipal CustomUserDetails userDetails

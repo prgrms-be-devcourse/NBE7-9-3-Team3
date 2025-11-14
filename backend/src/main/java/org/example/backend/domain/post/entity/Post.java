@@ -105,6 +105,9 @@ public class Post extends BaseEntity {
 
     public void deleteImageUrls() {
         this.images.clear();
+    }
 
+    public void setDisplayingPrivate(){
+        this.displaying = Post.Displaying.PRIVATE;
     }
 }
