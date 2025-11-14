@@ -61,6 +61,7 @@ public class PostControllerTest {
 
     private String accessToken;
     private Member testMember;
+
     @Autowired
     private PostRepository postRepository;
 
