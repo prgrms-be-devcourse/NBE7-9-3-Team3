@@ -1,4 +1,4 @@
-package org.example.backend.domain.post.postcontroller;
+package org.example.backend.domain.post.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -21,8 +21,8 @@ import org.example.backend.domain.post.dto.PostWriteRequestDto;
 import org.example.backend.domain.post.entity.Post;
 import org.example.backend.domain.post.entity.Post.BoardType;
 import org.example.backend.domain.post.entity.Post.Category;
+import org.example.backend.domain.post.entity.PostImage;
 import org.example.backend.domain.post.repository.PostRepository;
-import org.example.backend.domain.post.service.PostService;
 import org.example.backend.global.LoginUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -56,9 +56,6 @@ public class PostControllerTest {
     @Autowired
     private AuthTokenService authTokenService;
 
-    @Autowired
-    private PostService postService;
-
     @PersistenceContext
     private EntityManager em;
 
@@ -82,7 +79,7 @@ public class PostControllerTest {
     @BeforeEach
     void setUp() {
         // DB 초기화
-        postRepository.deleteAll(); // 서비스 메서드로 초기화
+        postRepository.deleteAll();
         memberRepository.deleteAll();
         em.createNativeQuery("ALTER TABLE post ALTER COLUMN id RESTART WITH 1").executeUpdate();
 
@@ -105,7 +102,13 @@ public class PostControllerTest {
                 imageUrls,
                 null
             );
-            postService.write(postDto, testMember);
+            Post post = new Post(postDto, testMember);
+
+            postDto.imageUrls().forEach(url ->
+                post.addImage(new PostImage(url, post)));
+
+            postRepository.save(post);
+
         }
     }
 
@@ -358,7 +361,12 @@ public class PostControllerTest {
             imageUrls,
             null
         );
-        postService.write(postDto, testMember2);
+        Post post = new Post(postDto, testMember2);
+
+        postDto.imageUrls().forEach(url ->
+            post.addImage(new PostImage(url, post)));
+
+        postRepository.save(post);
 
         ResultActions result = mvc.perform(
             get("/api/posts")
@@ -412,7 +420,7 @@ public class PostControllerTest {
             BoardType.QUESTION,
             imageUrls,
             Category.FISH);
-        postService.write(postDto1, testMember);
+        postRepository.save(new Post(postDto1, testMember));
 
         PostWriteRequestDto postDto2 = new PostWriteRequestDto(
             "제목 카테고리 수조",
@@ -420,7 +428,7 @@ public class PostControllerTest {
             BoardType.QUESTION,
             imageUrls,
             Category.AQUARIUM);
-        postService.write(postDto2, testMember);
+        postRepository.save(new Post(postDto2, testMember));
 
         ResultActions result = mvc.perform(
             get("/api/posts")
