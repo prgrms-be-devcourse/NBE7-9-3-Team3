@@ -61,15 +61,12 @@ class FishLogServiceTest {
 
     @BeforeEach
     void setUp() {
-        // LoginUtil을 사용하여 빠르게 회원 생성
         LoginUtil loginUtil = new LoginUtil(memberRepository, passwordEncoder, authTokenService);
         testMember = loginUtil.createMember("fishLogService@test.com", "test1234", "fishLogService", null);
 
-        // 테스트용 Aquarium 생성
         testAquarium = new Aquarium(testMember, "테스트 어항");
         aquariumRepository.save(testAquarium);
 
-        // 테스트용 Fish 생성
         testFish = new Fish(testAquarium, "금붕어", "테스트 물고기");
         fishRepository.save(testFish);
     }
@@ -77,24 +74,20 @@ class FishLogServiceTest {
     @Test
     @DisplayName("물고기 로그 생성 성공")
     void createLog_Success() {
-        // given
         FishLogRequestDto requestDto = FishLogRequestDto.builder()
                 .fishId(testFish.getId())
                 .status("건강함")
                 .logDate(LocalDateTime.now())
                 .build();
 
-        // when
         FishLogResponseDto responseDto = fishLogService.createLog(requestDto);
 
-        // then
         assertThat(responseDto).isNotNull();
         assertThat(responseDto.getFishId()).isEqualTo(testFish.getId());
         assertThat(responseDto.getStatus()).isEqualTo("건강함");
         assertThat(responseDto.getAquariumId()).isEqualTo(testAquarium.getId());
         assertThat(responseDto.getLogDate()).isNotNull();
 
-        // DB에 저장되었는지 확인
         FishLog savedLog = fishLogRepository.findById(responseDto.getLogId())
                 .orElseThrow();
         assertThat(savedLog.getStatus()).isEqualTo("건강함");
@@ -103,17 +96,14 @@ class FishLogServiceTest {
     @Test
     @DisplayName("물고기 로그 생성 - logDate가 null일 때 자동으로 현재 시간 설정")
     void createLog_WithNullLogDate_SetsCurrentTime() {
-        // given
         FishLogRequestDto requestDto = FishLogRequestDto.builder()
                 .fishId(testFish.getId())
                 .status("건강함")
                 .logDate(null)
                 .build();
 
-        // when
         FishLogResponseDto responseDto = fishLogService.createLog(requestDto);
 
-        // then
         assertThat(responseDto.getLogDate()).isNotNull();
         assertThat(responseDto.getLogDate()).isBeforeOrEqualTo(LocalDateTime.now());
     }
@@ -121,7 +111,6 @@ class FishLogServiceTest {
     @Test
     @DisplayName("물고기 로그 생성 실패 - 존재하지 않는 물고기")
     void createLog_Fail_WhenFishNotFound() {
-        // given
         Long nonExistentFishId = 999L;
         FishLogRequestDto requestDto = FishLogRequestDto.builder()
                 .fishId(nonExistentFishId)
@@ -129,7 +118,6 @@ class FishLogServiceTest {
                 .logDate(LocalDateTime.now())
                 .build();
 
-        // when & then
         assertThatThrownBy(() -> fishLogService.createLog(requestDto))
                 .isInstanceOf(BusinessException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.FISH_NOT_FOUND);
@@ -138,7 +126,6 @@ class FishLogServiceTest {
     @Test
     @DisplayName("물고기 로그 목록 조회 성공")
     void getLogsByFishId_Success() {
-        // given
         FishLog log1 = FishLog.builder()
                 .fish(testFish)
                 .status("건강함")
@@ -152,10 +139,8 @@ class FishLogServiceTest {
         fishLogRepository.save(log1);
         fishLogRepository.save(log2);
 
-        // when
         List<FishLogResponseDto> logs = fishLogService.getLogsByFishId(testFish.getId());
 
-        // then
         assertThat(logs).hasSize(2);
         assertThat(logs).extracting(FishLogResponseDto::getStatus)
                 .containsExactlyInAnyOrder("건강함", "약간 아픔");
@@ -164,17 +149,14 @@ class FishLogServiceTest {
     @Test
     @DisplayName("물고기 로그 목록 조회 - 로그가 없을 때 빈 리스트 반환")
     void getLogsByFishId_EmptyList_WhenNoLogs() {
-        // when
         List<FishLogResponseDto> logs = fishLogService.getLogsByFishId(testFish.getId());
 
-        // then
         assertThat(logs).isEmpty();
     }
 
     @Test
     @DisplayName("물고기 로그 수정 성공")
     void updateLog_Success() {
-        // given
         FishLog existingLog = FishLog.builder()
                 .fish(testFish)
                 .status("건강함")
@@ -189,15 +171,12 @@ class FishLogServiceTest {
                 .logDate(newLogDate)
                 .build();
 
-        // when
         FishLogResponseDto responseDto = fishLogService.updateLog(existingLog.getLogId(), updateDto);
 
-        // then
         assertThat(responseDto.getStatus()).isEqualTo("아픔");
         assertThat(responseDto.getLogDate()).isEqualTo(newLogDate);
         assertThat(responseDto.getLogId()).isEqualTo(existingLog.getLogId());
 
-        // DB에서 확인
         FishLog updatedLog = fishLogRepository.findById(existingLog.getLogId())
                 .orElseThrow();
         assertThat(updatedLog.getStatus()).isEqualTo("아픔");
@@ -206,7 +185,6 @@ class FishLogServiceTest {
     @Test
     @DisplayName("물고기 로그 수정 실패 - 존재하지 않는 로그")
     void updateLog_Fail_WhenLogNotFound() {
-        // given
         Long nonExistentLogId = 999L;
         FishLogRequestDto updateDto = FishLogRequestDto.builder()
                 .fishId(testFish.getId())
@@ -214,7 +192,6 @@ class FishLogServiceTest {
                 .logDate(LocalDateTime.now())
                 .build();
 
-        // when & then
         assertThatThrownBy(() -> fishLogService.updateLog(nonExistentLogId, updateDto))
                 .isInstanceOf(BusinessException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.FISH_LOG_NOT_FOUND);
@@ -223,7 +200,6 @@ class FishLogServiceTest {
     @Test
     @DisplayName("물고기 로그 수정 실패 - 존재하지 않는 물고기")
     void updateLog_Fail_WhenFishNotFound() {
-        // given
         FishLog existingLog = FishLog.builder()
                 .fish(testFish)
                 .status("건강함")
@@ -238,7 +214,6 @@ class FishLogServiceTest {
                 .logDate(LocalDateTime.now())
                 .build();
 
-        // when & then
         assertThatThrownBy(() -> fishLogService.updateLog(existingLog.getLogId(), updateDto))
                 .isInstanceOf(BusinessException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.FISH_NOT_FOUND);
@@ -247,7 +222,6 @@ class FishLogServiceTest {
     @Test
     @DisplayName("물고기 로그 삭제 성공")
     void deleteLog_Success() {
-        // given
         FishLog log = FishLog.builder()
                 .fish(testFish)
                 .status("건강함")
@@ -256,20 +230,16 @@ class FishLogServiceTest {
         fishLogRepository.save(log);
         Long logId = log.getLogId();
 
-        // when
         fishLogService.deleteLog(logId);
 
-        // then
         assertThat(fishLogRepository.findById(logId)).isEmpty();
     }
 
     @Test
     @DisplayName("물고기 로그 삭제 실패 - 존재하지 않는 로그")
     void deleteLog_Fail_WhenLogNotFound() {
-        // given
         Long nonExistentLogId = 999L;
 
-        // when & then
         assertThatThrownBy(() -> fishLogService.deleteLog(nonExistentLogId))
                 .isInstanceOf(BusinessException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.FISH_LOG_NOT_FOUND);

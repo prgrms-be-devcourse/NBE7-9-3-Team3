@@ -62,16 +62,13 @@ class FishLogControllerTest {
 
     @BeforeEach
     void setUp() {
-        // LoginUtil을 사용하여 빠르게 회원 생성 및 토큰 발급
         LoginUtil loginUtil = new LoginUtil(memberRepository, passwordEncoder, authTokenService);
         jwtToken = loginUtil.createMemberAndGetToken("fishLog@test.com", "test1234", "fishLog", null);
         testMember = loginUtil.getMemberByEmail("fishLog@test.com");
 
-        // 테스트용 Aquarium 생성
         testAquarium = new Aquarium(testMember, "테스트 어항");
         aquariumRepository.save(testAquarium);
 
-        // 테스트용 Fish 생성
         testFish = new Fish(testAquarium, "금붕어", "테스트 물고기");
         fishRepository.save(testFish);
     }
@@ -79,7 +76,6 @@ class FishLogControllerTest {
     @Test
     @DisplayName("물고기 로그 생성 API 테스트")
     void createLog_Success() throws Exception {
-        // given
         String requestBody = """
                 {
                   "status": "건강함",
@@ -87,7 +83,6 @@ class FishLogControllerTest {
                 }
                 """;
 
-        // when & then
         mvc.perform(post("/api/fish/{fishId}/fishLog", testFish.getId())
                         .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -102,14 +97,12 @@ class FishLogControllerTest {
     @Test
     @DisplayName("물고기 로그 생성 API - logDate 없이 생성")
     void createLog_WithoutLogDate_Success() throws Exception {
-        // given
         String requestBody = """
                 {
                   "status": "건강함"
                 }
                 """;
 
-        // when & then
         mvc.perform(post("/api/fish/{fishId}/fishLog", testFish.getId())
                         .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -123,7 +116,6 @@ class FishLogControllerTest {
     @Test
     @DisplayName("물고기 로그 목록 조회 API 테스트")
     void getLogsByFishId_Success() throws Exception {
-        // given
         FishLog log1 = FishLog.builder()
                 .fish(testFish)
                 .status("건강함")
@@ -137,7 +129,6 @@ class FishLogControllerTest {
         fishLogRepository.save(log1);
         fishLogRepository.save(log2);
 
-        // when & then
         mvc.perform(get("/api/fish/{fishId}/fishLog", testFish.getId())
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
@@ -151,7 +142,6 @@ class FishLogControllerTest {
     @Test
     @DisplayName("물고기 로그 목록 조회 API - 로그가 없을 때")
     void getLogsByFishId_EmptyList() throws Exception {
-        // when & then
         mvc.perform(get("/api/fish/{fishId}/fishLog", testFish.getId())
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
@@ -163,7 +153,6 @@ class FishLogControllerTest {
     @Test
     @DisplayName("물고기 로그 수정 API 테스트")
     void updateLog_Success() throws Exception {
-        // given
         FishLog existingLog = FishLog.builder()
                 .fish(testFish)
                 .status("건강함")
@@ -178,7 +167,6 @@ class FishLogControllerTest {
                 }
                 """;
 
-        // when & then
         mvc.perform(put("/api/fish/{fishId}/fishLog/{logId}", testFish.getId(), existingLog.getLogId())
                         .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -192,7 +180,6 @@ class FishLogControllerTest {
     @Test
     @DisplayName("물고기 로그 삭제 API 테스트")
     void deleteLog_Success() throws Exception {
-        // given
         FishLog log = FishLog.builder()
                 .fish(testFish)
                 .status("건강함")
@@ -200,20 +187,17 @@ class FishLogControllerTest {
                 .build();
         fishLogRepository.save(log);
 
-        // when & then
         mvc.perform(delete("/api/fish/{fishId}/fishLog/{logId}", testFish.getId(), log.getLogId())
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("물고기 기록이 삭제되었습니다."));
 
-        // DB에서 삭제되었는지 확인
         assertThat(fishLogRepository.findById(log.getLogId())).isEmpty();
     }
 
     @Test
     @DisplayName("물고기 로그 생성 실패 - 존재하지 않는 물고기")
     void createLog_Fail_WhenFishNotFound() throws Exception {
-        // given
         Long nonExistentFishId = 999L;
         String requestBody = """
                 {
@@ -222,7 +206,6 @@ class FishLogControllerTest {
                 }
                 """;
 
-        // when & then
         mvc.perform(post("/api/fish/{fishId}/fishLog", nonExistentFishId)
                         .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -233,7 +216,6 @@ class FishLogControllerTest {
     @Test
     @DisplayName("물고기 로그 수정 실패 - 존재하지 않는 로그")
     void updateLog_Fail_WhenLogNotFound() throws Exception {
-        // given
         Long nonExistentLogId = 999L;
         String requestBody = """
                 {
@@ -242,7 +224,6 @@ class FishLogControllerTest {
                 }
                 """;
 
-        // when & then
         mvc.perform(put("/api/fish/{fishId}/fishLog/{logId}", testFish.getId(), nonExistentLogId)
                         .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -253,10 +234,8 @@ class FishLogControllerTest {
     @Test
     @DisplayName("물고기 로그 삭제 실패 - 존재하지 않는 로그")
     void deleteLog_Fail_WhenLogNotFound() throws Exception {
-        // given
         Long nonExistentLogId = 999L;
 
-        // when & then
         mvc.perform(delete("/api/fish/{fishId}/fishLog/{logId}", testFish.getId(), nonExistentLogId)
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isNotFound());

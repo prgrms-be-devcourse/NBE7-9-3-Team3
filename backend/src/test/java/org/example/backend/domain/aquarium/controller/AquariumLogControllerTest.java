@@ -60,7 +60,6 @@ class AquariumLogControllerTest {
         jwtToken = loginUtil.createMemberAndGetToken("aquariumLog@test.com", "test1234", "aquariumLog", null);
         testMember = loginUtil.getMemberByEmail("aquariumLog@test.com");
 
-        // 테스트용 Aquarium 생성
         testAquarium = new Aquarium(testMember, "테스트 어항");
         aquariumRepository.save(testAquarium);
     }
@@ -68,7 +67,7 @@ class AquariumLogControllerTest {
     @Test
     @DisplayName("어항 로그 생성 API 테스트")
     void createLog_Success() throws Exception {
-        // given
+
         String requestBody = """
                 {
                   "temperature": 25.5,
@@ -92,14 +91,14 @@ class AquariumLogControllerTest {
     @Test
     @DisplayName("어항 로그 생성 API - temperature와 ph 없이 생성")
     void createLog_WithoutTemperatureAndPh_Success() throws Exception {
-        // given
+
         String requestBody = """
                 {
                   "logDate": "2024-01-01T10:00:00"
                 }
                 """;
 
-        // when & then
+
         mvc.perform(post("/api/aquarium/{aquariumId}/aquariumLog", testAquarium.getId())
                         .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -112,7 +111,7 @@ class AquariumLogControllerTest {
     @Test
     @DisplayName("어항 로그 목록 조회 API 테스트")
     void getLogsByAquariumId_Success() throws Exception {
-        // given
+
         AquariumLog log1 = AquariumLog.builder()
                 .aquarium(testAquarium)
                 .temperature(25.0)
@@ -128,7 +127,7 @@ class AquariumLogControllerTest {
         aquariumLogRepository.save(log1);
         aquariumLogRepository.save(log2);
 
-        // when & then
+
         mvc.perform(get("/api/aquarium/{aquariumId}/aquariumLog", testAquarium.getId())
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
@@ -142,7 +141,7 @@ class AquariumLogControllerTest {
     @Test
     @DisplayName("어항 로그 목록 조회 API - 로그가 없을 때")
     void getLogsByAquariumId_EmptyList() throws Exception {
-        // when & then
+
         mvc.perform(get("/api/aquarium/{aquariumId}/aquariumLog", testAquarium.getId())
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
@@ -154,7 +153,7 @@ class AquariumLogControllerTest {
     @Test
     @DisplayName("어항 로그 수정 API 테스트")
     void updateLog_Success() throws Exception {
-        // given
+
         AquariumLog existingLog = AquariumLog.builder()
                 .aquarium(testAquarium)
                 .temperature(25.0)
@@ -171,7 +170,7 @@ class AquariumLogControllerTest {
                 }
                 """;
 
-        // when & then
+
         mvc.perform(put("/api/aquarium/{aquariumId}/aquariumLog/{logId}", testAquarium.getId(), existingLog.getLogId())
                         .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -186,7 +185,7 @@ class AquariumLogControllerTest {
     @Test
     @DisplayName("어항 로그 수정 API - temperature와 ph를 null로 변경")
     void updateLog_WithNullValues_Success() throws Exception {
-        // given
+
         AquariumLog existingLog = AquariumLog.builder()
                 .aquarium(testAquarium)
                 .temperature(25.0)
@@ -203,7 +202,7 @@ class AquariumLogControllerTest {
                 }
                 """;
 
-        // when & then
+
         mvc.perform(put("/api/aquarium/{aquariumId}/aquariumLog/{logId}", testAquarium.getId(), existingLog.getLogId())
                         .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -217,7 +216,7 @@ class AquariumLogControllerTest {
     @Test
     @DisplayName("어항 로그 삭제 API 테스트")
     void deleteLog_Success() throws Exception {
-        // given
+
         AquariumLog log = AquariumLog.builder()
                 .aquarium(testAquarium)
                 .temperature(25.0)
@@ -226,20 +225,19 @@ class AquariumLogControllerTest {
                 .build();
         aquariumLogRepository.save(log);
 
-        // when & then
+
         mvc.perform(delete("/api/aquarium/{aquariumId}/aquariumLog/{logId}", testAquarium.getId(), log.getLogId())
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("어항 기록이 삭제되었습니다."));
 
-        // DB에서 삭제되었는지 확인
         assertThat(aquariumLogRepository.findById(log.getLogId())).isEmpty();
     }
 
     @Test
     @DisplayName("어항 로그 생성 실패 - 존재하지 않는 어항")
     void createLog_Fail_WhenAquariumNotFound() throws Exception {
-        // given
+
         Long nonExistentAquariumId = 999L;
         String requestBody = """
                 {
@@ -249,7 +247,7 @@ class AquariumLogControllerTest {
                 }
                 """;
 
-        // when & then
+
         mvc.perform(post("/api/aquarium/{aquariumId}/aquariumLog", nonExistentAquariumId)
                         .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -260,7 +258,7 @@ class AquariumLogControllerTest {
     @Test
     @DisplayName("어항 로그 수정 실패 - 존재하지 않는 로그")
     void updateLog_Fail_WhenLogNotFound() throws Exception {
-        // given
+
         Long nonExistentLogId = 999L;
         String requestBody = """
                 {
@@ -270,7 +268,7 @@ class AquariumLogControllerTest {
                 }
                 """;
 
-        // when & then
+
         mvc.perform(put("/api/aquarium/{aquariumId}/aquariumLog/{logId}", testAquarium.getId(), nonExistentLogId)
                         .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -281,10 +279,10 @@ class AquariumLogControllerTest {
     @Test
     @DisplayName("어항 로그 삭제 실패 - 존재하지 않는 로그")
     void deleteLog_Fail_WhenLogNotFound() throws Exception {
-        // given
+
         Long nonExistentLogId = 999L;
 
-        // when & then
+
         mvc.perform(delete("/api/aquarium/{aquariumId}/aquariumLog/{logId}", testAquarium.getId(), nonExistentLogId)
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isNotFound());

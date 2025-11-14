@@ -54,11 +54,9 @@ class EmailServiceTest {
 
     @BeforeEach
     void setUp() {
-        // LoginUtil을 사용하여 빠르게 회원 생성
         LoginUtil loginUtil = new LoginUtil(memberRepository, passwordEncoder, authTokenService);
         testMember = loginUtil.createMember("email@test.com", "test1234", "email", "");
 
-        // 테스트용 어항 생성 및 저장 (ID 자동 생성)
         testAquarium = new Aquarium(testMember, "테스트어항");
         testAquarium.changeSchedule(7, LocalDateTime.now().minusDays(7), LocalDateTime.now().plusDays(7));
         aquariumRepository.save(testAquarium);
@@ -67,15 +65,12 @@ class EmailServiceTest {
     @Test
     @DisplayName("어항 알림 이메일 발송 - 성공")
     void sendAquariumReminderEmail_Success() throws Exception {
-        // given
         MimeMessage mimeMessage = mock(MimeMessage.class);
         when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
         doNothing().when(mailSender).send(any(MimeMessage.class));
 
-        // when
         emailService.sendAquariumReminderEmail(testAquarium);
 
-        // then
         verify(mailSender, times(1)).createMimeMessage();
         verify(mailSender, times(1)).send(any(MimeMessage.class));
     }
@@ -83,13 +78,11 @@ class EmailServiceTest {
     @Test
     @DisplayName("어항 알림 이메일 발송 - 이메일 발송 실패")
     void sendAquariumReminderEmail_Failure() throws Exception {
-        // given
         MimeMessage mimeMessage = mock(MimeMessage.class);
         when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
         doThrow(new RuntimeException("SMTP 서버 연결 실패"))
                 .when(mailSender).send(any(MimeMessage.class));
 
-        // when & then
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             emailService.sendAquariumReminderEmail(testAquarium);
         });
@@ -103,7 +96,6 @@ class EmailServiceTest {
     @Test
     @DisplayName("어항 알림 이메일 발송 - nextDate가 null인 경우")
     void sendAquariumReminderEmail_NextDateNull() throws Exception {
-        // given
         Aquarium aquariumWithNullNextDate = new Aquarium(testMember, "미설정어항");
         aquariumWithNullNextDate.changeSchedule(7, LocalDateTime.now().minusDays(7), null);
         aquariumRepository.save(aquariumWithNullNextDate);
@@ -112,10 +104,8 @@ class EmailServiceTest {
         when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
         doNothing().when(mailSender).send(any(MimeMessage.class));
 
-        // when
         emailService.sendAquariumReminderEmail(aquariumWithNullNextDate);
 
-        // then
         verify(mailSender, times(1)).createMimeMessage();
         verify(mailSender, times(1)).send(any(MimeMessage.class));
     }

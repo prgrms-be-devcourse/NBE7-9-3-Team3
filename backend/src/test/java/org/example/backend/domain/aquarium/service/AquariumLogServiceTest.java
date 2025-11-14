@@ -55,11 +55,9 @@ class AquariumLogServiceTest {
 
     @BeforeEach
     void setUp() {
-        // LoginUtil을 사용하여 빠르게 회원 생성
         LoginUtil loginUtil = new LoginUtil(memberRepository, passwordEncoder, authTokenService);
         testMember = loginUtil.createMember("aquariumLogService@test.com", "test1234", "aquariumLogService", null);
 
-        // 테스트용 Aquarium 생성
         testAquarium = new Aquarium(testMember, "테스트 어항");
         aquariumRepository.save(testAquarium);
     }
@@ -67,7 +65,6 @@ class AquariumLogServiceTest {
     @Test
     @DisplayName("어항 로그 생성 성공")
     void createLog_Success() {
-        // given
         AquariumLogRequestDto requestDto = AquariumLogRequestDto.builder()
                 .aquariumId(testAquarium.getId())
                 .temperature(25.5)
@@ -75,17 +72,14 @@ class AquariumLogServiceTest {
                 .logDate(LocalDateTime.now())
                 .build();
 
-        // when
         AquariumLogResponseDto responseDto = aquariumLogService.createLog(requestDto);
 
-        // then
         assertThat(responseDto).isNotNull();
         assertThat(responseDto.getAquariumId()).isEqualTo(testAquarium.getId());
         assertThat(responseDto.getTemperature()).isEqualTo(25.5);
         assertThat(responseDto.getPh()).isEqualTo(7.0);
         assertThat(responseDto.getLogDate()).isNotNull();
 
-        // DB에 저장되었는지 확인
         AquariumLog savedLog = aquariumLogRepository.findById(responseDto.getLogId())
                 .orElseThrow();
         assertThat(savedLog.getTemperature()).isEqualTo(25.5);
@@ -95,7 +89,6 @@ class AquariumLogServiceTest {
     @Test
     @DisplayName("어항 로그 생성 - temperature와 ph가 null일 수 있음")
     void createLog_WithNullValues_Success() {
-        // given
         AquariumLogRequestDto requestDto = AquariumLogRequestDto.builder()
                 .aquariumId(testAquarium.getId())
                 .temperature(null)
@@ -103,10 +96,8 @@ class AquariumLogServiceTest {
                 .logDate(LocalDateTime.now())
                 .build();
 
-        // when
         AquariumLogResponseDto responseDto = aquariumLogService.createLog(requestDto);
 
-        // then
         assertThat(responseDto).isNotNull();
         assertThat(responseDto.getTemperature()).isNull();
         assertThat(responseDto.getPh()).isNull();
@@ -115,7 +106,6 @@ class AquariumLogServiceTest {
     @Test
     @DisplayName("어항 로그 생성 실패 - 존재하지 않는 어항")
     void createLog_Fail_WhenAquariumNotFound() {
-        // given
         Long nonExistentAquariumId = 999L;
         AquariumLogRequestDto requestDto = AquariumLogRequestDto.builder()
                 .aquariumId(nonExistentAquariumId)
@@ -124,7 +114,6 @@ class AquariumLogServiceTest {
                 .logDate(LocalDateTime.now())
                 .build();
 
-        // when & then
         assertThatThrownBy(() -> aquariumLogService.createLog(requestDto))
                 .isInstanceOf(BusinessException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.AQUARIUM_NOT_FOUND);
@@ -133,7 +122,6 @@ class AquariumLogServiceTest {
     @Test
     @DisplayName("어항 로그 목록 조회 성공")
     void getLogsByAquariumId_Success() {
-        // given
         AquariumLog log1 = AquariumLog.builder()
                 .aquarium(testAquarium)
                 .temperature(25.0)
@@ -149,10 +137,8 @@ class AquariumLogServiceTest {
         aquariumLogRepository.save(log1);
         aquariumLogRepository.save(log2);
 
-        // when
         List<AquariumLogResponseDto> logs = aquariumLogService.getLogsByAquariumId(testAquarium.getId());
 
-        // then
         assertThat(logs).hasSize(2);
         assertThat(logs).extracting(AquariumLogResponseDto::getTemperature)
                 .containsExactlyInAnyOrder(25.0, 26.0);
@@ -161,17 +147,14 @@ class AquariumLogServiceTest {
     @Test
     @DisplayName("어항 로그 목록 조회 - 로그가 없을 때 빈 리스트 반환")
     void getLogsByAquariumId_EmptyList_WhenNoLogs() {
-        // when
         List<AquariumLogResponseDto> logs = aquariumLogService.getLogsByAquariumId(testAquarium.getId());
 
-        // then
         assertThat(logs).isEmpty();
     }
 
     @Test
     @DisplayName("어항 로그 수정 성공")
     void updateLog_Success() {
-        // given
         AquariumLog existingLog = AquariumLog.builder()
                 .aquarium(testAquarium)
                 .temperature(25.0)
@@ -188,16 +171,13 @@ class AquariumLogServiceTest {
                 .logDate(newLogDate)
                 .build();
 
-        // when
         AquariumLogResponseDto responseDto = aquariumLogService.updateLog(existingLog.getLogId(), updateDto);
 
-        // then
         assertThat(responseDto.getTemperature()).isEqualTo(27.0);
         assertThat(responseDto.getPh()).isEqualTo(7.5);
         assertThat(responseDto.getLogDate()).isEqualTo(newLogDate);
         assertThat(responseDto.getLogId()).isEqualTo(existingLog.getLogId());
 
-        // DB에서 확인
         AquariumLog updatedLog = aquariumLogRepository.findById(existingLog.getLogId())
                 .orElseThrow();
         assertThat(updatedLog.getTemperature()).isEqualTo(27.0);
@@ -207,7 +187,6 @@ class AquariumLogServiceTest {
     @Test
     @DisplayName("어항 로그 수정 - temperature와 ph를 null로 변경 가능")
     void updateLog_WithNullValues_Success() {
-        // given
         AquariumLog existingLog = AquariumLog.builder()
                 .aquarium(testAquarium)
                 .temperature(25.0)
@@ -223,10 +202,8 @@ class AquariumLogServiceTest {
                 .logDate(LocalDateTime.now())
                 .build();
 
-        // when
         AquariumLogResponseDto responseDto = aquariumLogService.updateLog(existingLog.getLogId(), updateDto);
 
-        // then
         assertThat(responseDto.getTemperature()).isNull();
         assertThat(responseDto.getPh()).isNull();
     }
@@ -234,7 +211,6 @@ class AquariumLogServiceTest {
     @Test
     @DisplayName("어항 로그 수정 실패 - 존재하지 않는 로그")
     void updateLog_Fail_WhenLogNotFound() {
-        // given
         Long nonExistentLogId = 999L;
         AquariumLogRequestDto updateDto = AquariumLogRequestDto.builder()
                 .aquariumId(testAquarium.getId())
@@ -243,7 +219,6 @@ class AquariumLogServiceTest {
                 .logDate(LocalDateTime.now())
                 .build();
 
-        // when & then
         assertThatThrownBy(() -> aquariumLogService.updateLog(nonExistentLogId, updateDto))
                 .isInstanceOf(BusinessException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.AQUARIUM_LOG_NOT_FOUND);
@@ -252,7 +227,6 @@ class AquariumLogServiceTest {
     @Test
     @DisplayName("어항 로그 수정 실패 - 존재하지 않는 어항")
     void updateLog_Fail_WhenAquariumNotFound() {
-        // given
         AquariumLog existingLog = AquariumLog.builder()
                 .aquarium(testAquarium)
                 .temperature(25.0)
@@ -269,7 +243,6 @@ class AquariumLogServiceTest {
                 .logDate(LocalDateTime.now())
                 .build();
 
-        // when & then
         assertThatThrownBy(() -> aquariumLogService.updateLog(existingLog.getLogId(), updateDto))
                 .isInstanceOf(BusinessException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.AQUARIUM_NOT_FOUND);
@@ -278,7 +251,6 @@ class AquariumLogServiceTest {
     @Test
     @DisplayName("어항 로그 삭제 성공")
     void deleteLog_Success() {
-        // given
         AquariumLog log = AquariumLog.builder()
                 .aquarium(testAquarium)
                 .temperature(25.0)
@@ -288,20 +260,16 @@ class AquariumLogServiceTest {
         aquariumLogRepository.save(log);
         Long logId = log.getLogId();
 
-        // when
         aquariumLogService.deleteLog(logId);
 
-        // then
         assertThat(aquariumLogRepository.findById(logId)).isEmpty();
     }
 
     @Test
     @DisplayName("어항 로그 삭제 실패 - 존재하지 않는 로그")
     void deleteLog_Fail_WhenLogNotFound() {
-        // given
         Long nonExistentLogId = 999L;
 
-        // when & then
         assertThatThrownBy(() -> aquariumLogService.deleteLog(nonExistentLogId))
                 .isInstanceOf(BusinessException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.AQUARIUM_LOG_NOT_FOUND);
