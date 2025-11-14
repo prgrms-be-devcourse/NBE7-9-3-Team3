@@ -92,7 +92,7 @@ public class PostControllerTest {
         // 테스트용 JWT 발급 (서비스와 동일한 secret 사용)
         accessToken = authTokenService.genAccessToken(testMember);
 
-        // 게시글 5개 생성
+        // 게시글 3개 생성
         List<String> imageUrls = List.of("https://test-bucket.s3.ap-northeast-2.amazonaws.com/test.jpg");
         for (int i = 1; i <= 3; i++) {
             PostWriteRequestDto postDto = new PostWriteRequestDto(
