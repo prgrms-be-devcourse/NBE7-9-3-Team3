@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @Transactional
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestInstance(TestInstance.Lifecycle.PER_METHOD)
 public class PointControllerTest {
 
     @Autowired
@@ -124,7 +124,51 @@ public class PointControllerTest {
                 .andExpect(jsonPath("$.msg").value("포인트 결제 완료"));
     }
 
-    // ===중복 줄이기 위한 헬퍼 메서드===
+    @Test
+    @DisplayName("t5: 포인트로 상품 결제 실패 - 이미 판매 완료된 상품")
+    void t5() throws Exception {
+        Member seller = createSeller();
+        Trade trade = createTrade(seller, 5000L);
+
+        // 상품을 판매완료로 상태변경
+        trade.completeTransaction();
+        tradeRepository.save(trade);
+
+        testMember.updatePoints(10000L);
+        memberRepository.save(testMember);
+
+        String requestBody = purchaseRequest(seller, trade);
+
+        mvc.perform(post("/api/points/members/purchase")
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.resultCode").value("T005"))
+                .andExpect(jsonPath("$.msg").value("해당 물품은 이미 판매되었습니다."));
+    }
+
+    @Test
+    @DisplayName("t6: 포인트로 상품 결제 실패 - 포인트 부족")
+    void t6() throws Exception {
+        Member seller = createSeller();
+        Trade trade = createTrade(seller, 5000L);
+
+        // 구매자 포인트 상품보다 적게 충전
+        testMember.updatePoints(3000L);
+        memberRepository.save(testMember);
+
+        String requestBody = purchaseRequest(seller, trade);
+
+        mvc.perform(post("/api/points/members/purchase")
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.resultCode").value("P003"))
+                .andExpect(jsonPath("$.msg").value("포인트가 부족합니다."));
+    }
+    // ===== 중복 줄이기 위한 헬퍼 메서드 =====
 
     // 판매자 생성
     private Member createSeller() {
@@ -149,6 +193,7 @@ public class PointControllerTest {
                 LocalDateTime.now()));
     }
 
+    // 구매 요청 JSON 생성
     private String purchaseRequest(Member seller, Trade trade) {
         return """
         {
