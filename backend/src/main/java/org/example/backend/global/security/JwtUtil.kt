@@ -1,73 +1,69 @@
-package org.example.backend.global.security;
+package org.example.backend.global.security
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ClaimsBuilder;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import javax.crypto.SecretKey;
+import io.jsonwebtoken.Claims
+import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.security.Keys
+import java.nio.charset.StandardCharsets
+import java.security.Key
+import java.util.*
 
-public class JwtUtil {
-    public static class jwt {
-        public static String toString(String secret, long expireSeconds, Map<String, Object> body) {
-            ClaimsBuilder claimsBuilder = Jwts.claims();
+object JwtUtil {
+    @JvmStatic
+    fun toString(
+        secret: String,
+        expireSeconds: Long,
+        body: MutableMap<String, Any>
+    ): String {
+        val claimsBuilder = Jwts.claims()
 
-            for (Map.Entry<String, Object> entry : body.entrySet()) {
-                claimsBuilder.add(entry.getKey(), entry.getValue());
-            }
-
-            Claims claims = claimsBuilder.build();
-
-            Date issuedAt = new Date();
-            Date expiration = new Date(issuedAt.getTime() + 1000L * expireSeconds);
-
-            Key secretKey = Keys.hmacShaKeyFor(secret.getBytes());
-
-            return Jwts.builder()
-                .claims(claims)
-                .issuedAt(issuedAt)
-                .expiration(expiration)
-                .signWith(secretKey)
-                .compact();
+        for (entry in body.entries) {
+            claimsBuilder.add(entry.key, entry.value)
         }
 
-        public static boolean isValid(String jwt, String secretPattern) {
+        val claims = claimsBuilder.build()
 
-            SecretKey secretKey = Keys.hmacShaKeyFor(secretPattern.getBytes(StandardCharsets.UTF_8));
+        val issuedAt = Date()
+        val expiration = Date(issuedAt.time + 1000L * expireSeconds)
 
-            try {
-                Jwts
-                    .parser()
-                    .verifyWith(secretKey)
-                    .build()
-                    .parse(jwt);
+        val secretKey: Key = Keys.hmacShaKeyFor(secret.toByteArray())
 
-            } catch (Exception e) {
-                return false;
-            }
+        return Jwts.builder()
+            .claims(claims)
+            .issuedAt(issuedAt)
+            .expiration(expiration)
+            .signWith(secretKey)
+            .compact()
+    }
 
-            return true;
+    fun isValid(jwt: String, secretPattern: String): Boolean {
+        val secretKey = Keys.hmacShaKeyFor(secretPattern.toByteArray(StandardCharsets.UTF_8))
+
+        return try {
+            Jwts
+                .parser()
+                .verifyWith(secretKey)
+                .build()
+                .parse(jwt)
+            true
+        } catch (e: Exception) {
+            false
         }
+    }
 
-        public static Map<String, Object> payloadOrNull(String jwt, String secretPattern) {
+    @JvmStatic
+    fun payloadOrNull(jwt: String, secretPattern: String): MutableMap<String, Any>? {
+        val secretKey = Keys.hmacShaKeyFor(secretPattern.toByteArray(StandardCharsets.UTF_8))
 
-            SecretKey secretKey = Keys.hmacShaKeyFor(secretPattern.getBytes(StandardCharsets.UTF_8));
-
-            if(isValid(jwt, secretPattern)) {
-                Claims claims = (Claims) Jwts
-                    .parser()
-                    .verifyWith(secretKey)
-                    .build()
-                    .parse(jwt)
-                    .getPayload();
-                return new HashMap<>(claims);
-            }
-
-            return null;
+        return if (isValid(jwt, secretPattern)) {
+            val claims = Jwts
+                .parser()
+                .verifyWith(secretKey)
+                .build()
+                .parse(jwt)
+                .payload as Claims
+            HashMap(claims)
+        } else {
+            null
         }
     }
 }
