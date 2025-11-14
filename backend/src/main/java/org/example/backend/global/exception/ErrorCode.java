@@ -29,7 +29,7 @@ public enum ErrorCode {
     TRADE_BOARD_TYPE_INVALID("T002", HttpStatus.BAD_REQUEST, "게시판 타입은 필수입니다."),
     TRADE_BOARD_TYPE_MISMATCH("T003", HttpStatus.BAD_REQUEST, "해당 게시판의 게시글이 아닙니다."),
     TRADE_OWNER_MISMATCH("T004", HttpStatus.FORBIDDEN, "게시글 작성자만 수정/삭제할 수 있습니다."),
-    TRADE_ALREADY_SOLD("T005", HttpStatus.BAD_REQUEST, "해당 물픔은 이미 판매되었습니다."),
+    TRADE_ALREADY_SOLD("T005", HttpStatus.BAD_REQUEST, "해당 물품은 이미 판매되었습니다."),
     // ========== TradeComment 도메인 에러 ==========
     TRADE_COMMENT_NOT_FOUND("TC001", HttpStatus.NOT_FOUND, "존재하지 않는 댓글입니다."),
     TRADE_COMMENT_POST_MISMATCH("TC002", HttpStatus.BAD_REQUEST, "해당 게시글의 댓글이 아닙니다."),
