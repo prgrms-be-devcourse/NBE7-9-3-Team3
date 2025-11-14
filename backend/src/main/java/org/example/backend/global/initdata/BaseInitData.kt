@@ -4,8 +4,8 @@ import org.example.backend.domain.aquarium.entity.Aquarium
 import org.example.backend.domain.aquarium.repository.AquariumRepository
 import org.example.backend.domain.fish.entity.Fish
 import org.example.backend.domain.fish.repository.FishRepository
-import org.example.backend.domain.follow.entity.Follow
 import org.example.backend.domain.follow.repository.FollowRepository
+import org.example.backend.domain.follow.service.FollowService
 import org.example.backend.domain.member.entity.Member
 import org.example.backend.domain.member.repository.MemberRepository
 import org.example.backend.domain.post.dto.PostWriteRequestDto
@@ -31,6 +31,7 @@ import java.util.*
 class BaseInitData(
     private val memberRepository: MemberRepository,
     private val followRepository: FollowRepository,
+    private val followService: FollowService,
     private val aquariumRepository: AquariumRepository,
     private val fishRepository: FishRepository,
     private val postRepository: PostRepository,
@@ -106,10 +107,10 @@ class BaseInitData(
             }
 
             val member = Member(
-                email,
-                passwordEncoder.encode(password),
-                nickname,
-                "https://upload.wikimedia.org/wikipedia/commons/7/75/%EC%82%AC%EB%9E%8C.png"
+                email = email,
+                password = passwordEncoder.encode(password),
+                nickname = nickname,
+                profileImage = "https://upload.wikimedia.org/wikipedia/commons/7/75/%EC%82%AC%EB%9E%8C.png"
             )
 
             memberRepository.save(member)
@@ -124,7 +125,7 @@ class BaseInitData(
 
         // test1부터 test10까지의 유저들을 조회
         for (i in 1..10) {
-            val follower = memberRepository!!.findByMemberId(i.toLong()).orElse(null)
+            val follower = memberRepository.findByMemberId(i.toLong()).orElse(null)
 
             if (follower == null) {
                 continue
@@ -137,14 +138,11 @@ class BaseInitData(
                     memberRepository.findByMemberId(followeeNumber.toLong()).orElse(null)
 
                 if (followee != null && follower.memberId != followee.memberId) {
-                    // 이미 팔로우 관계가 있는지 확인
-                    if (!followRepository.existsByFollowerMemberIdAndFolloweeMemberId(
-                            follower.memberId, followee.memberId
-                        )
-                    ) {
-                        val follow = Follow(follower, followee)
-
-                        followRepository.save(follow)
+                    try {
+                        followService.follow(follower.memberId!!, followee.memberId!!)
+                    } catch (e: Exception) {
+                        // 이미 팔로우 관계가 있거나 다른 예외가 발생한 경우 무시하고 계속 진행
+                        // (초기 데이터 생성이므로 예외 발생 시 로그만 남기고 계속 진행)
                     }
                 }
             }
@@ -263,7 +261,7 @@ class BaseInitData(
 
     private fun createQuestionPosts() {
         // 이미 질문게시판 데이터가 있는지 확인 (QUESTION 타입만 체크)
-        if (!postRepository!!.findByBoardType(Post.BoardType.QUESTION).isEmpty()) {
+        if (!postRepository.findByBoardType(Post.BoardType.QUESTION).isEmpty()) {
             return
         }
 

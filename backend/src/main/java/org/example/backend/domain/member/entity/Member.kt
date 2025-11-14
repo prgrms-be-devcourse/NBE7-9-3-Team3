@@ -1,59 +1,55 @@
-package org.example.backend.domain.member.entity;
+package org.example.backend.domain.member.entity
 
-import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-
-import java.time.LocalDateTime;
+import jakarta.persistence.*
+import org.springframework.data.annotation.CreatedDate
+import java.time.LocalDateTime
 
 @Entity
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long memberId;
-
+class Member(
     @Column(nullable = false, unique = true, length = 100)
-    private String email;
+    var email: String,
 
     @Column(nullable = false, length = 255)
-    private String password;
+    var password: String,
 
     @Column(unique = true, length = 50)
-    private String nickname;
+    var nickname: String,
 
     @Column(length = 500)
-    private String profileImage;
+    var profileImage: String? = null
+) {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var memberId: Long? = null
+        protected set
 
-    private Integer tradeScore = 50;
+    var tradeScore: Int = 50
+        private set
 
     @CreatedDate
-    private LocalDateTime createDate;
+    var createDate: LocalDateTime? = null
+        protected set
 
     @Column(nullable = false)
-    private Long points = 0L;
+    var points: Long = 0L
 
-    @Builder
-    public Member(String email, String password, String nickname, String profileImage) {
-        this.email = email;
-        this.password = password;
-        this.nickname = nickname;
-        this.profileImage = profileImage;
+    // JPA를 위한 protected 기본 생성자
+    protected constructor() : this("", "", "", null)
+
+    fun updatePoints(newPoint: Long) {
+        this.points = newPoint
     }
 
-    public void updatePoints(Long newPoint) {
-        this.points = newPoint;
+    fun updateMemberInfo(
+        email: String,
+        password: String,
+        nickname: String,
+        profileImage: String?
+    ) {
+        this.email = email
+        this.password = password
+        this.nickname = nickname
+        this.profileImage = profileImage
     }
 
-    public void updateMemberInfo(String email, String password, String nickname, String profileImage) {
-        this.email = email;
-        this.password = password;
-        this.nickname = nickname;
-        this.profileImage = profileImage;
-    }
 }
