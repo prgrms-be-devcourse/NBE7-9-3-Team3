@@ -10,10 +10,7 @@ import org.example.backend.domain.trade.enums.BoardType;
 import org.example.backend.domain.trade.enums.TradeStatus;
 import org.example.backend.domain.trade.repository.TradeRepository;
 import org.example.backend.global.LoginUtil;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -53,7 +50,7 @@ public class PointControllerTest {
     private Member testMember;
     private String jwtToken;
 
-    @BeforeAll
+    @BeforeEach
     void Login() {
         LoginUtil loginUtil = new LoginUtil(memberRepository, passwordEncoder, authTokenService);
         jwtToken = loginUtil.createMemberAndGetToken(
