@@ -76,15 +76,10 @@ public class PostCommentControllerTest {
 
         // 테스트 멤버 생성
         LoginUtil loginUtil = new LoginUtil(memberRepository, passwordEncoder, authTokenService);
-        testMember1 = memberRepository.save(
-            new Member("test1@test.com", "test1234", "테스트1", "https://example.com/img1.jpg")
-        );
-        // 테스트용 JWT 발급 (서비스와 동일한 secret 사용)
-        accessToken = authTokenService.genAccessToken(testMember1);
+        accessToken = loginUtil.createMemberAndGetToken( "test1@test.com","test1234", "테스트1", "https://example.com/img1.jpg");
+        testMember1 = loginUtil.getMemberByEmail("test1@test.com");
+        testMember2 = loginUtil.createMember( "test2@test.com","test1234", "테스트2", "https://example.com/img1.jpg");
 
-        testMember2 = memberRepository.save(
-            new Member("test2@test.com", "test1234", "테스트2", "https://example.com/img1.jpg")
-        );
 
         // 게시글 2개 생성
         List<String> imageUrls = List.of(

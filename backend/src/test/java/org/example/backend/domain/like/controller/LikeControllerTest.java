@@ -75,12 +75,8 @@ public class LikeControllerTest {
 
         // 테스트 멤버 생성
         LoginUtil loginUtil = new LoginUtil(memberRepository, passwordEncoder, authTokenService);
-        testMember = memberRepository.save(
-            new Member("test1@test.com", "test1234", "테스트1", "https://example.com/img1.jpg")
-        );
-
-        // 테스트용 JWT 발급 (서비스와 동일한 secret 사용)
-        accessToken = authTokenService.genAccessToken(testMember);
+        accessToken = loginUtil.createMemberAndGetToken( "test1@test.com","test1234", "테스트1", "https://example.com/img1.jpg");
+        testMember = loginUtil.getMemberByEmail("test1@test.com");
 
         // 게시글 3개 생성
         List<String> imageUrls = List.of("https://test-bucket.s3.ap-northeast-2.amazonaws.com/test.jpg");

@@ -86,12 +86,8 @@ public class PostControllerTest {
 
         // 테스트 멤버 생성
         LoginUtil loginUtil = new LoginUtil(memberRepository, passwordEncoder, authTokenService);
-        testMember = memberRepository.save(
-            new Member("test1@test.com", "test1234", "테스트1", "https://example.com/img1.jpg")
-        );
-
-        // 테스트용 JWT 발급 (서비스와 동일한 secret 사용)
-        accessToken = authTokenService.genAccessToken(testMember);
+        accessToken = loginUtil.createMemberAndGetToken( "test1@test.com","test1234", "테스트1", "https://example.com/img1.jpg");
+        testMember = loginUtil.getMemberByEmail("test1@test.com");
 
         // 게시글 3개 생성
         List<String> imageUrls = List.of("https://test-bucket.s3.ap-northeast-2.amazonaws.com/test.jpg");
@@ -343,15 +339,14 @@ public class PostControllerTest {
     @DisplayName("게시글 다건 조회 성공 - 필터 타입이 있는 경우")
     void getPostsFollowing() throws Exception {
 
-        // 멤버 2로 로그인
-        Member testMember2 = memberRepository.save(
-            new Member("test2@test.com", "test1234", "테스트2", "https://example.com/img1.jpg")
-        );
+        LoginUtil loginUtil = new LoginUtil(memberRepository, passwordEncoder, authTokenService);
+        Member testMember2 = loginUtil.createMember("test2@test.com", "test1234", "테스트2", "https://example.com/img1.jpg");
 
         // 멤버2가 멤버1을 팔로우
         followRepository.deleteAll();
         followRepository.save(new Follow(testMember2, testMember));
 
+        // 멤버 2로 로그인
         accessToken = authTokenService.genAccessToken(testMember2);
 
         List<String> imageUrls = List.of("https://test-bucket.s3.ap-northeast-2.amazonaws.com/test.jpg");
@@ -528,10 +523,8 @@ public class PostControllerTest {
             }
             """;
 
-        testMember = memberRepository.save(
-            new Member("test2@test.com", "test1234", "테스트2", "https://example.com/img1.jpg")
-        );
-        accessToken = authTokenService.genAccessToken(testMember);
+        LoginUtil loginUtil = new LoginUtil(memberRepository, passwordEncoder, authTokenService);
+        accessToken = loginUtil.createMemberAndGetToken("test2@test.com", "test1234", "테스트2", "https://example.com/img1.jpg");
 
         ResultActions result = mvc.perform(
             patch("/api/posts/1")
@@ -584,10 +577,8 @@ public class PostControllerTest {
     @DisplayName("게시글 삭제 실패 - 타인의 게시글")
     void deletePostOhters() throws Exception {
 
-        testMember = memberRepository.save(
-            new Member("test2@test.com", "test1234", "테스트2", "https://example.com/img1.jpg")
-        );
-        accessToken = authTokenService.genAccessToken(testMember);
+        LoginUtil loginUtil = new LoginUtil(memberRepository, passwordEncoder, authTokenService);
+        accessToken = loginUtil.createMemberAndGetToken("test2@test.com", "test1234", "테스트2", "https://example.com/img1.jpg");
 
         ResultActions result = mvc.perform(
             delete("/api/posts/1")
