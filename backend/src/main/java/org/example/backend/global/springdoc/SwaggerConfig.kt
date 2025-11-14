@@ -1,109 +1,108 @@
-package org.example.backend.global.springdoc;
+package org.example.backend.global.springdoc
 
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.info.Info;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import io.swagger.v3.oas.models.OpenAPI;
-import org.springdoc.core.models.GroupedOpenApi;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.security.SecurityScheme
+import io.swagger.v3.oas.models.OpenAPI
+import io.swagger.v3.oas.models.info.Info
+import org.springdoc.core.models.GroupedOpenApi
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 
 @Configuration
 @OpenAPIDefinition(
-    info = @Info(
+    info = io.swagger.v3.oas.annotations.info.Info(
         title = "NBE7-9-2-Team3 어항관리 API",
         description = "NBE7-9-2-Team3 어항관리 API 문서"
-    ),
-    security = @SecurityRequirement(name = "bearerAuth")
+    ), security = [SecurityRequirement(name = "bearerAuth")]
 )
 @SecurityScheme(
     name = "bearerAuth",
-    type = io.swagger.v3.oas.annotations.enums.SecuritySchemeType.HTTP,
+    type = SecuritySchemeType.HTTP,
     bearerFormat = "JWT",
     scheme = "bearer"
 )
-public class SwaggerConfig {
-
+class SwaggerConfig {
     @Bean
-    public OpenAPI customOpenAPI() {
-        return new OpenAPI()
-            .info(new io.swagger.v3.oas.models.info.Info()
-                .title("NBE7-9-2-Team3 API")
-                .version("1.0.0")
-                .description("NBE7-9-2-Team3 프로젝트의 REST API 문서입니다.")
-            );
+    fun customOpenAPI(): OpenAPI {
+        return OpenAPI()
+            .info(
+                Info()
+                    .title("NBE7-9-2-Team3 API")
+                    .version("1.0.0")
+                    .description("NBE7-9-2-Team3 프로젝트의 REST API 문서입니다.")
+            )
     }
 
     @Bean
-    public GroupedOpenApi memberApi() {
+    fun memberApi(): GroupedOpenApi {
         return GroupedOpenApi.builder()
             .group("01. Member API")
             .pathsToMatch("/api/members/**")
-            .build();
+            .build()
     }
 
     @Bean
-    public GroupedOpenApi followApi() {
+    fun followApi(): GroupedOpenApi {
         return GroupedOpenApi.builder()
             .group("02. Follow API")
             .pathsToMatch("/api/follows/**")
-            .build();
+            .build()
     }
 
     @Bean
-    public GroupedOpenApi fishApi() {
+    fun fishApi(): GroupedOpenApi {
         return GroupedOpenApi.builder()
             .group("03. Fish API")
             .pathsToMatch(
                 "/api/aquarium/*/fish/**",
                 "/api/fish/*/fishLog/**"
-                )
-            .build();
+            )
+            .build()
     }
 
     @Bean
-    public GroupedOpenApi aquariumApi() {
+    fun aquariumApi(): GroupedOpenApi {
         return GroupedOpenApi.builder()
             .group("04. Aquarium API")
             .pathsToMatch(
                 "/api/aquarium/**",
                 "/api/aquarium/*/aquariumLog/**"
-                )
+            )
             .pathsToExclude("/api/aquarium/*/fish/**")
-            .build();
+            .build()
     }
 
     @Bean
-    public GroupedOpenApi tradeApi() {
+    fun tradeApi(): GroupedOpenApi {
         return GroupedOpenApi.builder()
             .group("05. Trade API")
             .pathsToMatch("/api/market/**")
-            .build();
+            .build()
     }
 
     @Bean
-    public GroupedOpenApi postApi() {
+    fun postApi(): GroupedOpenApi {
         return GroupedOpenApi.builder()
             .group("06. Post API")
             .pathsToMatch("/api/posts/**")
-            .build();
+            .build()
     }
 
     @Bean
-    public GroupedOpenApi pointApi() {
+    fun pointApi(): GroupedOpenApi {
         return GroupedOpenApi.builder()
             .group("07. Point API")
             .pathsToMatch("/api/points/**")
-            .build();
+            .build()
     }
 
     @Bean
-    public GroupedOpenApi tradeChatApi() {
+    fun tradeChatApi(): GroupedOpenApi {
         return GroupedOpenApi.builder()
             .group("08. Trade Chat API")
             .pathsToMatch("/api/chat/**")
-            .build();
+            .build()
     }
-
 }
