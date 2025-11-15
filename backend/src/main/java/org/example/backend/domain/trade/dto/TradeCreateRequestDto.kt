@@ -1,44 +1,45 @@
-package org.example.backend.domain.trade.dto;
+package org.example.backend.domain.trade.dto
 
-import java.time.LocalDateTime;
-import java.util.List;
-import org.example.backend.domain.member.entity.Member;
-import org.example.backend.domain.trade.entity.Trade;
-import org.example.backend.domain.trade.enums.BoardType;
-import org.example.backend.domain.trade.enums.TradeStatus;
+import org.example.backend.domain.member.entity.Member
+import org.example.backend.domain.trade.entity.Trade
+import org.example.backend.domain.trade.enums.BoardType
+import org.example.backend.domain.trade.enums.TradeStatus
+import java.time.LocalDateTime
 
-public record TradeCreateRequestDto(
-    Long memberId,
-    BoardType boardType,
-    String title,
-    String description,
-    Long price,
-    String category,
-    List<String> imageUrls
+data class TradeCreateRequestDto(
+    @JvmField val memberId: Long,
+    val boardType: BoardType,
+    val title: String,
+    val description: String,
+    val price: Long,
+    val category: String?,
+    @JvmField val imageUrls: List<String>
 ) {
-
-    public static TradeCreateRequestDto from(TradeRequestDto dto, BoardType type, Long memberId) {
-        return new TradeCreateRequestDto(
-            memberId,
-            type,
-            dto.title(),
-            dto.description(),
-            dto.price(),
-            dto.category(),
-            dto.imageUrls()
-        );
+    fun toEntity(member: Member): Trade {
+        return Trade(
+            member = member,
+            boardType = this.boardType,
+            title = this.title,
+            description = this.description,
+            price = this.price,
+            status = TradeStatus.SELLING,
+            category = this.category,
+            createDate = LocalDateTime.now()
+        )
     }
 
-    public Trade toEntity(Member member) {
-        return new Trade(
-            member,
-            this.boardType,
-            this.title,
-            this.description,
-            this.price,
-            TradeStatus.SELLING,
-            this.category,
-            LocalDateTime.now()
-        );
+    companion object {
+        @JvmStatic
+        fun from(dto: TradeRequestDto, type: BoardType, memberId: Long): TradeCreateRequestDto {
+            return TradeCreateRequestDto(
+                memberId = memberId,
+                boardType = type,
+                title = dto.title,
+                description = dto.description,
+                price = dto.price,
+                category = dto.category,
+                imageUrls = dto.imageUrls
+            )
+        }
     }
 }

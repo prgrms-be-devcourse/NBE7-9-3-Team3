@@ -1,38 +1,39 @@
-package org.example.backend.domain.trade.dto;
+package org.example.backend.domain.trade.dto
 
-import java.time.LocalDateTime;
-import java.util.List;
-import org.example.backend.domain.trade.entity.Trade;
-import org.example.backend.domain.trade.enums.BoardType;
-import org.example.backend.domain.trade.enums.TradeStatus;
+import org.example.backend.domain.trade.entity.Trade
+import org.example.backend.domain.trade.enums.BoardType
+import org.example.backend.domain.trade.enums.TradeStatus
+import java.time.LocalDateTime
 
-public record TradeResponseDto(
-    Long tradeId,
-    Long memberId,
-    String memberNickname,
-    BoardType boardType,
-    String title,
-    String description,
-    Long price,
-    TradeStatus status,
-    String category,
-    LocalDateTime createdDate,
-    List<String> images
+data class TradeResponseDto(
+    val tradeId: Long,
+    val memberId: Long,
+    val memberNickname: String,
+    val boardType: BoardType,
+    val title: String,
+    val description: String,
+    val price: Long,
+    val status: TradeStatus,
+    val category: String?,
+    val createdDate: LocalDateTime,
+    val images: List<String>
 ) {
-
-    public static TradeResponseDto from(Trade trade) {
-        return new TradeResponseDto(
-            trade.getTradeId(),
-            trade.getMember().getMemberId(),
-            trade.getMember().getNickname(),
-            trade.getBoardType(),
-            trade.getTitle(),
-            trade.getDescription(),
-            trade.getPrice(),
-            trade.getStatus(),
-            trade.getCategory(),
-            trade.getCreateDate(),
-            trade.getImageUrls()
-        );
+    companion object {
+        @JvmStatic
+        fun from(trade: Trade): TradeResponseDto {
+            return TradeResponseDto(
+                tradeId = trade.tradeId,
+                memberId = 1L,  // TODO: trade.member.memberId
+                memberNickname = "TODO",    // TODO: trade.member.nickname
+                boardType = trade.boardType,
+                title = trade.title,
+                description = trade.description,
+                price = trade.price,
+                status = trade.status,
+                category = trade.category,
+                createdDate = trade.createDate,
+                images = trade.imageUrls
+            )
+        }
     }
 }

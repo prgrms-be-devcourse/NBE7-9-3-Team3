@@ -84,7 +84,7 @@ public class TradeCommentService {
     }
 
     private void validateTrade(TradeComment comment, Long tradeId) {
-        if (!comment.getTrade().getTradeId().equals(tradeId)) {
+        if (comment.getTrade().getTradeId() != tradeId) {
             throw new BusinessException(ErrorCode.TRADE_COMMENT_POST_MISMATCH);
         }
     }

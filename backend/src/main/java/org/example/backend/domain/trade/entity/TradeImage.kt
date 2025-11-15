@@ -1,37 +1,24 @@
-package org.example.backend.domain.trade.entity;
+package org.example.backend.domain.trade.entity
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*
 
-@Getter
-@NoArgsConstructor
 @Entity
-public class TradeImage {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long imageId;
-
+class TradeImage(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "trade_id")
-    private Trade trade;
+    val trade: Trade,
 
     @Column(nullable = false, length = 500)
-    private String image;
+    val image: String
+) {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val imageId: Long = 0L
 
-    public static TradeImage of(Trade trade, String imageUrl) {
-        TradeImage tradeImage = new TradeImage();
-        tradeImage.trade = trade;
-        tradeImage.image = imageUrl;
-        return tradeImage;
+    companion object {
+        fun of(trade: Trade, imageUrl: String): TradeImage {
+            requireNotNull(imageUrl)
+            return TradeImage(trade, imageUrl)
+        }
     }
-
 }

@@ -1,23 +1,30 @@
-package org.example.backend.domain.trade.dto;
+package org.example.backend.domain.trade.dto
 
-import java.util.List;
-import org.example.backend.domain.trade.enums.BoardType;
+import org.example.backend.domain.trade.enums.BoardType
 
-public record TradeUpdateRequestDto(
-    BoardType boardType,
-    Long tradeId,
-    Long memberId,
-    TradeRequestDto tradeData,
-    List<String> imageUrls
+data class TradeUpdateRequestDto(
+    @JvmField val boardType: BoardType,
+    @JvmField val tradeId: Long,
+    @JvmField val memberId: Long,
+    @JvmField val tradeData: TradeRequestDto,
+    @JvmField val imageUrls: List<String>
 ) {
-
-    public static TradeUpdateRequestDto of(
-        BoardType boardType,
-        Long tradeId,
-        Long memberId,
-        TradeRequestDto tradeData,
-        List<String> imageUrls
-    ) {
-        return new TradeUpdateRequestDto(boardType, tradeId, memberId, tradeData, imageUrls);
+    companion object {
+        @JvmStatic
+        fun of(
+            boardType: BoardType,
+            tradeId: Long,
+            memberId: Long,
+            tradeData: TradeRequestDto,
+            imageUrls: List<String>
+        ): TradeUpdateRequestDto {
+            return TradeUpdateRequestDto(
+                boardType = boardType,
+                tradeId = tradeId,
+                memberId = memberId,
+                tradeData = tradeData,
+                imageUrls = imageUrls
+            )
+        }
     }
 }

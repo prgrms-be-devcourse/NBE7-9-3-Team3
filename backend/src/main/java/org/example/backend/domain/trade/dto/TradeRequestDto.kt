@@ -1,18 +1,15 @@
-package org.example.backend.domain.trade.dto;
+package org.example.backend.domain.trade.dto
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
-import java.util.List;
-import org.example.backend.domain.trade.enums.TradeStatus;
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.PositiveOrZero
+import org.example.backend.domain.trade.enums.TradeStatus
 
-public record TradeRequestDto(
-    @NotBlank String title,
-    @NotBlank String description,
-    @NotNull @PositiveOrZero Long price, // 0원(나눔) 허용
-    @NotNull TradeStatus status,
-    String category,
-    List<String> imageUrls
-) {
-
-}
+data class TradeRequestDto(
+    @field:NotBlank @JvmField val title: String,
+    @field:NotBlank @JvmField val description: String,
+    @field:NotNull @field:PositiveOrZero @JvmField val price: Long,  // 0원(나눔) 허용
+    @field:NotNull @JvmField val status: TradeStatus,
+    @JvmField val category: String?,
+    @JvmField val imageUrls: List<String>
+) 
