@@ -7,9 +7,9 @@ import org.example.backend.domain.trade.entity.Trade
 import org.example.backend.domain.tradecomment.entity.TradeComment
 
 data class TradeCommentRequestDto(
-    @field:NotNull @JvmField val memberId: Long,
-    @field:NotNull @JvmField val tradeId: Long,
-    @field:NotBlank @JvmField val content: String
+    @field:NotNull val memberId: Long,
+    @field:NotNull val tradeId: Long,
+    @field:NotBlank val content: String
 ) {
     fun toEntity(member: Member, trade: Trade): TradeComment {
         return TradeComment(

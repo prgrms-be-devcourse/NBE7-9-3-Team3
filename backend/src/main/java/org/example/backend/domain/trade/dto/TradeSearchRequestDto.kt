@@ -3,14 +3,14 @@ package org.example.backend.domain.trade.dto
 import org.example.backend.domain.trade.enums.TradeStatus
 
 class TradeSearchRequestDto(
-    @JvmField val page: Int?,
-    @JvmField val size: Int?,
-    @JvmField val sort: String?,
-    @JvmField val searchTerm: String?,
-    @JvmField val searchType: String?,
-    @JvmField val minPrice: Long?,
-    @JvmField val maxPrice: Long?,
-    @JvmField val status: TradeStatus?
+    private val page: Int?,
+    private val size: Int?,
+    private val sort: String?,
+    val searchTerm: String?,
+    val searchType: String?,
+    val minPrice: Long?,
+    val maxPrice: Long?,
+    val status: TradeStatus?
 ) {
     fun getPage(): Int = if (page == null || page < 0) 0 else page
 

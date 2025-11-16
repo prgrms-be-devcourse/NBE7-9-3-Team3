@@ -7,13 +7,13 @@ import org.example.backend.domain.trade.enums.TradeStatus
 import java.time.LocalDateTime
 
 data class TradeCreateRequestDto(
-    @JvmField val memberId: Long,
+    val memberId: Long,
     val boardType: BoardType,
     val title: String,
     val description: String,
     val price: Long,
     val category: String?,
-    @JvmField val imageUrls: List<String>
+    val imageUrls: List<String>
 ) {
     fun toEntity(member: Member): Trade {
         return Trade(
@@ -29,7 +29,6 @@ data class TradeCreateRequestDto(
     }
 
     companion object {
-        @JvmStatic
         fun from(dto: TradeRequestDto, type: BoardType, memberId: Long): TradeCreateRequestDto {
             return TradeCreateRequestDto(
                 memberId = memberId,

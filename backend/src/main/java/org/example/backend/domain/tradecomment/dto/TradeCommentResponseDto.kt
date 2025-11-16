@@ -12,7 +12,6 @@ data class TradeCommentResponseDto(
     val createDate: LocalDateTime
 ) {
     companion object {
-        @JvmStatic
         fun from(comment: TradeComment) = TradeCommentResponseDto(
             commentId = comment.commentId,
             memberId = 1L,  // TODO: comment.member.memberId

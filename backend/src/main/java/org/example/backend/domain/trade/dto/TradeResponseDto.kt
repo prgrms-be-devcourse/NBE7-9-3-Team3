@@ -19,7 +19,6 @@ data class TradeResponseDto(
     val images: List<String>
 ) {
     companion object {
-        @JvmStatic
         fun from(trade: Trade): TradeResponseDto {
             return TradeResponseDto(
                 tradeId = trade.tradeId,

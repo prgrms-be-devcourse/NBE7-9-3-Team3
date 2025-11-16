@@ -3,14 +3,13 @@ package org.example.backend.domain.trade.dto
 import org.example.backend.domain.trade.enums.BoardType
 
 data class TradeUpdateRequestDto(
-    @JvmField val boardType: BoardType,
-    @JvmField val tradeId: Long,
-    @JvmField val memberId: Long,
-    @JvmField val tradeData: TradeRequestDto,
-    @JvmField val imageUrls: List<String>
+    val boardType: BoardType,
+    val tradeId: Long,
+    val memberId: Long,
+    val tradeData: TradeRequestDto,
+    val imageUrls: List<String>
 ) {
     companion object {
-        @JvmStatic
         fun of(
             boardType: BoardType,
             tradeId: Long,

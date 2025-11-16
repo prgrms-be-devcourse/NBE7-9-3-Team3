@@ -7,7 +7,6 @@ enum class BoardType(
     SECONDHAND("중고물품");
 
     companion object {
-        @JvmStatic
         fun from(value: String): BoardType {
             return valueOf(value.uppercase())
         }

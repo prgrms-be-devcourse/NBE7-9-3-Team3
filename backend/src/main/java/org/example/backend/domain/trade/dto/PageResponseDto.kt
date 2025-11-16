@@ -15,7 +15,6 @@ data class PageResponseDto<T> (
 ){
 
     companion object {
-        @JvmStatic
         fun <T> from(page: Page<T>): PageResponseDto<T> {
             return PageResponseDto(
                 content = page.content,
