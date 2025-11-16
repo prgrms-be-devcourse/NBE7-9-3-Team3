@@ -1,9 +1,9 @@
-package org.example.backend.domain.tradecomment.dto;
+package org.example.backend.domain.tradecomment.dto
 
-public record MyTradeCommentReadResponseDto(
-    Long id,
-    Long tradeId,
-    String tradeTitle,
-    String content,
-    String boardType
-) {}
+data class MyTradeCommentReadResponseDto(
+    val id: Long,
+    val tradeId: Long,
+    val tradeTitle: String,
+    val content: String,
+    val boardType: String
+)

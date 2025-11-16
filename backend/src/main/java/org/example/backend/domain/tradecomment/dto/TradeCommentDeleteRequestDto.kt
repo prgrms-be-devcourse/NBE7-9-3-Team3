@@ -1,19 +1,27 @@
-package org.example.backend.domain.tradecomment.dto;
+package org.example.backend.domain.tradecomment.dto
 
-import org.example.backend.domain.trade.enums.BoardType;
+import org.example.backend.domain.trade.enums.BoardType
 
-public record TradeCommentDeleteRequestDto(
-    BoardType boardType,
-    Long tradeId,
-    Long commentId,
-    Long memberId
+data class TradeCommentDeleteRequestDto(
+    @JvmField val boardType: BoardType,
+    @JvmField val tradeId: Long,
+    @JvmField val commentId: Long,
+    @JvmField val memberId: Long
 ) {
-    public static TradeCommentDeleteRequestDto of(
-        BoardType boardType,
-        Long tradeId,
-        Long commentId,
-        Long memberId
-    ) {
-        return new TradeCommentDeleteRequestDto(boardType, tradeId, commentId, memberId);
+    companion object {
+        @JvmStatic
+        fun of(
+            boardType: BoardType,
+            tradeId: Long,
+            commentId: Long,
+            memberId: Long
+        ): TradeCommentDeleteRequestDto {
+            return TradeCommentDeleteRequestDto(
+                boardType = boardType,
+                tradeId = tradeId,
+                commentId = commentId,
+                memberId = memberId
+            )
+        }
     }
 }

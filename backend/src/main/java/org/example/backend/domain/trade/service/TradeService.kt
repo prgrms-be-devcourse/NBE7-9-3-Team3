@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 // Member가 Java+Lombok일 때 임시로 사용하는 확장 함수
-// Member가 Kotlin으로 마이그레이션되면 삭제 예정
+// TODO : Member가 Kotlin으로 마이그레이션되면 삭제 예정
 private fun Member.getMemberIdValue(): Long {
     return try {
         val method = this::class.java.getMethod("getMemberId")

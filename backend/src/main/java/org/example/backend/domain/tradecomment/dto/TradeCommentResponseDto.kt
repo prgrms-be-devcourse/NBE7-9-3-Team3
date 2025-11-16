@@ -1,26 +1,25 @@
-package org.example.backend.domain.tradecomment.dto;
+package org.example.backend.domain.tradecomment.dto
 
-import java.time.LocalDateTime;
-import org.example.backend.domain.tradecomment.entity.TradeComment;
+import org.example.backend.domain.tradecomment.entity.TradeComment
+import java.time.LocalDateTime
 
-public record TradeCommentResponseDto(
-    Long commentId,
-    Long memberId,
-    String memberNickname,
-    Long tradeId,
-    String comment,
-    LocalDateTime createdDate
+data class TradeCommentResponseDto(
+    val commentId: Long,
+    val memberId: Long,
+    val memberNickname: String,
+    val tradeId: Long,
+    val comment: String,
+    val createDate: LocalDateTime
 ) {
-
-    public static TradeCommentResponseDto from(TradeComment comment) {
-        return new TradeCommentResponseDto(
-            comment.getCommentId(),
-            comment.getMember().getMemberId(),
-            comment.getMember().getNickname(),
-            comment.getTrade().getTradeId(),
-            comment.getContent(),
-            comment.getCreateDate()
-        );
+    companion object {
+        @JvmStatic
+        fun from(comment: TradeComment) = TradeCommentResponseDto(
+            commentId = comment.commentId,
+            memberId = 1L,  // TODO: comment.member.memberId
+            memberNickname = "테스트",  // TODO: comment.member.nickname
+            tradeId = comment.trade.tradeId,
+            comment = comment.content,
+            createDate = comment.createDate
+        )
     }
-
 }
