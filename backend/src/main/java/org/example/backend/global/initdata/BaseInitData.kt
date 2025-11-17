@@ -228,7 +228,7 @@ class BaseInitData(
                     " (작성자: test" + i + ")"
 
             // 자랑게시판용 이미지들 (물고기/어항 관련)
-            val showoffImages = arrayOf<String>(
+            val showoffImages = arrayOf(
                 "https://images.unsplash.com/photo-1535591273668-578e31182c4f?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8JUVCJUFDJUJDJUVBJUIzJUEwJUVBJUI4JUIwfGVufDB8fDB8fHww&fm=jpg&q=60&w=3000",
                 "https://t1.daumcdn.net/news/202211/30/nongmin/20221130163646676iqlt.png",
                 "https://marketplace.canva.com/XdJTM/MAGyo8XdJTM/1/tl/canva-adorable-cartoon-blue-fish-illustration-MAGyo8XdJTM.png",
@@ -243,7 +243,7 @@ class BaseInitData(
                 title,
                 content,
                 Post.BoardType.SHOWOFF,
-                mutableListOf(),  // 자랑게시판은 이미지 필수
+                listOf(selectedImage),  // 자랑게시판은 이미지 필수
                 null
             )
 
@@ -298,7 +298,7 @@ class BaseInitData(
                 title,
                 content,
                 Post.BoardType.QUESTION,
-                mutableListOf(),  // 질문게시판은 이미지 없음
+                listOf(),  // 질문게시판은 이미지 없음
                 null
             )
 

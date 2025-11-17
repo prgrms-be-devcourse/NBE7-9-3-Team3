@@ -1,6 +1,5 @@
 package org.example.backend.domain.like.service
 
-import lombok.RequiredArgsConstructor
 import org.example.backend.domain.like.dto.PostLikeResponseDto
 import org.example.backend.domain.like.entity.Like
 import org.example.backend.domain.like.repository.LikeRepository
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-@RequiredArgsConstructor
 class LikeService(
     private val likeRepository: LikeRepository,
     private val postRepository: PostRepository,
@@ -32,8 +30,8 @@ class LikeService(
 
         val existingLike = likeRepository.findByMemberAndPost(member, post)
 
-        val liked = if (existingLike.isPresent) {
-            likeRepository.delete(existingLike.get())
+        val liked = if (existingLike !=null) {
+            likeRepository.delete(existingLike)
             post.decreaseLikeCount()
             false
         } else {

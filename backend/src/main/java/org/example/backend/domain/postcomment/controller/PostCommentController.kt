@@ -1,6 +1,5 @@
 package org.example.backend.domain.postcomment.controller
 
-import lombok.RequiredArgsConstructor
 import org.example.backend.domain.postcomment.dto.*
 import org.example.backend.domain.postcomment.service.PostCommentService
 import org.example.backend.global.response.ApiResponse
@@ -9,7 +8,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/posts/comments")
 class PostCommentController (
     private val postCommentService: PostCommentService

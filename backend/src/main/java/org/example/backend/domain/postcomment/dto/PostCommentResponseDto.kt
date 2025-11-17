@@ -2,7 +2,6 @@ package org.example.backend.domain.postcomment.dto
 
 import org.example.backend.domain.postcomment.entity.PostComment
 
-@JvmRecord
 data class PostCommentResponseDto(
     val id: Long,
     val postId: Long,

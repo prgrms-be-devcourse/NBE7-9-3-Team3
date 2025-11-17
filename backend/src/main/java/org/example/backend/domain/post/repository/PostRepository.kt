@@ -90,5 +90,5 @@ interface PostRepository : JpaRepository<Post, Long> {
     fun findMyPostsWithAuthor(
         @Param("boardType") boardType: Post.BoardType,
         @Param("id") id: Long
-    ): MutableList<Post>
+    ): List<Post>
 }

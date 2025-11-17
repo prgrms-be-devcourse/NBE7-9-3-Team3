@@ -1,6 +1,5 @@
 package org.example.backend.domain.postcomment.service
 
-import lombok.RequiredArgsConstructor
 import org.example.backend.domain.member.entity.Member
 import org.example.backend.domain.post.service.PostService
 import org.example.backend.domain.postcomment.dto.*
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-@RequiredArgsConstructor
 class PostCommentService(
     private val postCommentRepository: PostCommentRepository,
     private val postService: PostService
@@ -26,7 +24,7 @@ class PostCommentService(
     ): PostCommentResponseDto {
 
         val postComment = postCommentRepository.findByIdWithAuthor(commentId)
-            .orElseThrow{ BusinessException(ErrorCode.NOT_FOUND_DATA) }
+            ?:throw BusinessException(ErrorCode.NOT_FOUND_DATA)
 
         // 작성자 검증
         if (postComment.author.memberId != member.memberId) {
@@ -41,7 +39,7 @@ class PostCommentService(
     fun deletePostComment(commentId: Long, member: Member) {
 
         val postComment = postCommentRepository.findByIdWithAuthor(commentId)
-            .orElseThrow { BusinessException(ErrorCode.NOT_FOUND_DATA) }
+            ?:throw BusinessException(ErrorCode.NOT_FOUND_DATA)
 
         // 작성자 검증
         if (postComment.author.memberId != member.memberId) {
@@ -58,7 +56,6 @@ class PostCommentService(
     ): PostCommentResponseDto {
 
         val post = postService.findById(reqBody.postId)
-            ?: throw BusinessException(ErrorCode.NOT_FOUND_DATA)
 
         val postComment = PostComment(
             reqBody.content,

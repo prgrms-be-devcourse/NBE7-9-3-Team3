@@ -12,7 +12,6 @@ import org.example.backend.global.exception.ErrorCode
 import org.example.backend.global.image.ImageService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -24,8 +23,8 @@ class PostService(
     private val likeService: LikeService
 ) {
 
-    fun findById(id: Long): Post? {
-        return postRepository.findByIdOrNull(id)
+    fun findById(id: Long): Post {
+        return postRepository.findById(id).orElseThrow { BusinessException(ErrorCode.NOT_FOUND_DATA) }
     }
 
     @Transactional

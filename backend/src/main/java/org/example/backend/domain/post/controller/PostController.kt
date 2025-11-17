@@ -1,6 +1,5 @@
 package org.example.backend.domain.post.controller
 
-import lombok.RequiredArgsConstructor
 import org.example.backend.domain.post.dto.*
 import org.example.backend.domain.post.entity.Post
 import org.example.backend.domain.post.service.PostService
@@ -13,7 +12,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/posts")
 class PostController (
     private val postService: PostService
