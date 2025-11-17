@@ -1,93 +1,69 @@
-package org.example.backend.domain.postcomment.controller;
+package org.example.backend.domain.postcomment.controller
 
-import java.util.List;
-import lombok.RequiredArgsConstructor;
-import org.example.backend.domain.postcomment.dto.MyPostCommentReadResponseDto;
-import org.example.backend.domain.postcomment.dto.PostCommentCreateRequestDto;
-import org.example.backend.domain.postcomment.dto.PostCommentModifyRequestDto;
-import org.example.backend.domain.postcomment.dto.PostCommentReadResponseDto;
-import org.example.backend.domain.postcomment.dto.PostCommentResponseDto;
-import org.example.backend.domain.postcomment.service.PostCommentService;
-import org.example.backend.global.response.ApiResponse;
-import org.example.backend.global.security.CustomUserDetails;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.RequiredArgsConstructor
+import org.example.backend.domain.postcomment.dto.*
+import org.example.backend.domain.postcomment.service.PostCommentService
+import org.example.backend.global.response.ApiResponse
+import org.example.backend.global.security.CustomUserDetails
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/posts/comments")
-public class PostCommentController implements PostCommentControllerSpec {
+class PostCommentController (
+    private val postCommentService: PostCommentService
+) : PostCommentControllerSpec{
 
-    private final PostCommentService postCommentService;
-
-    @Override
     @GetMapping
-    public ApiResponse<List<PostCommentReadResponseDto>> getPostComments(
-        @RequestParam Long postId,
-        @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
+    override fun getPostComments(
+        @RequestParam postId: Long,
+        @AuthenticationPrincipal userDetails: CustomUserDetails
+    ): ApiResponse<List<PostCommentReadResponseDto>> {
+        val response = postCommentService.getPostComments(postId, userDetails.member)
 
-        List<PostCommentReadResponseDto> response =
-            postCommentService.getPostComments(postId, userDetails.getMember());
-
-        return ApiResponse.ok("댓글 목록 조회", response);
+        return ApiResponse.ok("댓글 목록 조회", response)
     }
 
-    @Override
     @GetMapping("/my")
-    public ApiResponse<List<MyPostCommentReadResponseDto>> getMyPostComments(
-        @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
-
-        List<MyPostCommentReadResponseDto> response = postCommentService.findMyComments(userDetails.getMember());
-        return ApiResponse.ok("내가 쓴 댓글 목록 조회",response);
+    override fun getMyPostComments(
+        @AuthenticationPrincipal userDetails: CustomUserDetails
+    ): ApiResponse<List<MyPostCommentReadResponseDto>> {
+        val response = postCommentService.findMyComments(userDetails.member)
+        return ApiResponse.ok("내가 쓴 댓글 목록 조회", response)
     }
 
-    @Override
     @DeleteMapping("/{commentId}")
-    public ApiResponse<Void> deletePostComment(
-        @PathVariable Long commentId,
-        @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
+    override fun deletePostComment(
+        @PathVariable commentId: Long,
+        @AuthenticationPrincipal userDetails: CustomUserDetails
+    ): ApiResponse<Void> {
 
-        postCommentService.deletePostComment(commentId, userDetails.getMember());
+        postCommentService.deletePostComment(commentId, userDetails.member)
 
-        return ApiResponse.ok("%d번 댓글 삭제".formatted(commentId));
-
+        return ApiResponse.ok("${commentId}번 댓글 삭제")
     }
 
-    @Override
     @PostMapping
-    public ApiResponse<PostCommentResponseDto> createPostComment(
-        @RequestBody PostCommentCreateRequestDto reqBody,
-        @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
+    override fun createPostComment(
+        @RequestBody reqBody: PostCommentCreateRequestDto,
+        @AuthenticationPrincipal userDetails: CustomUserDetails
+    ): ApiResponse<PostCommentResponseDto> {
 
-        PostCommentResponseDto response = postCommentService.createPostComment(reqBody, userDetails.getMember());
+        val response = postCommentService.createPostComment(reqBody, userDetails.member)
 
-
-        return ApiResponse.ok("댓글이 생성되었습니다",response);
-
+        return ApiResponse.ok("댓글이 생성되었습니다", response)
     }
 
-    @Override
     @PatchMapping("/{commentId}")
-    public ApiResponse<PostCommentResponseDto> modifyPostComment(
-        @PathVariable Long commentId,
-        @RequestBody PostCommentModifyRequestDto reqBody,
-        @AuthenticationPrincipal CustomUserDetails userDetails
-    ){
+    override fun modifyPostComment(
+        @PathVariable commentId: Long,
+        @RequestBody reqBody: PostCommentModifyRequestDto,
+        @AuthenticationPrincipal userDetails: CustomUserDetails
+    ): ApiResponse<PostCommentResponseDto> {
 
-        PostCommentResponseDto response = postCommentService.modifyPostComment(commentId, reqBody, userDetails.getMember());
+        val response = postCommentService.modifyPostComment(commentId, reqBody, userDetails.member)
 
-        return ApiResponse.ok("%d번 댓글 수정".formatted(commentId), response);
+        return ApiResponse.ok("${commentId}번 댓글 수정",response)
     }
 }

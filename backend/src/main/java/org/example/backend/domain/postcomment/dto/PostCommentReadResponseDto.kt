@@ -1,8 +1,9 @@
-package org.example.backend.domain.postcomment.dto;
+package org.example.backend.domain.postcomment.dto
 
-public record PostCommentReadResponseDto(
-    Long id,
-    String content,
-    String nickname,
-    boolean isMine
-) {}
+@JvmRecord
+data class PostCommentReadResponseDto(
+    val id: Long,
+    val content: String,
+    val nickname: String,
+    val isMine: Boolean
+)

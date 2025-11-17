@@ -1,114 +1,107 @@
-package org.example.backend.domain.postcomment.service;
+package org.example.backend.domain.postcomment.service
 
-import java.util.Comparator;
-import java.util.List;
-import lombok.RequiredArgsConstructor;
-import org.example.backend.domain.member.entity.Member;
-import org.example.backend.domain.post.entity.Post;
-import org.example.backend.domain.post.service.PostService;
-import org.example.backend.domain.postcomment.dto.MyPostCommentReadResponseDto;
-import org.example.backend.domain.postcomment.dto.PostCommentCreateRequestDto;
-import org.example.backend.domain.postcomment.dto.PostCommentModifyRequestDto;
-import org.example.backend.domain.postcomment.dto.PostCommentReadResponseDto;
-import org.example.backend.domain.postcomment.dto.PostCommentResponseDto;
-import org.example.backend.domain.postcomment.entity.PostComment;
-import org.example.backend.domain.postcomment.repository.PostCommentRepository;
-import org.example.backend.global.exception.BusinessException;
-import org.example.backend.global.exception.ErrorCode;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import lombok.RequiredArgsConstructor
+import org.example.backend.domain.member.entity.Member
+import org.example.backend.domain.post.service.PostService
+import org.example.backend.domain.postcomment.dto.*
+import org.example.backend.domain.postcomment.entity.PostComment
+import org.example.backend.domain.postcomment.repository.PostCommentRepository
+import org.example.backend.global.exception.BusinessException
+import org.example.backend.global.exception.ErrorCode
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 @RequiredArgsConstructor
-public class PostCommentService {
-
-    private final PostCommentRepository postCommentRepository;
-    private final PostService postService;
+class PostCommentService(
+    private val postCommentRepository: PostCommentRepository,
+    private val postService: PostService
+) {
 
     @Transactional
-    public PostCommentResponseDto modifyPostComment(Long commentId, PostCommentModifyRequestDto reqBody, Member member) {
+    fun modifyPostComment(
+        commentId: Long,
+        reqBody: PostCommentModifyRequestDto,
+        member: Member
+    ): PostCommentResponseDto {
 
-        PostComment postComment = postCommentRepository.findByIdWithAuthor(commentId)
-            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_DATA));
+        val postComment = postCommentRepository.findByIdWithAuthor(commentId)
+            .orElseThrow{ BusinessException(ErrorCode.NOT_FOUND_DATA) }
 
         // 작성자 검증
-        if (!postComment.getAuthor().getMemberId().equals(member.getMemberId())) {
-            throw new BusinessException(ErrorCode.FORBIDDEN_ACCESS);
+        if (postComment.author.memberId != member.memberId) {
+            throw BusinessException(ErrorCode.FORBIDDEN_ACCESS)
         }
 
-        postComment.modifyContent(reqBody.content());
-        return new PostCommentResponseDto(postComment);
+        postComment.modifyContent(reqBody.content)
+        return PostCommentResponseDto(postComment)
     }
 
     @Transactional
-    public void deletePostComment(Long commentId, Member member) {
+    fun deletePostComment(commentId: Long, member: Member) {
 
-        PostComment postComment = postCommentRepository.findByIdWithAuthor(commentId)
-            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_DATA));
+        val postComment = postCommentRepository.findByIdWithAuthor(commentId)
+            .orElseThrow { BusinessException(ErrorCode.NOT_FOUND_DATA) }
 
         // 작성자 검증
-        if (!postComment.getAuthor().getMemberId().equals(member.getMemberId())) {
-            throw new BusinessException(ErrorCode.FORBIDDEN_ACCESS);
+        if (postComment.author.memberId != member.memberId) {
+            throw BusinessException(ErrorCode.FORBIDDEN_ACCESS)
         }
 
-        postCommentRepository.delete(postComment);
+        postCommentRepository.delete(postComment)
     }
 
     @Transactional
-    public PostCommentResponseDto createPostComment(PostCommentCreateRequestDto reqBody, Member member) {
+    fun createPostComment(
+        reqBody: PostCommentCreateRequestDto,
+        member: Member
+    ): PostCommentResponseDto {
 
-        Post post = postService.findById(reqBody.postId());
-        if (post == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_DATA);
-        }
+        val post = postService.findById(reqBody.postId)
+            ?: throw BusinessException(ErrorCode.NOT_FOUND_DATA)
 
-        PostComment postComment = new PostComment(
-            reqBody.content(),
+        val postComment = PostComment(
+            reqBody.content,
             post,
             member
-        );
+        )
 
-        postCommentRepository.save(postComment);
-        return new PostCommentResponseDto(postComment);
+        postCommentRepository.save(postComment)
+        return PostCommentResponseDto(postComment)
     }
 
     @Transactional(readOnly = true)
-    public List<MyPostCommentReadResponseDto> findMyComments(Member member) {
+    fun findMyComments(member: Member): List<MyPostCommentReadResponseDto> {
+        val postComments =
+            postCommentRepository.findByAuthor_MemberIdWithPost(member.memberId!!)
 
-        List<PostComment> postComments = postCommentRepository.findByAuthor_MemberIdWithPost(member.getMemberId());
-
-        List<MyPostCommentReadResponseDto> response = postComments.stream()
-            .sorted(Comparator.comparing(PostComment::getCreateDate)
-                .thenComparing(PostComment::getId))
-            .map(c -> new MyPostCommentReadResponseDto(
-                c.getId(),
-                c.getPost().getId(),
-                c.getPost().getTitle(),
-                c.getContent(),
-                c.getPost().getBoardType(),
-                c.getPost().getCategory()
-            ))
-            .toList();
-
-        return response;
+        return postComments
+            .sortedWith(compareBy<PostComment> { it.createDate }.thenBy { it.id })
+            .map{
+                MyPostCommentReadResponseDto(
+                it.id,
+                it.post.id,
+                it.post.title,
+                it.content,
+                it.post.boardType,
+                it.post.category
+                )
+            }
     }
 
     @Transactional(readOnly = true)
-    public List<PostCommentReadResponseDto> getPostComments(Long postId, Member member) {
+    fun getPostComments(postId: Long, member: Member): List<PostCommentReadResponseDto> {
+        val comments =
+            postCommentRepository.findByPostIdWithAuthor(postId)
 
-        List<PostComment> comments = postCommentRepository.findByPostIdWithAuthor(postId);
-
-        List<PostCommentReadResponseDto> response = comments.stream()
-            .map(c -> new PostCommentReadResponseDto(
-                c.getId(),
-                c.getContent(),
-                c.getAuthor().getNickname(),
-                c.getAuthor().getMemberId().equals(member.getMemberId())
-            ))
-            .toList();
-
-        return response;
+       return comments
+            .map{
+                PostCommentReadResponseDto(
+                    it.id,
+                    it.content,
+                    it.author.nickname,
+                    it.author.memberId == member.memberId
+                )
+            }
     }
-
-
 }
