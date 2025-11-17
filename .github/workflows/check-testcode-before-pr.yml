@@ -8,6 +8,7 @@ on:
       - main
 jobs:
   test:
+    if: "! contains(github.event.head_commit.message, 'test')" # 커밋 메시지에 'test' 포함되어 있으면 실행X
     runs-on: ubuntu-latest
 
     steps:
