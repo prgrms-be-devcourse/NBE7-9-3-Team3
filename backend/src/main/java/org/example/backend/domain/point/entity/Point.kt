@@ -26,7 +26,7 @@ class Point private constructor( // 해당 클래스만 접근 가능한 생성�
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val logId: Long? = null
+    var logId: Long = 0L
 
     companion object {
         @JvmStatic
