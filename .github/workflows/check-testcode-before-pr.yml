@@ -4,6 +4,7 @@ on:
     types: [opened, reopened, synchronize]  
     paths:
       - "backend/src/main/**"
+      - "backend/src/test/**"
     branches:
       - main
 jobs:
