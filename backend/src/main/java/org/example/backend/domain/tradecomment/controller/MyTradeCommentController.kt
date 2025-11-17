@@ -22,7 +22,7 @@ class MyTradeCommentController(
     fun getMyTradeComments(
         @AuthenticationPrincipal userDetails: CustomUserDetails
     ): ApiResponse<List<MyTradeCommentReadResponseDto>> {
-        val comments = tradeCommentService.getMyTradeComments(userDetails.getId())
+        val comments = tradeCommentService.getMyTradeComments(userDetails.id!!)
         return ApiResponse.ok(
             "내가 작성한 거래글 댓글 조회 성공",
             comments
