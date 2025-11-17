@@ -33,9 +33,9 @@ class FollowService(
 
         // Member 엔티티 조회 (존재 여부 확인과 함께)
         val follower = memberService.findByMemberId(followerId)
-            .orElseThrow { BusinessException(ErrorCode.FOLLOW_NOT_FOUND) }
+            ?: throw BusinessException(ErrorCode.FOLLOW_NOT_FOUND)
         val followee = memberService.findByMemberId(followeeId)
-            .orElseThrow { BusinessException(ErrorCode.FOLLOWEE_NOT_FOUND) }
+            ?: throw BusinessException(ErrorCode.FOLLOWEE_NOT_FOUND)
 
         val followEntity = Follow(
             follower = follower,
