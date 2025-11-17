@@ -10,37 +10,42 @@ import org.example.backend.global.jpa.entity.BaseEntity
 import java.time.LocalDateTime
 
 @Entity
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-class Aquarium : BaseEntity {
+class Aquarium(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private var member: Member?
+    var member: Member,
 
     @Column(length = 50)
-    private var name: String?
+    var name: String,
 
-    // 기본값 = false
-    private var ownedAquarium = false
+    var ownedAquarium: Boolean,  // 기본값 = false
 
-    @Column(columnDefinition = "int default 0") // 기본값 = 0
-    // 0 이상의 숫자만 가능
-    private var cycleDate: @PositiveOrZero Int = 0
+    @Column(columnDefinition = "int default 0")  // 기본값 = 0
+    @field:PositiveOrZero  // 0 이상의 숫자만 가능
+    var cycleDate: Int,
 
-    private var lastDate: LocalDateTime? = null
+    var lastDate: LocalDateTime? = null,
+    var nextDate: LocalDateTime? = null,
 
-    private var nextDate: LocalDateTime? = null
+    ) : BaseEntity() {
 
-    constructor(member: Member?, name: String?) {
-        this.member = member
-        this.name = name
-    }
+    constructor(member: Member, name: String) : this(
+        member,
+        name,
+        false,
+        0,
+        null,
+        null
+    )
 
-    constructor(member: Member?, name: String?, ownedAquarium: Boolean) {
-        this.member = member
-        this.name = name
-        this.ownedAquarium = ownedAquarium
-    }
+    constructor(member: Member, name: String, ownedAquarium: Boolean) : this(
+        member,
+        name,
+        ownedAquarium,
+        0,
+        null,
+        null
+    )
 
     fun changeSchedule(cycleDate: Int, lastDate: LocalDateTime?, nextDate: LocalDateTime?) {
         this.cycleDate = cycleDate
@@ -48,7 +53,7 @@ class Aquarium : BaseEntity {
         this.nextDate = nextDate
     }
 
-    fun changeName(name: String?) {
+    fun changeName(name: String) {
         this.name = name
     }
 }

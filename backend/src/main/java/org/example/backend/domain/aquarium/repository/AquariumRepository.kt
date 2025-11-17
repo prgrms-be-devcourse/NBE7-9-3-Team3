@@ -7,12 +7,12 @@ import org.springframework.data.repository.query.Param
 import java.time.LocalDateTime
 import java.util.*
 
-interface AquariumRepository : JpaRepository<Aquarium?, Long?> {
-    fun findAllByMember_MemberId(memberId: Long?): MutableList<Aquarium?>?
+interface AquariumRepository : JpaRepository<Aquarium, Long> {
+    fun findAllByMember_MemberId(memberId: Long): List<Aquarium>
 
-    fun existsByMember_MemberIdAndOwnedAquariumTrue(memberId: Long?): Boolean
+    fun existsByMember_MemberIdAndOwnedAquariumTrue(memberId: Long): Boolean
 
-    fun findByMember_MemberIdAndOwnedAquariumTrue(memberId: Long?): Optional<Aquarium?>?
+    fun findByMember_MemberIdAndOwnedAquariumTrue(memberId: Long): Aquarium?
 
     /**
      * 이메일 알림을 보낼 어항들을 조회
@@ -25,5 +25,5 @@ interface AquariumRepository : JpaRepository<Aquarium?, Long?> {
                 "AND a.nextDate <= :now " +
                 "AND a.member.email IS NOT NULL")
     )
-    fun findAquariumsForNotification(@Param("now") now: LocalDateTime?): MutableList<Aquarium?>?
+    fun findAquariumsForNotification(@Param("now") now: LocalDateTime?): List<Aquarium>
 }

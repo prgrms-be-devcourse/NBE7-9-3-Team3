@@ -10,17 +10,16 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.LocalDateTime
 
 @MappedSuperclass
-@Getter
 @EntityListeners(AuditingEntityListener::class)
 abstract class BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.PROTECTED)
-    private val id: Long? = null
+    var id: Long = 0
+        protected set
 
     @CreatedDate
-    private val createDate: LocalDateTime? = null
+    lateinit var createDate: LocalDateTime
 
     @LastModifiedDate
-    private val modifyDate: LocalDateTime? = null
+    lateinit var modifyDate: LocalDateTime
 }
