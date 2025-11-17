@@ -14,6 +14,7 @@ import org.example.backend.domain.fish.repository.FishRepository;
 import org.example.backend.domain.member.entity.Member;
 import org.example.backend.domain.member.repository.MemberRepository;
 import org.example.backend.domain.member.service.AuthTokenService;
+import org.example.backend.domain.trade.repository.TradeRepository;
 import org.example.backend.global.LoginUtil;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,8 @@ public class AquariumControllerTest {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private AuthTokenService authTokenService;
+    @Autowired
+    private TradeRepository tradeRepository;
 
     private Member testMember;  // 어항 생성시 사용할 test member
     private String jwtToken;  // 테스트시 사용할 jwt 토큰
