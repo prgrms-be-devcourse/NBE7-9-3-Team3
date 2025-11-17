@@ -79,7 +79,7 @@ class ImageService(
      *  - validateS3Url도 non-null로 변경
      *  - ImageServiceTest의 T6, T10 테스트 제거 또는 수정
      */
-    fun deleteFile(fileUrl: String?) {
+    fun deleteFile(fileUrl: String) {
         val key = extractNameFromUrl(fileUrl)
 
         val deleteObjectRequest = DeleteObjectRequest.builder()
@@ -124,11 +124,11 @@ class ImageService(
     }
 
     /** S3 URL에서 키(경로) 추출 및 검증  */
-    private fun extractNameFromUrl(fileUrl: String?): String {
+    private fun extractNameFromUrl(fileUrl: String): String {
         validateS3Url(fileUrl)
 
         val expectedPrefix = "https://$bucket.s3.$region.amazonaws.com/"
-        return fileUrl!!.substring(expectedPrefix.length)
+        return fileUrl.substring(expectedPrefix.length)
     }
 
     /** S3 URL 형식 및 버킷 검증  */

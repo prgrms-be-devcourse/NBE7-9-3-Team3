@@ -124,23 +124,9 @@ public class ImageServiceTest {
             .hasFieldOrPropertyWithValue("errorCode", ErrorCode.IMAGE_URL_INVALID);
     }
 
-    // TODO: Kotlin null safety로 인해 컴파일 타임에 null 전달 불가
-    //  테스트 Kotlin 마이그레이션 시 ImageService.deleteFile을 non-null로 변경하고 이 테스트 제거
     @Test
-    @DisplayName("t6: 단일 파일 삭제 실패 - null URL")
+    @DisplayName("t6: 단일 파일 삭제 실패 - 다른 버킷 URL")
     void t6() {
-        // given
-        String nullUrl = null;
-
-        // when & then
-        assertThatThrownBy(() -> imageService.deleteFile(nullUrl))
-            .isInstanceOf(BusinessException.class)
-            .hasFieldOrPropertyWithValue("errorCode", ErrorCode.IMAGE_URL_INVALID);
-    }
-
-    @Test
-    @DisplayName("t7: 단일 파일 삭제 실패 - 다른 버킷 URL")
-    void t7() {
         // given
         String otherBucketUrl = "https://other-bucket.s3.ap-northeast-2.amazonaws.com/image.jpg";
 
@@ -152,8 +138,8 @@ public class ImageServiceTest {
 
     // ========== 다중 파일 삭제 테스트 ==========
     @Test
-    @DisplayName("t8: 다중 파일 삭제 성공")
-    void t8() {
+    @DisplayName("t7: 다중 파일 삭제 성공")
+    void t7() {
         // given
         List<String> fileUrls = Arrays.asList(
             "https://test-bucket.s3.ap-northeast-2.amazonaws.com/trades/abc123.jpg",
@@ -169,8 +155,8 @@ public class ImageServiceTest {
     }
 
     @Test
-    @DisplayName("t9: 다중 파일 삭제 - 빈 리스트")
-    void t9() {
+    @DisplayName("t8: 다중 파일 삭제 - 빈 리스트")
+    void t8() {
         // given
         List<String> emptyList = Collections.emptyList();
 
@@ -181,24 +167,9 @@ public class ImageServiceTest {
         verify(s3Client, never()).deleteObjects(any(DeleteObjectsRequest.class));
     }
 
-    // TODO: Kotlin null safety로 인해 컴파일 타임에 null 전달 불가
-    //  테스트 Kotlin 마이그레이션 시 ImageService.deleteFiles를 non-null로 변경하고 이 테스트 제거
     @Test
-    @DisplayName("t10: 다중 파일 삭제 - null 리스트")
-    void t10() {
-        // given
-        List<String> nullList = null;
-
-        // when
-        imageService.deleteFiles(nullList);
-
-        // then
-        verify(s3Client, never()).deleteObjects(any(DeleteObjectsRequest.class));
-    }
-
-    @Test
-    @DisplayName("t11: 다중 파일 삭제 실패 - 잘못된 URL 포함")
-    void t11() {
+    @DisplayName("t9: 다중 파일 삭제 실패 - 잘못된 URL 포함")
+    void t9() {
         // given
         List<String> fileUrls = Arrays.asList(
             "https://test-bucket.s3.ap-northeast-2.amazonaws.com/trades/abc123.jpg",
@@ -214,8 +185,8 @@ public class ImageServiceTest {
 
     // ========== URL 검증 추가 테스트 ==========
     @Test
-    @DisplayName("t12: URL 검증 - 다른 리전")
-    void t12() {
+    @DisplayName("t10: URL 검증 - 다른 리전")
+    void t10() {
         // given
         String differentRegionUrl = "https://test-bucket.s3.us-east-1.amazonaws.com/image.jpg";
 
@@ -226,8 +197,8 @@ public class ImageServiceTest {
     }
 
     @Test
-    @DisplayName("t13: URL 검증 - HTTP 프로토콜 (HTTPS 아님)")
-    void t13() {
+    @DisplayName("t11: URL 검증 - HTTP 프로토콜 (HTTPS 아님)")
+    void t11() {
         // given
         String httpUrl = "http://test-bucket.s3.ap-northeast-2.amazonaws.com/image.jpg";
 
@@ -238,8 +209,8 @@ public class ImageServiceTest {
     }
 
     @Test
-    @DisplayName("t14: URL 검증 - 공백 문자열")
-    void t14() {
+    @DisplayName("t12: URL 검증 - 공백 문자열")
+    void t12() {
         // given
         String blankUrl = "   ";
 
