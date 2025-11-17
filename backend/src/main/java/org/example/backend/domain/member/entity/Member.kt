@@ -17,6 +17,7 @@ class Member(
 
     @Column(length = 500)
     var profileImage: String? = null
+
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,9 +33,6 @@ class Member(
 
     @Column(nullable = false)
     var points: Long = 0L
-
-    // JPA를 위한 protected 기본 생성자
-    protected constructor() : this("", "", "", null)
 
     fun updatePoints(newPoint: Long) {
         this.points = newPoint

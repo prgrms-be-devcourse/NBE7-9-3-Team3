@@ -1,7 +1,10 @@
 package org.example.backend.domain.follow.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.example.backend.domain.follow.dto.*;
+import org.example.backend.domain.follow.dto.FollowListResponseDto;
+import org.example.backend.domain.follow.dto.FollowResponseDto;
 import org.example.backend.domain.follow.entity.Follow;
 import org.example.backend.domain.follow.repository.FollowRepository;
 import org.example.backend.domain.member.entity.Member;
@@ -11,9 +14,6 @@ import org.example.backend.global.exception.ErrorCode;
 import org.example.backend.global.response.ApiResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,10 +35,14 @@ public class FollowService {
         }
 
         // Member 엔티티 조회 (존재 여부 확인과 함께)
-        Member follower = memberService.findByMemberId(followerId).orElseThrow(
-            () -> new BusinessException(ErrorCode.FOLLOW_NOT_FOUND));
-        Member followee = memberService.findByMemberId(followeeId).orElseThrow(
-            () -> new BusinessException(ErrorCode.FOLLOWEE_NOT_FOUND));
+        Member follower = memberService.findByMemberId(followerId);
+        if (follower == null) {
+            throw new BusinessException(ErrorCode.FOLLOW_NOT_FOUND);
+        }
+        Member followee = memberService.findByMemberId(followeeId);
+        if (followee == null) {
+            throw new BusinessException(ErrorCode.FOLLOWEE_NOT_FOUND);
+        }
 
         Follow followEntity = Follow.builder()
             .follower(follower)

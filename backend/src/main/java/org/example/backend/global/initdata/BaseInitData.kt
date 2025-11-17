@@ -77,7 +77,7 @@ class BaseInitData(
             val i = itemId / 10 // 유저 ID
             val itemNum = itemId % 10 // 아이템 번호
 
-            val member = memberRepository.findByMemberId(i.toLong()).orElse(null)
+            val member = memberRepository.findByMemberId(i.toLong())
             if (member == null) {
                 continue
             }
@@ -102,7 +102,7 @@ class BaseInitData(
             val password = "test1234"
 
             // 이미 존재하는지 확인
-            if (memberRepository.findByEmail(email).isPresent()) {
+            if (memberRepository.findByEmail(email) != null) {
                 continue
             }
 
@@ -125,7 +125,7 @@ class BaseInitData(
 
         // test1부터 test10까지의 유저들을 조회
         for (i in 1..10) {
-            val follower = memberRepository.findByMemberId(i.toLong()).orElse(null)
+            val follower = memberRepository.findByMemberId(i.toLong())
 
             if (follower == null) {
                 continue
@@ -135,7 +135,7 @@ class BaseInitData(
             for (j in 1..2) {
                 val followeeNumber = (i + j - 1) % 10 + 1 // 순환 로직
                 val followee =
-                    memberRepository.findByMemberId(followeeNumber.toLong()).orElse(null)
+                    memberRepository.findByMemberId(followeeNumber.toLong())
 
                 if (followee != null && follower.memberId != followee.memberId) {
                     try {
@@ -172,7 +172,7 @@ class BaseInitData(
 
         // test1부터 test10까지의 유저들에 대해 어항과 물고기 생성
         for (i in 1..10) {
-            val member = memberRepository.findByMemberId(i.toLong()).orElse(null)
+            val member = memberRepository.findByMemberId(i.toLong())
 
             if (member == null) {
                 continue
