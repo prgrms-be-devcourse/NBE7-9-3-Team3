@@ -19,7 +19,7 @@ class GlobalExceptionHandler {
 
     // 비즈니스 로직 예외 처리 (BusinessException)
     @ExceptionHandler(BusinessException::class)
-    fun handleBusinessException(ex: BusinessException): ResponseEntity<ApiResponse<Void?>> {
+    fun handleBusinessException(ex: BusinessException): ResponseEntity<ApiResponse<Void>> {
         val errorCode = ex.errorCode
 
         // HTTP 상태 코드에 따라 로깅 레벨 구분
@@ -47,7 +47,7 @@ class GlobalExceptionHandler {
 
     // 기존 ServiceException 호환성 유지
     @ExceptionHandler(ServiceException::class)
-    fun handleServiceException(e: ServiceException): ResponseEntity<ApiResponse<Void?>> {
+    fun handleServiceException(e: ServiceException): ResponseEntity<ApiResponse<Void>> {
         log.warn(
             "ServiceException occurred: code={}, message={}",
             e.resultCode,
@@ -90,7 +90,8 @@ class GlobalExceptionHandler {
 
     // 잘못된 요청 형식
     @ExceptionHandler(HttpMessageNotReadableException::class)
-    fun handleHttpMessageNotReadable(ex: HttpMessageNotReadableException): ResponseEntity<ApiResponse<Void?>> {
+    fun handleHttpMessageNotReadable(ex: HttpMessageNotReadableException):
+            ResponseEntity<ApiResponse<Void>> {
         log.warn("Invalid request format: {}", ex.message)
 
         val response = ApiResponse.error(ErrorCode.BAD_REQUEST_FORMAT)
@@ -102,7 +103,8 @@ class GlobalExceptionHandler {
 
     // NoSuchElementException 처리
     @ExceptionHandler(NoSuchElementException::class)
-    fun handleNoSuchElementException(ex: NoSuchElementException): ResponseEntity<ApiResponse<Void?>> {
+    fun handleNoSuchElementException(ex: NoSuchElementException):
+            ResponseEntity<ApiResponse<Void>> {
         log.warn("NoSuchElementException: {}", ex.message)
 
         val response = ApiResponse.error(ErrorCode.NOT_FOUND_DATA)
@@ -111,7 +113,7 @@ class GlobalExceptionHandler {
 
     // SecurityException 처리
     @ExceptionHandler(SecurityException::class)
-    fun handleSecurityException(ex: SecurityException): ResponseEntity<ApiResponse<Void?>> {
+    fun handleSecurityException(ex: SecurityException): ResponseEntity<ApiResponse<Void>> {
         log.warn("SecurityException: {}", ex.message)
 
         val response = ApiResponse.error(ErrorCode.FORBIDDEN_ACCESS)
@@ -120,7 +122,8 @@ class GlobalExceptionHandler {
 
     // 정적 리소스 없음 처리 (Swagger UI 관련)
     @ExceptionHandler(NoResourceFoundException::class)
-    fun handleNoResourceFoundException(ex: NoResourceFoundException): ResponseEntity<ApiResponse<Void?>> {
+    fun handleNoResourceFoundException(ex: NoResourceFoundException):
+            ResponseEntity<ApiResponse<Void>> {
         val resourcePath = ex.resourcePath
 
         // Swagger UI 관련 리소스는 조용히 처리 (로그 레벨 낮춤)
@@ -142,7 +145,7 @@ class GlobalExceptionHandler {
 
     // 그 외 모든 예외 처리
     @ExceptionHandler(Exception::class)
-    fun handleException(ex: Exception): ResponseEntity<ApiResponse<Void?>> {
+    fun handleException(ex: Exception): ResponseEntity<ApiResponse<Void>> {
         log.error("Unexpected exception occurred", ex)
 
         val response = ApiResponse.error(ErrorCode.INTERNAL_ERROR)
