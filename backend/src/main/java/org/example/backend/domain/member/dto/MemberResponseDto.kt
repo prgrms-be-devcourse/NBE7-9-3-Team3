@@ -4,8 +4,8 @@ import org.example.backend.domain.member.entity.Member
 
 data class MemberResponseDto(
     val memberId: Long?,
-    val email: String?,
-    val nickname: String?,
+    val email: String,
+    val nickname: String,
     val profileImage: String?,
     val followerCount: Long?,
     val followingCount: Long?

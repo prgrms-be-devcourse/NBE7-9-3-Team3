@@ -5,9 +5,9 @@ import java.time.LocalDateTime
 
 data class MemberEditResponseDto(
     val memberId: Long?,
-    val email: String?,
+    val email: String,
     val createDate: LocalDateTime?,
-    val nickname: String?,
+    val nickname: String,
     val profileImage: String?,
     val newAccessToken: String? // 새로운 토큰 (필요한 경우에만)
 ) {

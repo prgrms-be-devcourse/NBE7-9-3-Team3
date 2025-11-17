@@ -78,9 +78,9 @@ class MemberService(
         profileImageUrl: String?
     ): ApiResponse<MemberJoinResponseDto> {
         val savedMember = create(
-            request.email ?: throw BusinessException(ErrorCode.MEMBER_EMAIL_DUPLICATE),
-            request.password ?: throw BusinessException(ErrorCode.MEMBER_PASSWORD_MISMATCH),
-            request.nickname ?: throw BusinessException(ErrorCode.MEMBER_NICKNAME_DUPLICATE),
+            request.email,
+            request.password,
+            request.nickname,
             profileImageUrl
         )
 
@@ -144,7 +144,7 @@ class MemberService(
 
         // 새로운 비밀번호 암호화
         val encodedPassword = passwordEncoder.encode(
-            request.newPassword ?: throw BusinessException(ErrorCode.MEMBER_PASSWORD_MISMATCH)
+            request.newPassword
         )
 
         // 프로필 이미지: 새로운 URL이 제공되면 업데이트, 없으면 기존 이미지 유지
@@ -153,7 +153,7 @@ class MemberService(
 
         // 회원 정보 업데이트
         member.updateMemberInfo(
-            request.email ?: throw BusinessException(ErrorCode.MEMBER_EMAIL_DUPLICATE),
+            request.email,
             encodedPassword,
             request.nickname ?: throw BusinessException(ErrorCode.MEMBER_NICKNAME_DUPLICATE),
             finalProfileImageUrl

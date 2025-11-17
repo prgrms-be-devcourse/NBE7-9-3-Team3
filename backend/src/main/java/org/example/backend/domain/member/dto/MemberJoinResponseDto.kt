@@ -5,9 +5,9 @@ import java.time.LocalDateTime
 
 data class MemberJoinResponseDto(
     val memberId: Long?,
-    val email: String?,
+    val email: String,
     val createDate: LocalDateTime?,
-    val nickname: String?,
+    val nickname: String,
     val profileImage: String?
 ) {
     constructor(member: Member) : this(
