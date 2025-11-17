@@ -220,6 +220,9 @@ class BaseInitData(
 
         // 모든 게시글을 개별적으로 생성하여 완전히 섞기
         createShuffledItems(5, ItemCreator { i: Int, postNum: Int, member: Member? ->
+
+            if (member == null) return@ItemCreator
+
             val title = showoffTitles[(i + postNum - 1) % showoffTitles.size] + " " + postNum
             val content = showoffContents[(i + postNum - 1) % showoffContents.size] +
                     " (작성자: test" + i + ")"
@@ -240,7 +243,7 @@ class BaseInitData(
                 title,
                 content,
                 Post.BoardType.SHOWOFF,
-                listOf(selectedImage),  // 자랑게시판은 이미지 필수
+                mutableListOf(),  // 자랑게시판은 이미지 필수
                 null
             )
 
@@ -283,6 +286,9 @@ class BaseInitData(
 
         // 모든 게시글을 개별적으로 생성하여 완전히 섞기
         createShuffledItems(5, ItemCreator { i: Int, postNum: Int, member: Member? ->
+
+            if (member == null) return@ItemCreator
+
             val title = questionTitles[(i + postNum - 1) % questionTitles.size] + " " + postNum
             val content = questionContents[(i + postNum - 1) % questionContents.size] +
                     " (작성자: test" + i + ")"
@@ -292,7 +298,7 @@ class BaseInitData(
                 title,
                 content,
                 Post.BoardType.QUESTION,
-                null,  // 질문게시판은 이미지 없음
+                mutableListOf(),  // 질문게시판은 이미지 없음
                 null
             )
 

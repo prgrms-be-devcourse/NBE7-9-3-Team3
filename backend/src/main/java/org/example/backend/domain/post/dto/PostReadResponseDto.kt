@@ -14,7 +14,7 @@ data class PostReadResponseDto(
     val likeCount: Int,
     val liked: Boolean,
     val following: Boolean,
-    val authorId: Long,
+    val authorId: Long?,
     val category: Post.Category?,   //자랑게시판 글은 카테고리 Null임
     val isMine: Boolean
 
