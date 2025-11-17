@@ -65,9 +65,9 @@ class FollowService(
 
 
     @Transactional(readOnly = true)
-    fun getFollowers(memberId: Long?): ApiResponse<FollowListResponseDto> {
+    fun getFollowers(memberId: Long): ApiResponse<FollowListResponseDto> {
         if (memberService.notExistsById(
-                memberId ?: throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
+                memberId
             )
         ) {
             throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)

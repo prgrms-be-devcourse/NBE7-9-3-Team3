@@ -24,7 +24,7 @@ class FollowController(
     @Operation(summary = "팔로우하기", description = "특정 사용자를 팔로우합니다.")
     @PostMapping("/{followeeId}")
     fun follow(
-        @Parameter(description = "팔로우할 사용자 ID", required = true) @PathVariable followeeId: Long?
+        @Parameter(description = "팔로우할 사용자 ID", required = true) @PathVariable followeeId: Long
     ): ResponseEntity<ApiResponse<FollowResponseDto>> {
         val currentMemberId = requestContext.currentMemberId
             ?: throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
@@ -36,9 +36,11 @@ class FollowController(
     @Operation(summary = "언팔로우하기", description = "특정 사용자의 팔로우를 취소합니다.")
     @DeleteMapping("/{followeeId}")
     fun unfollow(
-        @Parameter(description = "언팔로우할 사용자 ID", required = true) @PathVariable followeeId: Long?
+        @Parameter(description = "언팔로우할 사용자 ID", required = true) @PathVariable followeeId: Long
     ): ResponseEntity<ApiResponse<Void>> {
         val currentMemberId = requestContext.currentMemberId
+            ?: throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
+
         val response = followService.unfollow(currentMemberId, followeeId)
         return ResponseEntity.ok(response)
     }
@@ -49,7 +51,7 @@ class FollowController(
         @Parameter(
             description = "팔로워 목록을 조회할 사용자 ID",
             required = true
-        ) @PathVariable memberId: Long?
+        ) @PathVariable memberId: Long
     ): ResponseEntity<ApiResponse<FollowListResponseDto>> {
         val response = followService.getFollowers(memberId)
         return ResponseEntity.ok(response)
