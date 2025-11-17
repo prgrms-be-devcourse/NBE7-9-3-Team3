@@ -94,7 +94,7 @@ public class LikeControllerTest {
             );
             Post post = new Post(postDto, testMember);
 
-            postDto.imageUrls().forEach(url ->
+            postDto.imageUrls.forEach(url ->
                 post.addImage(new PostImage(url, post)));
 
             postRepository.save(post);

@@ -107,10 +107,10 @@ public class PostCommentControllerTest {
         );
         Post post2 = new Post(postDto2, testMember1);
 
-        postDto.imageUrls().forEach(url ->
+        postDto.imageUrls.forEach(url ->
             post.addImage(new PostImage(url, post)));
 
-        postDto2.imageUrls().forEach(url ->
+        postDto2.imageUrls.forEach(url ->
             post2.addImage(new PostImage(url, post)));
 
         postRepository.save(post);

@@ -1,113 +1,108 @@
-package org.example.backend.domain.post.entity;
+package org.example.backend.domain.post.entity
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.example.backend.domain.like.entity.Like;
-import org.example.backend.domain.member.entity.Member;
-import org.example.backend.domain.post.dto.PostWriteRequestDto;
-import org.example.backend.domain.postcomment.entity.PostComment;
-import org.example.backend.global.jpa.entity.BaseEntity;
+import jakarta.persistence.*
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
+import lombok.Getter
+import lombok.NoArgsConstructor
+import org.example.backend.domain.like.entity.Like
+import org.example.backend.domain.member.entity.Member
+import org.example.backend.domain.post.dto.PostWriteRequestDto
+import org.example.backend.domain.postcomment.entity.PostComment
+import org.example.backend.global.jpa.entity.BaseEntity
 
 @NoArgsConstructor
 @Getter
 @Entity
-public class Post extends BaseEntity {
+class Post(
 
     @Column(nullable = false)
-    @NotBlank(message = "제목은 필수입니다.")
-    private String title;
+    @field:NotBlank(message = "제목은 필수입니다.")
+    var title: String,
 
     @Column(nullable = false)
-    @NotBlank(message = "내용은 필수입니다.")
-    private String content;
+    @field:NotBlank(message = "내용은 필수입니다.")
+    var content: String,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Member author;
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PostComment> comments = new ArrayList<>();
+    val author: Member,
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @NotNull(message = "게시판 종류는 필수입니다.")
-    private BoardType boardType;
-
-    public enum BoardType {
-        SHOWOFF, QUESTION
-    }
+    @field:NotNull(message = "게시판 종류는 필수입니다.")
+    val boardType: BoardType,
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @NotNull(message = "공개 여부는 필수입니다.")
-    private Displaying displaying;
-
-    public enum Displaying {
-        PUBLIC, PRIVATE
-    }
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PostImage> images = new ArrayList<>();
-
-    private int likeCount = 0;
-
-    public void increaseLikeCount() {
-        this.likeCount++;
-    }
-
-    public void decreaseLikeCount() {
-        if (this.likeCount > 0) this.likeCount--;
-    }
+    @field:NotNull(message = "공개 여부는 필수입니다.")
+    var displaying: Displaying,
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = true)
-    private Category category;
+    var category: Category? = null,
 
-    public enum Category {
+) : BaseEntity() {
+
+    @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
+    private val comments: MutableList<PostComment> = mutableListOf()
+
+    @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val images: MutableList<PostImage> = mutableListOf()
+
+    @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
+    private val likes: MutableList<Like> = mutableListOf()
+
+    var likeCount = 0
+
+    enum class BoardType {
+        SHOWOFF, QUESTION
+    }
+
+    enum class Displaying {
+        PUBLIC, PRIVATE
+    }
+
+    enum class Category {
         ALL, FISH, AQUARIUM
     }
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Like> likes = new ArrayList<>();
-
-    public Post(PostWriteRequestDto reqBody, Member member) {
-        this.title = reqBody.title();
-        this.content = reqBody.content();
-        this.author = member;
-        this.boardType = reqBody.boardType();
-        this.displaying = Post.Displaying.PUBLIC;
-        this.images = new ArrayList<>();
-        this.category = reqBody.category();
+    constructor(reqBody: PostWriteRequestDto, author: Member) : this(
+        reqBody.title,
+        reqBody.content,
+        author,
+        reqBody.boardType,
+        Displaying.PUBLIC,
+        reqBody.category
+    ) {
     }
 
-    public void addImage(PostImage image) {
-        images.add(image);
+    fun increaseLikeCount() {
+        this.likeCount++
     }
 
-    public void updateTitle(String title) {
-        this.title = title;
+    fun decreaseLikeCount() {
+        if (this.likeCount > 0) this.likeCount--
     }
 
-    public void updateContent(String content) {
-        this.content = content;
+    fun addImage(image: PostImage) {
+        images.add(image)
     }
 
-    public void deleteImageUrls() {
-        this.images.clear();
+    fun updateTitle(title: String) {
+        this.title = title
     }
 
-    public void setDisplayingPrivate(){
-        this.displaying = Post.Displaying.PRIVATE;
+    fun updateContent(content: String) {
+        this.content = content
     }
+
+    fun deleteImageUrls() {
+        this.images.clear()
+    }
+
+    fun setDisplayingPrivate() {
+        this.displaying = Displaying.PRIVATE
+    }
+
+
 }

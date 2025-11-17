@@ -1,24 +1,25 @@
-package org.example.backend.domain.post.dto;
+package org.example.backend.domain.post.dto
 
-import jakarta.validation.constraints.NotBlank;
-import java.util.List;
-import org.example.backend.domain.post.entity.Post;
-import org.example.backend.domain.post.entity.Post.Category;
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
+import org.example.backend.domain.post.entity.Post
 
-public record PostWriteRequestDto(
+@JvmRecord
+data class PostWriteRequestDto(
 
-    @NotBlank(message = "제목은 필수입니다.")
-    String title,
-    @NotBlank(message = "내용은 필수입니다.")
-    String content,
+    @field:NotBlank(message = "제목은 필수입니다.")
+    val title: String,
 
-    @NotBlank(message = "게시판 타입은 필수입니다.")
-    Post.BoardType boardType,
+    @field:NotBlank(message = "내용은 필수입니다.")
+    val content: String,
 
-    List<String> imageUrls,
+    @JvmField
+    @field:NotNull(message = "게시판 타입은 필수입니다.")
+    val boardType: Post.BoardType,
 
-    Category category
+    @JvmField
+    val imageUrls: MutableList<String> = mutableListOf(),
 
-) {
+    val category: Post.Category? = null
 
-}
+)

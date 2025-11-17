@@ -1,17 +1,18 @@
-package org.example.backend.domain.post.dto;
+package org.example.backend.domain.post.dto
 
-import jakarta.validation.constraints.NotBlank;
-import java.util.List;
+import jakarta.validation.constraints.NotBlank
 
-public record PostModifyRequestDto(
+@JvmRecord
+data class PostModifyRequestDto(
 
-    @NotBlank(message = "제목은 필수입니다.")
-    String title,
+    @JvmField
+    @field:NotBlank(message = "제목은 필수입니다.")
+    val title: String,
 
-    @NotBlank(message = "내용은 필수입니다.")
-    String content,
+    @JvmField
+    @field:NotBlank(message = "내용은 필수입니다.")
+    val content: String,
 
-    List<String> imageUrls
-) {
-
-}
+    @JvmField
+    val imageUrls: List<String>
+)

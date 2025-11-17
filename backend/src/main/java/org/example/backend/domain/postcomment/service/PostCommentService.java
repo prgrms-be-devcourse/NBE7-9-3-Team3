@@ -57,8 +57,10 @@ public class PostCommentService {
     @Transactional
     public PostCommentResponseDto createPostComment(PostCommentCreateRequestDto reqBody, Member member) {
 
-        Post post = postService.findById(reqBody.postId())
-            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_DATA));
+        Post post = postService.findById(reqBody.postId());
+        if (post == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_DATA);
+        }
 
         PostComment postComment = new PostComment(
             reqBody.content(),
