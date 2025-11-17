@@ -59,8 +59,15 @@ jobs:
         working-directory: ./backend
         run: chmod +x gradlew
 
-      # 빌드 및 테스트
+      # 도커 정상 동작 여부 확인
+      - name: Check Docker
+        run: docker info
+
+      # 테스트 실행
       - name: Run tests
         if: steps.skip-check.outputs.skip == 'false'
         working-directory: ./backend
+        env:
+          # testcontainers 실행시 발생할 수 있는 메모리 부족 방지를 위해 최대 힙메모리 지정
+          GRADLE_OPTS: "-Xmx1024m"
         run: ./gradlew clean test
