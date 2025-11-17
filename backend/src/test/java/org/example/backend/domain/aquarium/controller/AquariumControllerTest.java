@@ -45,6 +45,8 @@ public class AquariumControllerTest {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private AuthTokenService authTokenService;
+    @Autowired
+    private TradeRepository tradeRepository;
 
     private Member testMember;  // 어항 생성시 사용할 test member
     private String jwtToken;  // 테스트시 사용할 jwt 토큰
