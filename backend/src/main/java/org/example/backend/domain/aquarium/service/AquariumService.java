@@ -29,7 +29,7 @@ public class AquariumService {
   private final MemberRepository memberRepository;
   private final FishRepository fishRepository;
 
-  public long count() {
+  public long countTest() {
     return aquariumRepository.count();
   }
 
