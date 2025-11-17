@@ -15,17 +15,10 @@ class Follow(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "followee_id")
-    val followee: Member
-) {
+    val followee: Member,
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null
-        protected set
-
-    // JPA를 위한 protected 기본 생성자
-    @Suppress("unused")
-    protected constructor() : this(
-        Member("", "", "", null),
-        Member("", "", "", null)
-    )
+    var id: Long
+) {
 }
