@@ -130,4 +130,5 @@ class FollowService(
     fun existsByFollowerAndFollowee(member: Member, author: Member): Boolean {
         return followRepository.existsByFollowerAndFollowee(member, author)
     }
+
 }
