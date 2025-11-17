@@ -32,7 +32,7 @@ class AquariumService(
     }
 
     fun create(userDetails: CustomUserDetails, requestDto: AquariumRequestDto): AquariumListResponseDto {
-        val memberId = userDetails.id // JWT 토큰을 이용해 로그인한 member의 id를 가져옴
+        val memberId = userDetails.id!! // JWT 토큰을 이용해 로그인한 member의 id를 가져옴
         val aquariumName = requestDto.aquariumName
 
         if (aquariumName == "내가 키운 물고기") {
@@ -49,7 +49,7 @@ class AquariumService(
     }
 
     fun findAllByMemberId(userDetails: CustomUserDetails): List<AquariumResponseDto> {
-        val memberId = userDetails.id
+        val memberId = userDetails.id!!
 
         return aquariumRepository.findAllByMember_MemberId(memberId)
             .asReversed()
@@ -66,7 +66,7 @@ class AquariumService(
     fun hasFish(id: Long): Boolean = fishRepository.countByAquarium_Id(id) >= 1
 
     fun moveFishToOwnedAquarium(userDetails: CustomUserDetails, aquariumId: Long) {
-        val memberId = userDetails.id
+        val memberId = userDetails.id!!
 
         // 해당 member가 "내가 키운 물고기" 어항을 가지고 있는 지 확인
         if (checkMemberHaveOwnedAquarium(memberId)) {
