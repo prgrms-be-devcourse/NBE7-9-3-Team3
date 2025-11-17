@@ -1,8 +1,7 @@
-package org.example.backend.domain.post.dto;
+package org.example.backend.domain.post.dto
 
-import java.util.List;
-
-public record PostListResponseDto(
-    List<PostReadResponseDto> posts,
-    int totalCount
-) {}
+@JvmRecord
+data class PostListResponseDto(
+    val posts: List<PostReadResponseDto>,
+    val totalCount: Int
+)

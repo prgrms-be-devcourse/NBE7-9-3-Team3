@@ -1,24 +1,21 @@
-package org.example.backend.domain.post.dto;
+package org.example.backend.domain.post.dto
 
-import java.time.LocalDateTime;
-import java.util.List;
-import org.example.backend.domain.post.entity.Post.Category;
+import org.example.backend.domain.post.entity.Post
+import java.time.LocalDateTime
 
-public record PostReadResponseDto(
+@JvmRecord
+data class PostReadResponseDto(
+    val id: Long,
+    val title: String,
+    val content: String,
+    val nickname: String,
+    val createDate: LocalDateTime,
+    val images: List<String>,
+    val likeCount: Int,
+    val liked: Boolean,
+    val following: Boolean,
+    val authorId: Long,
+    val category: Post.Category?,   //자랑게시판 글은 카테고리 Null임
+    val isMine: Boolean
 
-    Long id,
-    String title,
-    String content,
-    String nickname,
-    LocalDateTime createDate,
-    List<String> images,
-    int likeCount,
-    boolean liked,
-    boolean following,
-    Long authorId,
-    Category category,
-    boolean isMine
-
-) {
-
-}
+)
