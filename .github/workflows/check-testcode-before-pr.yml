@@ -1,7 +1,7 @@
 name: check testcode before PR
 on:
   pull_request:
-    types: [opened, reopened, synchronize]  
+    types: [opened, reopened, synchronize] # synchronize: PR에 commit push 
     paths:
       - "backend/src/main/**"
       - "backend/src/test/**"
@@ -22,6 +22,32 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
+
+      # 도커 mysql 이미지 캐시
+      - name: Cache Docker image for Testcontainers
+        id: docker-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            /tmp/mysql-image.tar
+          key: docker-image-mysql-8-0-33
+          restore-keys: docker-image-mysql-
+
+      # GitHub Actions 두번째 실행부터는 캐시된 docker 이미지 load
+      # 즉, PR후 push가 발행한다면, 해당 로직 수행
+      - name: Load cached Docker image (if exists)
+        if: steps.docker-cache.outputs.cache-hit == 'true'
+        run: |
+          echo "Loading cached Docker image..."
+          docker load -i /tmp/mysql-image.tar
+
+      # GitHhb Actions 최초 실행시, docker pull
+      - name: Pull Docker image (first run only)
+        if: steps.docker-cache.outputs.cache-hit != 'true'
+        run: |
+          echo "Pulling MySQL docker image..."
+          docker pull mysql:8.0.33
+          docker save mysql:8.0.33 -o /tmp/mysql-image.tar
 
       # Gradle 캐시
       - name: Cache Gradle packages
@@ -58,10 +84,6 @@ jobs:
         if: steps.skip-check.outputs.skip == 'false'
         working-directory: ./backend
         run: chmod +x gradlew
-
-      # 도커 정상 동작 여부 확인
-      - name: Check Docker
-        run: docker info
 
       # 테스트 실행
       - name: Run tests
