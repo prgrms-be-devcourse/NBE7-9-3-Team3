@@ -10,6 +10,7 @@ import org.example.backend.domain.postcomment.dto.MyPostCommentReadResponseDto;
 import org.example.backend.domain.postcomment.dto.PostCommentCreateRequestDto;
 import org.example.backend.domain.postcomment.dto.PostCommentModifyRequestDto;
 import org.example.backend.domain.postcomment.dto.PostCommentReadResponseDto;
+import org.example.backend.domain.postcomment.dto.PostCommentResponseDto;
 import org.example.backend.domain.postcomment.entity.PostComment;
 import org.example.backend.domain.postcomment.repository.PostCommentRepository;
 import org.example.backend.global.exception.BusinessException;
@@ -25,7 +26,7 @@ public class PostCommentService {
     private final PostService postService;
 
     @Transactional
-    public void modifyPostComment(Long commentId, PostCommentModifyRequestDto reqBody, Member member) {
+    public PostCommentResponseDto modifyPostComment(Long commentId, PostCommentModifyRequestDto reqBody, Member member) {
 
         PostComment postComment = postCommentRepository.findByIdWithAuthor(commentId)
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_DATA));
@@ -36,6 +37,7 @@ public class PostCommentService {
         }
 
         postComment.modifyContent(reqBody.content());
+        return new PostCommentResponseDto(postComment);
     }
 
     @Transactional
@@ -53,18 +55,19 @@ public class PostCommentService {
     }
 
     @Transactional
-    public void createPostComment(PostCommentCreateRequestDto reqBody, Member member) {
+    public PostCommentResponseDto createPostComment(PostCommentCreateRequestDto reqBody, Member member) {
 
         Post post = postService.findById(reqBody.postId())
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_DATA));
 
-        PostComment postcomment = new PostComment(
+        PostComment postComment = new PostComment(
             reqBody.content(),
             post,
             member
         );
 
-        postCommentRepository.save(postcomment);
+        postCommentRepository.save(postComment);
+        return new PostCommentResponseDto(postComment);
     }
 
     @Transactional(readOnly = true)
@@ -73,7 +76,8 @@ public class PostCommentService {
         List<PostComment> postComments = postCommentRepository.findByAuthor_MemberIdWithPost(member.getMemberId());
 
         List<MyPostCommentReadResponseDto> response = postComments.stream()
-            .sorted(Comparator.comparing(PostComment::getCreateDate))
+            .sorted(Comparator.comparing(PostComment::getCreateDate)
+                .thenComparing(PostComment::getId))
             .map(c -> new MyPostCommentReadResponseDto(
                 c.getId(),
                 c.getPost().getId(),

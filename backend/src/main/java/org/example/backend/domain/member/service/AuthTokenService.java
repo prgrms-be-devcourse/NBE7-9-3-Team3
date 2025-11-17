@@ -1,11 +1,10 @@
 package org.example.backend.domain.member.service;
 
+import java.util.Map;
 import org.example.backend.domain.member.entity.Member;
 import org.example.backend.global.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
 
 @Service
 public class AuthTokenService {
@@ -20,7 +19,7 @@ public class AuthTokenService {
 
     public String genAccessToken(Member member) {
 
-        return JwtUtil.jwt.toString(
+        return JwtUtil.toString(
             secretPattern,
             expireSeconds,
             Map.of("id", member.getMemberId(), "email", member.getEmail(), "nickname", member.getNickname())
@@ -29,7 +28,7 @@ public class AuthTokenService {
 
     // 웹소켓 연결용 임시 토큰 (10분)
     public String genTempToken(Member member) {
-        return JwtUtil.jwt.toString(
+        return JwtUtil.toString(
                 secretPattern,
                 shortExpireSeconds,
                 Map.of(
@@ -41,7 +40,7 @@ public class AuthTokenService {
     }
 
     public Map<String, Object> payloadOrNull(String jwt) {
-        Map<String, Object> payload = JwtUtil.jwt.payloadOrNull(jwt, secretPattern);
+        Map<String, Object> payload = JwtUtil.payloadOrNull(jwt, secretPattern);
 
         if(payload == null) {
             return null;
