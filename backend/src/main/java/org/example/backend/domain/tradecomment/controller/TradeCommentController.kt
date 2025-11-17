@@ -47,7 +47,7 @@ class TradeCommentController(
         @PathVariable commentId: Long,
         @RequestBody @Valid request: TradeCommentRequestDto
     ): ApiResponse<TradeCommentResponseDto> {
-        val memberId = userDetails.getId()
+        val memberId = userDetails.id!!
         val type = BoardType.from(boardType)
         val updateRequest = TradeCommentUpdateRequestDto.of(
             type, tradeId, commentId, memberId, request
@@ -63,7 +63,7 @@ class TradeCommentController(
         @PathVariable tradeId: Long,
         @PathVariable commentId: Long
     ): ApiResponse<Void> {
-        val memberId = userDetails.getId()
+        val memberId = userDetails.id!!
         val type = BoardType.from(boardType)
         val deleteRequest = TradeCommentDeleteRequestDto.of(
             type, tradeId, commentId, memberId

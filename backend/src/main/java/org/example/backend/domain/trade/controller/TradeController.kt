@@ -26,7 +26,7 @@ class TradeController(
         @PathVariable boardType: String,
         @RequestBody @Valid request: TradeRequestDto
     ): ApiResponse<TradeResponseDto> {
-        val memberId = userDetails.getId()
+        val memberId = userDetails.id!!
         val type = BoardType.from(boardType)
         val serviceRequest = TradeCreateRequestDto.from(request, type, memberId)
         val trade = tradeService.createTrade(serviceRequest)
@@ -60,7 +60,7 @@ class TradeController(
         @PathVariable tradeId: Long,
         @RequestBody @Valid request: TradeRequestDto
     ): ApiResponse<TradeResponseDto> {
-        val memberId = userDetails.getId()
+        val memberId = userDetails.id!!
         val type = BoardType.from(boardType)
         val updateRequest = TradeUpdateRequestDto.of(
             type, tradeId, memberId,
@@ -76,7 +76,7 @@ class TradeController(
         @PathVariable boardType: String,
         @PathVariable tradeId: Long
     ): ApiResponse<Void> {
-        val memberId = userDetails.getId()
+        val memberId = userDetails.id!!
         val type = BoardType.from(boardType)
         tradeService.deleteTrade(type, tradeId, memberId)
         return ApiResponse.ok("거래 게시글 삭제 성공")
@@ -89,7 +89,7 @@ class TradeController(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "10") size: Int
     ): ApiResponse<PageResponseDto<TradeResponseDto>> {
-        val memberId = userDetails.getId()
+        val memberId = userDetails.id!!
         val type = BoardType.from(boardType)
         val trades = tradeService.getMyTrades(memberId, type, page, size)
         return ApiResponse.ok("내 거래 게시글 조회 성공", trades)
