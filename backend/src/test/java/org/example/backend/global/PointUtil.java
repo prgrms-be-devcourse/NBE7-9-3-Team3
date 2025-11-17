@@ -26,7 +26,7 @@ public class PointUtil {
     // 판매자 생성
     public Member createSeller() {
         Member seller = new Member("seller@test.com", passwordEncoder.encode("seller1234"),
-            "seller", "")
+            "seller", "");
         return memberRepository.save(seller);
     }
 
