@@ -24,10 +24,6 @@ class AquariumService(
     private val fishRepository: FishRepository,
 ) {
 
-    fun count(): Long {
-        return aquariumRepository.count()
-    }
-
     fun create(userDetails: CustomUserDetails, requestDto: AquariumRequestDto): AquariumListResponseDto {
         val memberId = userDetails.id!! // JWT 토큰을 이용해 로그인한 member의 id를 가져옴
         val aquariumName = requestDto.aquariumName
