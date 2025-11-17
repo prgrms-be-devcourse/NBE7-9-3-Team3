@@ -15,9 +15,10 @@ class Follow(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "followee_id")
-    val followee: Member,
-
+    val followee: Member
+) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long
-)
+    var id: Long? = null
+        protected set
+}
