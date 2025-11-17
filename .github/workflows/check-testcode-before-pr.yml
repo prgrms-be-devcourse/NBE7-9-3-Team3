@@ -46,6 +46,11 @@ jobs:
             const allContainTest = commits.data.every(c => c.commit.message.includes('test:'));
             core.setOutput('skip', allContainTest ? 'true' : 'false');
             console.log(`All commits contain 'test': ${allContainTest}`);
+            
+      # 모든 커밋이 'test:'일 때 exit 0로 종료 (성공 처리)
+      - name: Skip tests but mark as success
+        if: steps.skip-check.outputs.skip == 'true'
+        run: echo "✨ All commits contain 'test'. Marking workflow as SUCCESS without running tests."
           
       # 실행 권한 부여
       - name: Grant execute permission for gradlew
@@ -58,8 +63,3 @@ jobs:
         if: steps.skip-check.outputs.skip == 'false'
         working-directory: ./backend
         run: ./gradlew clean test
-
-      # 테스트 스킵
-      - name: Skipped Message
-        if: steps.skip-check.outputs.skip == 'true'
-        run: echo "✨ All commits contain 'test:'. Tests skipped."
