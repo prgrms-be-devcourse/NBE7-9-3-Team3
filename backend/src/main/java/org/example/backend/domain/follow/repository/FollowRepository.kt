@@ -1,37 +1,36 @@
-package org.example.backend.domain.follow.repository;
+package org.example.backend.domain.follow.repository
 
-import java.util.List;
-import org.example.backend.domain.follow.entity.Follow;
-import org.example.backend.domain.member.entity.Member;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
+import org.example.backend.domain.follow.entity.Follow
+import org.example.backend.domain.member.entity.Member
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
+import org.springframework.stereotype.Repository
 
 @Repository
-public interface FollowRepository extends JpaRepository<Follow, Long> {
-
+interface FollowRepository : JpaRepository<Follow, Long> {
     // 사용자가 다른 사용자를 팔로우하고 있는지 확인
-    boolean existsByFollowerMemberIdAndFolloweeMemberId(Long followerId, Long followeeId);
-    
+    fun existsByFollowerMemberIdAndFolloweeMemberId(followerId: Long?, followeeId: Long?): Boolean
+
     // 팔로우 관계 삭제
-    void deleteByFollowerMemberIdAndFolloweeMemberId(Long followerId, Long followeeId);
+    fun deleteByFollowerMemberIdAndFolloweeMemberId(followerId: Long?, followeeId: Long?)
 
     // 팔로워 수 조회
-    long countByFolloweeMemberId(Long followeeId);
+    fun countByFolloweeMemberId(followeeId: Long?): Long
 
     // 팔로잉 수 조회
-    long countByFollowerMemberId(Long followerId);
+    fun countByFollowerMemberId(followerId: Long?): Long
 
     // 팔로워 목록과 멤버 정보를 함께 조회 (Fetch Join)
     @Query("SELECT f FROM Follow f JOIN FETCH f.follower WHERE f.followee.memberId = :followeeId")
-    List<Follow> findFollowersWithMemberInfo(@Param("followeeId") Long followeeId);
+    fun findFollowersWithMemberInfo(@Param("followeeId") followeeId: Long?): List<Follow>
 
     // 팔로잉 목록과 멤버 정보를 함께 조회 (Fetch Join)
     @Query("SELECT f FROM Follow f JOIN FETCH f.followee WHERE f.follower.memberId = :followerId")
-    List<Follow> findFollowingsWithMemberInfo(@Param("followerId") Long followerId);
+    fun findFollowingsWithMemberInfo(@Param("followerId") followerId: Long?): List<Follow>
 
-    boolean existsByFollowerAndFollowee(Member member, Member member2);
+    fun existsByFollowerAndFollowee(member: Member, author: Member): Boolean
 
     @Query("SELECT f.followee.memberId FROM Follow f WHERE f.follower = :member")
-    List<Long> findFolloweeIdsByFollower(@Param("member") Member member);}
+    fun findFolloweeIdsByFollower(@Param("member") member: Member): List<Long>
+}
