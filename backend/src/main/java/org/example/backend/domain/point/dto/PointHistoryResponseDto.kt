@@ -5,10 +5,10 @@ import org.example.backend.domain.point.entity.TransactionType
 import java.time.LocalDateTime
 
 data class PointHistoryResponseDto(
-    val type: TransactionType?,
-    val date: LocalDateTime?,
-    val points: Long?,
-    val afterPoint: Long?
+    val type: TransactionType,
+    val date: LocalDateTime,
+    val points: Long,
+    val afterPoint: Long
 ) {
     companion object {
         @JvmStatic
