@@ -21,7 +21,7 @@ class FollowService(
 ) {
 
     // 팔로우하기
-    fun follow(followerId: Long, followeeId: Long?): ApiResponse<FollowResponseDto> {
+    fun follow(followerId: Long, followeeId: Long): ApiResponse<FollowResponseDto> {
         if (followerId == followeeId) {
             throw BusinessException(ErrorCode.FOLLOW_SELF_FOLLOW)
         }
@@ -54,7 +54,7 @@ class FollowService(
         return ok("팔로우가 완료되었습니다.", responseDto)
     }
 
-    fun unfollow(followerId: Long?, followeeId: Long?): ApiResponse<Void> {
+    fun unfollow(followerId: Long, followeeId: Long): ApiResponse<Void> {
         if (!followRepository.existsByFollowerMemberIdAndFolloweeMemberId(followerId, followeeId)) {
             throw BusinessException(ErrorCode.FOLLOW_NOT_FOUND)
         }
