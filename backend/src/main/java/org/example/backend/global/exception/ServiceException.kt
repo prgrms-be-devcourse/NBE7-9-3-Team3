@@ -10,7 +10,7 @@ class ServiceException(
 ) : RuntimeException(
     "$resultCode : $msg"
 ) {
-    fun getApiResponse(): ApiResponse<Unit> {
+    fun getApiResponse(): ApiResponse<Void> {
         return ApiResponse(resultCode, msg)
     }
 }

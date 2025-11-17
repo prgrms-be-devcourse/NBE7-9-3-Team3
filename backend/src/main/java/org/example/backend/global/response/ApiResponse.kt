@@ -17,7 +17,7 @@ class ApiResponse<T>(
         }
 
         @JvmStatic
-        fun ok(message: String): ApiResponse<Unit> {
+        fun ok(message: String): ApiResponse<Void> {
             return ApiResponse("200", message, null)
         }
 
@@ -28,7 +28,7 @@ class ApiResponse<T>(
 
         // 에러 응답 생성
         @JvmStatic
-        fun error(errorCode: ErrorCode): ApiResponse<Unit> {
+        fun error(errorCode: ErrorCode): ApiResponse<Void> {
             return ApiResponse(errorCode.code, errorCode.message, null)
         }
 
