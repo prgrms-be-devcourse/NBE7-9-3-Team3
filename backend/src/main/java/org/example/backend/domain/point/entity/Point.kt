@@ -29,21 +29,24 @@ class Point private constructor( // 해당 클래스만 접근 가능한 생성�
     val logId: Long? = null
 
     companion object {
-        fun charge(member: Member, amount: Long, afterPoint: Long) = Point(
+        @JvmStatic
+        fun create(member: Member, amount: Long, afterPoint: Long) = Point(
             member = member,
             type = TransactionType.CHARGE,
             points = amount,
             afterPoint = afterPoint
         )
 
-        fun purchase(member: Member, amount: Long, afterPoint: Long) = Point(
+        @JvmStatic
+        fun createPurchase(member: Member, amount: Long, afterPoint: Long) = Point(
             member = member,
             type = TransactionType.PURCHASE,
             points = amount,
             afterPoint = afterPoint
         )
 
-        fun sale(member: Member, amount: Long, afterPoint: Long) = Point(
+        @JvmStatic
+        fun createSale(member: Member, amount: Long, afterPoint: Long) = Point(
             member = member,
             type = TransactionType.SALE,
             points = amount,

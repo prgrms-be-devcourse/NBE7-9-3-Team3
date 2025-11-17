@@ -14,10 +14,10 @@ data class PointHistoryResponseDto(
         @JvmStatic
         fun from(point: Point): PointHistoryResponseDto {
             return PointHistoryResponseDto(
-                point.getType(),
-                point.getCreateDate(),
-                point.getPoints(),
-                point.getAfterPoint()
+                point.type,
+                point.createDate,
+                point.points,
+                point.afterPoint
             )
         }
     }
