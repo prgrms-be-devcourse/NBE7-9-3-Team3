@@ -55,8 +55,6 @@ class AquariumLogControllerTest {
     private lateinit var testMember: Member
     private lateinit var testAquarium: Aquarium
     private lateinit var jwtToken: String
-    // 임시 코드: Aquarium이 Kotlin으로 전환되면 Long? 대신 Long으로 변경 가능
-    // lateinit은 primitive 타입에 사용할 수 없으므로 nullable로 선언
     private var aquariumId: Long? = null
 
     @BeforeEach

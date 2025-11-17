@@ -12,9 +12,6 @@ import java.time.LocalDateTime
  * @property temperature 온도
  * @property ph pH 값
  * @property logDate 기록 일시
- * 
- * 임시 코드: Java 코드와의 호환성을 위해 작성됨
- * Aquarium이 Kotlin으로 전환되면 일부 임시 코드 제거 예정
  */
 @Entity
 @Table(name = "aquarium_log")
@@ -22,7 +19,7 @@ class AquariumLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "log_id")
-    var logId: Long? = null
+     var logId: Long? = null
         protected set
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -37,10 +34,6 @@ class AquariumLog {
 
     @Column(name = "log_date", nullable = false)
     var logDate: LocalDateTime = LocalDateTime.now()
-    
-    // 참고: Kotlin의 var 프로퍼티는 자동으로 Java 호환 getter/setter를 생성합니다.
-    // 예: logId -> getLogId(), setLogId()
-    // 따라서 명시적 getter를 추가할 필요가 없으며, 추가하면 JVM 시그니처 충돌이 발생합니다.
 
     /**
      * 일반 사용을 위한 생성자
