@@ -1,10 +1,10 @@
-package org.example.backend.domain.member.dto;
+package org.example.backend.domain.member.dto
 
-public record MemberLoginResponseDto(
-    Long memberId,
-    String email,
-    String nickname,
-    String profileImage
-) {}
+data class MemberLoginResponseDto(
+    val memberId: Long?,
+    val email: String?,
+    val nickname: String?,
+    val profileImage: String?
+)
 
 

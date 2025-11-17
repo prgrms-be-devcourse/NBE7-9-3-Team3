@@ -1,23 +1,21 @@
-package org.example.backend.domain.member.dto;
+package org.example.backend.domain.member.dto
 
-import org.example.backend.domain.member.entity.Member;
+import org.example.backend.domain.member.entity.Member
 
-public record MemberResponseDto(
-    Long memberId,
-    String email,
-    String nickname,
-    String profileImage,
-    Long followerCount,
-    Long followingCount
+data class MemberResponseDto(
+    val memberId: Long?,
+    val email: String?,
+    val nickname: String?,
+    val profileImage: String?,
+    val followerCount: Long?,
+    val followingCount: Long?
 ) {
-    public MemberResponseDto(Member member, Long followerCount, Long followingCount){
-        this(
-            member.getMemberId(),
-            member.getEmail(),
-            member.getNickname(),
-            member.getProfileImage(),
-            followerCount,
-            followingCount
-        );
-    }
+    constructor(member: Member, followerCount: Long?, followingCount: Long?) : this(
+        member.memberId,
+        member.email,
+        member.nickname,
+        member.profileImage,
+        followerCount,
+        followingCount
+    )
 }

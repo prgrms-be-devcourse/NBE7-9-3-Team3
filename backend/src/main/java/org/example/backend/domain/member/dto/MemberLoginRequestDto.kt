@@ -1,11 +1,11 @@
-package org.example.backend.domain.member.dto;
+package org.example.backend.domain.member.dto
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Email
+import jakarta.validation.constraints.NotBlank
 
-public record MemberLoginRequestDto(
-    @NotBlank @Email String email,
-    @NotBlank String password
-) {}
+data class MemberLoginRequestDto(
+    @field:NotBlank @field:Email val email: String?,
+    @field:NotBlank val password: String?
+)
 
 

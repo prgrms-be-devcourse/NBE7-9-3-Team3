@@ -1,26 +1,27 @@
-package org.example.backend.domain.member.dto;
+package org.example.backend.domain.member.dto
 
-import java.time.LocalDateTime;
-import org.example.backend.domain.member.entity.Member;
+import org.example.backend.domain.member.entity.Member
+import java.time.LocalDateTime
 
-public record MemberJoinResponseDto(
-    Long memberId,
-    String email,
-    LocalDateTime createDate,
-    String nickname,
-    String profileImage
+data class MemberJoinResponseDto(
+    val memberId: Long?,
+    val email: String?,
+    val createDate: LocalDateTime?,
+    val nickname: String?,
+    val profileImage: String?
 ) {
-    public MemberJoinResponseDto(Member member){
-        this(
-            member.getMemberId(),
-            member.getEmail(),
-            member.getCreateDate(),
-            member.getNickname(),
-            member.getProfileImage()
-        );
-    }
-    public static MemberJoinResponseDto from(Member member){
-        return new MemberJoinResponseDto(member);
-    }
+    constructor(member: Member) : this(
+        member.memberId,
+        member.email,
+        member.createDate,
+        member.nickname,
+        member.profileImage
+    )
 
+    companion object {
+        @JvmStatic
+        fun from(member: Member): MemberJoinResponseDto {
+            return MemberJoinResponseDto(member)
+        }
+    }
 }

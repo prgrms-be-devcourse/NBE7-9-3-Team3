@@ -1,56 +1,54 @@
-package org.example.backend.domain.member.service;
+package org.example.backend.domain.member.service
 
-import java.util.Map;
-import org.example.backend.domain.member.entity.Member;
-import org.example.backend.global.security.JwtUtil;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.example.backend.domain.member.entity.Member
+import org.example.backend.global.security.JwtUtil
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Service
 
 @Service
-public class AuthTokenService {
+class AuthTokenService {
+    @Value("\${custom.jwt.secretPattern}")
+    lateinit var secretPattern: String
 
-    @Value("${custom.jwt.secretPattern}")
-    private String secretPattern;
-    @Value("${custom.jwt.expireSeconds}")
-    private long expireSeconds;
-    @Value("${custom.jwt.shortExpireSeconds:600}") // 기본값 10분
-    private long shortExpireSeconds;
+    @Value("\${custom.jwt.expireSeconds}")
+    var expireSeconds: Long = 0
 
+    @Value("\${custom.jwt.shortExpireSeconds:600}") // 기본값 10분
+    var shortExpireSeconds: Long = 0
 
-    public String genAccessToken(Member member) {
-
+    fun genAccessToken(member: Member): String {
         return JwtUtil.toString(
             secretPattern,
             expireSeconds,
-            Map.of("id", member.getMemberId(), "email", member.getEmail(), "nickname", member.getNickname())
-        );
+            mutableMapOf(
+                "id" to (member.memberId ?: throw IllegalStateException("Member ID is null")),
+                "email" to member.email,
+                "nickname" to member.nickname
+            )
+        )
     }
 
     // 웹소켓 연결용 임시 토큰 (10분)
-    public String genTempToken(Member member) {
+    fun genTempToken(member: Member): String {
         return JwtUtil.toString(
-                secretPattern,
-                shortExpireSeconds,
-                Map.of(
-                        "id", member.getMemberId(),
-                        "email", member.getEmail(),
-                        "nickname", member.getNickname()
-                )
-        );
+            secretPattern,
+            shortExpireSeconds,
+            mutableMapOf(
+                "id" to (member.memberId ?: throw IllegalStateException("Member ID is null")),
+                "email" to member.email,
+                "nickname" to member.nickname
+            )
+        )
     }
 
-    public Map<String, Object> payloadOrNull(String jwt) {
-        Map<String, Object> payload = JwtUtil.payloadOrNull(jwt, secretPattern);
+    fun payloadOrNull(jwt: String): Map<String, Any>? {
+        val payload = JwtUtil.payloadOrNull(jwt, secretPattern) ?: return null
 
-        if(payload == null) {
-            return null;
-        }
+        val idNo = payload["id"] as? Number ?: return null
+        val id = idNo.toLong()
+        val email = payload["email"] as? String ?: return null
+        val nickname = payload["nickname"] as? String ?: return null
 
-        Number idNo = (Number)payload.get("id");
-        long id = idNo.longValue();
-        String email = (String)payload.get("email");
-        String nickname = (String)payload.get("nickname");
-
-        return Map.of("id", id, "email", email, "nickname", nickname);
+        return mapOf("id" to id, "email" to email, "nickname" to nickname)
     }
 }
