@@ -53,7 +53,7 @@ class PointService(
     fun purchaseItem(buyerId: Long, request: PurchaseRequestDto) {
         val buyer = memberRepository.findById(buyerId)
             .orElseThrow { BusinessException(ErrorCode.POINT_BUYER_NOT_FOUND) }
-        val seller = memberRepository.findById(request.sellerId!!)
+        val seller = memberRepository.findById(request.sellerId)
             .orElseThrow { BusinessException(ErrorCode.POINT_SELLER_NOT_FOUND) }
 
         val trade = request.tradeId?.let { tradeRepository.findByIdForUpdate(it) }
