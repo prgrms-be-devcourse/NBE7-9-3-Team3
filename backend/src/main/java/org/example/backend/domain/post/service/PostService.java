@@ -1,5 +1,7 @@
 package org.example.backend.domain.post.service;
 
+import static org.example.backend.domain.post.entity.Post.BoardType.SHOWOFF;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +14,7 @@ import org.example.backend.domain.post.dto.MyPostReadResponseDto;
 import org.example.backend.domain.post.dto.PostListResponseDto;
 import org.example.backend.domain.post.dto.PostModifyRequestDto;
 import org.example.backend.domain.post.dto.PostReadResponseDto;
+import org.example.backend.domain.post.dto.PostResponseDto;
 import org.example.backend.domain.post.dto.PostWriteRequestDto;
 import org.example.backend.domain.post.entity.Post;
 import org.example.backend.domain.post.entity.Post.BoardType;
@@ -63,10 +66,10 @@ public class PostService {
     }
 
     @Transactional
-    public void write(PostWriteRequestDto reqBody, Member member) {
+    public PostResponseDto write(PostWriteRequestDto reqBody, Member member) {
         Post post = new Post(reqBody, member);
 
-        if (reqBody.boardType() == Post.BoardType.SHOWOFF
+        if (reqBody.boardType() == SHOWOFF
             && (reqBody.imageUrls() == null || reqBody.imageUrls().isEmpty())) {
             throw new BusinessException(ErrorCode.IMAGE_FILE_EMPTY);
         }
@@ -77,10 +80,12 @@ public class PostService {
         }
 
         postRepository.save(post);
+
+        return new PostResponseDto(post);
     }
 
     @Transactional
-    public void modify(Long id, PostModifyRequestDto reqBody, Member member) {
+    public PostResponseDto  modify(Long id, PostModifyRequestDto reqBody, Member member) {
 
         Post post = postRepository.findByIdWithAuthorAndImages(id)
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_DATA));
@@ -117,6 +122,7 @@ public class PostService {
         }
 
         postRepository.save(post);
+        return new PostResponseDto(post);
 
     }
 
