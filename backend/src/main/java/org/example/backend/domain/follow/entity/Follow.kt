@@ -20,5 +20,4 @@ class Follow(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long
-) {
-}
+)
