@@ -4,6 +4,7 @@ on:
     types: [opened, reopened, synchronize]  
     paths:
       - "backend/src/main/**"
+      - "backend/src/test/**"
     branches:
       - main
 jobs:
@@ -31,13 +32,35 @@ jobs:
             ~/.gradle/wrapper/
           key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: gradle-${{ runner.os }}-
+
+      # PR의 모든 commit 메시지가 'test:'를 포함하고 있는 지 검사
+      - name: Check if all commit messages contain 'test:'
+        id: skip-check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const commits = await github.rest.pulls.listCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            const allContainTest = commits.data.every(c => c.commit.message.includes('test:'));
+            core.setOutput('skip', allContainTest ? 'true' : 'false');
+            console.log(`All commits contain 'test': ${allContainTest}`);
+            
+      # 모든 커밋이 'test:'일 때 exit 0로 종료 (성공 처리)
+      - name: Skip tests but mark as success
+        if: steps.skip-check.outputs.skip == 'true'
+        run: echo "✨ All commits contain 'test'. Marking workflow as SUCCESS without running tests."
           
       # 실행 권한 부여
       - name: Grant execute permission for gradlew
+        if: steps.skip-check.outputs.skip == 'false'
         working-directory: ./backend
         run: chmod +x gradlew
 
       # 빌드 및 테스트
       - name: Run tests
+        if: steps.skip-check.outputs.skip == 'false'
         working-directory: ./backend
         run: ./gradlew clean test

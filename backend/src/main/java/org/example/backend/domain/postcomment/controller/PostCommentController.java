@@ -6,6 +6,7 @@ import org.example.backend.domain.postcomment.dto.MyPostCommentReadResponseDto;
 import org.example.backend.domain.postcomment.dto.PostCommentCreateRequestDto;
 import org.example.backend.domain.postcomment.dto.PostCommentModifyRequestDto;
 import org.example.backend.domain.postcomment.dto.PostCommentReadResponseDto;
+import org.example.backend.domain.postcomment.dto.PostCommentResponseDto;
 import org.example.backend.domain.postcomment.service.PostCommentService;
 import org.example.backend.global.response.ApiResponse;
 import org.example.backend.global.security.CustomUserDetails;
@@ -47,10 +48,7 @@ public class PostCommentController implements PostCommentControllerSpec {
     ) {
 
         List<MyPostCommentReadResponseDto> response = postCommentService.findMyComments(userDetails.getMember());
-        return new ApiResponse<>("200-1",
-            "내가 쓴 댓글 목록 조회",
-            response
-        );
+        return ApiResponse.ok("내가 쓴 댓글 목록 조회",response);
     }
 
     @Override
@@ -68,28 +66,28 @@ public class PostCommentController implements PostCommentControllerSpec {
 
     @Override
     @PostMapping
-    public ApiResponse<Void> createPostComment(
+    public ApiResponse<PostCommentResponseDto> createPostComment(
         @RequestBody PostCommentCreateRequestDto reqBody,
         @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
 
-        postCommentService.createPostComment(reqBody, userDetails.getMember());
+        PostCommentResponseDto response = postCommentService.createPostComment(reqBody, userDetails.getMember());
 
 
-        return ApiResponse.ok("댓글이 생성되었습니다");
+        return ApiResponse.ok("댓글이 생성되었습니다",response);
 
     }
 
     @Override
     @PatchMapping("/{commentId}")
-    public ApiResponse<Void> modifyItem(
+    public ApiResponse<PostCommentResponseDto> modifyPostComment(
         @PathVariable Long commentId,
         @RequestBody PostCommentModifyRequestDto reqBody,
         @AuthenticationPrincipal CustomUserDetails userDetails
     ){
 
-        postCommentService.modifyPostComment(commentId, reqBody, userDetails.getMember());
+        PostCommentResponseDto response = postCommentService.modifyPostComment(commentId, reqBody, userDetails.getMember());
 
-        return ApiResponse.ok("%d번 댓글 수정".formatted(commentId));
+        return ApiResponse.ok("%d번 댓글 수정".formatted(commentId), response);
     }
 }
