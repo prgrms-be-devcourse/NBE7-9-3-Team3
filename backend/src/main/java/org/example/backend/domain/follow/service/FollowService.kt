@@ -123,19 +123,6 @@ class FollowService(
         return ok("팔로잉 목록을 조회했습니다.", responseDto)
     }
 
-    // 팔로잉 여부 확인(추후에 게시글 조회 시 사용)
-    @Transactional(readOnly = true)
-    @SuppressWarnings("unused")
-    fun isFollowing(followerId: Long?, followeeId: Long?): Boolean {
-        if (followerId == null || followeeId == null) {
-            return false
-        }
-        if (followerId == followeeId) {
-            return false // 자기 자신은 팔로잉하지 않은 것으로 처리
-        }
-        return followRepository.existsByFollowerMemberIdAndFolloweeMemberId(followerId, followeeId)
-    }
-
     fun findFolloweeIdsByFollower(member: Member): List<Long> {
         return followRepository.findFolloweeIdsByFollower(member)
     }

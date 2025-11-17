@@ -23,11 +23,11 @@ interface FollowRepository : JpaRepository<Follow, Long> {
 
     // 팔로워 목록과 멤버 정보를 함께 조회 (Fetch Join)
     @Query("SELECT f FROM Follow f JOIN FETCH f.follower WHERE f.followee.memberId = :followeeId")
-    fun findFollowersWithMemberInfo(@Param("followeeId") followeeId: Long?): List<Follow>
+    fun findFollowersWithMemberInfo(@Param("followeeId") followeeId: Long): List<Follow>
 
     // 팔로잉 목록과 멤버 정보를 함께 조회 (Fetch Join)
     @Query("SELECT f FROM Follow f JOIN FETCH f.followee WHERE f.follower.memberId = :followerId")
-    fun findFollowingsWithMemberInfo(@Param("followerId") followerId: Long?): List<Follow>
+    fun findFollowingsWithMemberInfo(@Param("followerId") followerId: Long): List<Follow>
 
     fun existsByFollowerAndFollowee(member: Member, author: Member): Boolean
 

@@ -19,6 +19,6 @@ class Follow(
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null
+    var id: Long = 0L
         protected set
 }
