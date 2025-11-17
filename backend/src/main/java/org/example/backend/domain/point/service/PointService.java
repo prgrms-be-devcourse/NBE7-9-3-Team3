@@ -59,14 +59,14 @@ public class PointService {
     public void purchaseItem(Long buyerId, PurchaseRequestDto request) {
         Member buyer = memberRepository.findById(buyerId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.POINT_BUYER_NOT_FOUND));
-        Member seller = memberRepository.findById(request.sellerId())
+        Member seller = memberRepository.findById(request.sellerId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.POINT_SELLER_NOT_FOUND));
 
-        if (request.tradeId() == null) {
+        if (request.tradeId == null) {
             throw new BusinessException(ErrorCode.TRADE_NOT_FOUND);
         }
 
-        Trade trade = tradeRepository.findByIdForUpdate(request.tradeId())
+        Trade trade = tradeRepository.findByIdForUpdate(request.tradeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.TRADE_NOT_FOUND));
 
         // 이미 판매 완료된 상품인지 확인
@@ -75,18 +75,18 @@ public class PointService {
         }
 
         // 포인트 보유량 확인
-        if (buyer.getPoints() < request.amount()) {
+        if (buyer.getPoints() < request.amount) {
             throw new BusinessException(ErrorCode.POINT_INSUFFICIENT);
         }
 
-        Long buyerNewPoints = buyer.getPoints() - request.amount();
-        Long sellerNewPoints = seller.getPoints() + request.amount();
+        Long buyerNewPoints = buyer.getPoints() - request.amount;
+        Long sellerNewPoints = seller.getPoints() + request.amount;
 
         buyer.updatePoints(buyerNewPoints);
         seller.updatePoints(sellerNewPoints);
 
-        pointRepository.save(Point.createPurchase(buyer, request.amount(), buyerNewPoints));
-        pointRepository.save(Point.createSale(seller, request.amount(), sellerNewPoints));
+        pointRepository.save(Point.createPurchase(buyer, request.amount, buyerNewPoints));
+        pointRepository.save(Point.createSale(seller, request.amount, sellerNewPoints));
 
         // 거래 상태를 판매 완료로 변경 (엔티티 내부에서 중복 방지 체크)
         trade.completeTransaction();
