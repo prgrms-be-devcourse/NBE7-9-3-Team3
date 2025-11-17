@@ -2,9 +2,6 @@ package org.example.backend.domain.aquarium.entity
 
 import jakarta.persistence.*
 import jakarta.validation.constraints.PositiveOrZero
-import lombok.AccessLevel
-import lombok.Getter
-import lombok.NoArgsConstructor
 import org.example.backend.domain.member.entity.Member
 import org.example.backend.global.jpa.entity.BaseEntity
 import java.time.LocalDateTime

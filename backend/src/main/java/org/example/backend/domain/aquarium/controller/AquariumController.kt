@@ -1,14 +1,12 @@
 package org.example.backend.domain.aquarium.controller
 
 import jakarta.validation.Valid
-import lombok.RequiredArgsConstructor
 import org.example.backend.domain.aquarium.dto.AquariumListResponseDto
 import org.example.backend.domain.aquarium.dto.AquariumRequestDto
 import org.example.backend.domain.aquarium.dto.AquariumResponseDto
 import org.example.backend.domain.aquarium.dto.AquariumScheduleRequestDto
 import org.example.backend.domain.aquarium.service.AquariumService
 import org.example.backend.global.response.ApiResponse
-import org.example.backend.global.response.ApiResponse.Companion.ok
 import org.example.backend.global.security.CustomUserDetails
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*

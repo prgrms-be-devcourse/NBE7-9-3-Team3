@@ -1,6 +1,5 @@
 package org.example.backend.domain.aquarium.service
 
-import lombok.RequiredArgsConstructor
 import org.example.backend.domain.aquarium.dto.AquariumListResponseDto
 import org.example.backend.domain.aquarium.dto.AquariumRequestDto
 import org.example.backend.domain.aquarium.dto.AquariumResponseDto
@@ -8,7 +7,6 @@ import org.example.backend.domain.aquarium.dto.AquariumScheduleRequestDto
 import org.example.backend.domain.aquarium.entity.Aquarium
 import org.example.backend.domain.aquarium.repository.AquariumLogRepository
 import org.example.backend.domain.aquarium.repository.AquariumRepository
-import org.example.backend.domain.fish.entity.Fish
 import org.example.backend.domain.fish.repository.FishRepository
 import org.example.backend.domain.member.repository.MemberRepository
 import org.example.backend.global.exception.BusinessException
@@ -17,7 +15,6 @@ import org.example.backend.global.security.CustomUserDetails
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
-import java.util.function.Supplier
 
 @Service
 class AquariumService(
