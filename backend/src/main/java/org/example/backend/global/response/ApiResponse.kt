@@ -3,11 +3,11 @@ package org.example.backend.global.response
 import org.example.backend.global.exception.ErrorCode
 
 class ApiResponse<T>(
-    val resultCode: String?,
+    val resultCode: String,
     val msg: String?,
     val data: T? = null
 ) {
-    constructor(resultCode: String?, msg: String?) : this(resultCode, msg, null)
+    constructor(resultCode: String, msg: String?) : this(resultCode, msg, null)
 
     companion object {
         // 성공 응답 생성
