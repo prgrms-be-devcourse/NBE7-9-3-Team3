@@ -61,7 +61,7 @@ class PointService(
             ?: throw BusinessException(ErrorCode.TRADE_NOT_FOUND)
 
         // 이미 판매 완료된 상품인지 확인
-        if (trade.isSoldOut()) {
+        if (trade.isSoldOut) {
             throw BusinessException(ErrorCode.TRADE_ALREADY_SOLD)
         }
 
