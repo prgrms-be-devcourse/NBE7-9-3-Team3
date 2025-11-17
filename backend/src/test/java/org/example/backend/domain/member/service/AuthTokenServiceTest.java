@@ -1,5 +1,8 @@
 package org.example.backend.domain.member.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Map;
 import org.example.backend.domain.member.entity.Member;
 import org.example.backend.domain.member.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -10,10 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -38,12 +37,12 @@ public class AuthTokenServiceTest {
     @DisplayName("t1: 액세스 토큰 생성 성공")
     void t1() {
         // given
-        Member member = Member.builder()
-                .email("test@test.com")
-                .password(passwordEncoder.encode("password123"))
-                .nickname("testuser")
-                .profileImage(null)
-                .build();
+        Member member = new Member(
+            "test@test.com",
+            passwordEncoder.encode("password123"),
+            "testuser",
+            null
+        );
         Member savedMember = memberRepository.save(member);
 
         // when
@@ -65,12 +64,12 @@ public class AuthTokenServiceTest {
     @DisplayName("t2: 임시 토큰 생성 성공")
     void t2() {
         // given
-        Member member = Member.builder()
-                .email("temp@test.com")
-                .password(passwordEncoder.encode("password123"))
-                .nickname("tempuser")
-                .profileImage(null)
-                .build();
+        Member member = new Member(
+            "temp@test.com",
+            passwordEncoder.encode("password123"),
+            "tempuser",
+            null
+        );
         Member savedMember = memberRepository.save(member);
 
         // when
@@ -92,12 +91,12 @@ public class AuthTokenServiceTest {
     @DisplayName("t3: 유효한 토큰에서 payload 추출 성공")
     void t3() {
         // given
-        Member member = Member.builder()
-                .email("payload@test.com")
-                .password(passwordEncoder.encode("password123"))
-                .nickname("payloaduser")
-                .profileImage(null)
-                .build();
+        Member member = new Member(
+            "payload@test.com",
+            passwordEncoder.encode("password123"),
+            "payloaduser",
+            null
+        );
         Member savedMember = memberRepository.save(member);
         String token = authTokenService.genAccessToken(savedMember);
 
@@ -156,12 +155,12 @@ public class AuthTokenServiceTest {
     @DisplayName("t7: 액세스 토큰과 임시 토큰의 payload 내용이 동일한지 확인")
     void t7() {
         // given
-        Member member = Member.builder()
-                .email("compare@test.com")
-                .password(passwordEncoder.encode("password123"))
-                .nickname("compareuser")
-                .profileImage(null)
-                .build();
+        Member member = new Member(
+            "compare@test.com",
+            passwordEncoder.encode("password123"),
+            "compareuser",
+            null
+        );
         Member savedMember = memberRepository.save(member);
 
         // when

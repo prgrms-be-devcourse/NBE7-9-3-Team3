@@ -12,8 +12,8 @@ import org.example.backend.domain.member.dto.MemberJoinResponseDto;
 import org.example.backend.domain.member.dto.MemberLoginRequestDto;
 import org.example.backend.domain.member.dto.MemberLoginResponseDto;
 import org.example.backend.domain.member.dto.MemberResponseDto;
-import org.example.backend.domain.member.dto.MemberSearchResponseDto;
 import org.example.backend.domain.member.dto.MemberSearchListResponseDto;
+import org.example.backend.domain.member.dto.MemberSearchResponseDto;
 import org.example.backend.domain.member.entity.Member;
 import org.example.backend.domain.member.repository.MemberRepository;
 import org.example.backend.global.exception.BusinessException;
@@ -26,7 +26,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -82,12 +81,7 @@ public class MemberService {
         String encodedPassword = passwordEncoder.encode(password);
 
         // 회원 생성
-        Member member = Member.builder()
-                .email(email)
-                .password(encodedPassword)
-                .nickname(nickname)
-                .profileImage(profileImage)
-                .build();
+        Member member = new Member(email, encodedPassword, nickname, profileImage);
 
         return memberRepository.save(member);
     }

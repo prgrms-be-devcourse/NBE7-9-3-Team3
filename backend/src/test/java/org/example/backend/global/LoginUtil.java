@@ -28,12 +28,7 @@ public class LoginUtil {
         String encodedPassword = passwordEncoder.encode(password);
 
         // 회원 생성
-        Member member = Member.builder()
-                .email(email)
-                .password(encodedPassword)
-                .nickname(nickname)
-                .profileImage(profileImage)
-                .build();
+        Member member = new Member(email, encodedPassword, nickname, profileImage);
 
         return memberRepository.save(member);
     }

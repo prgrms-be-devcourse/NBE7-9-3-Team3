@@ -16,7 +16,6 @@ import org.example.backend.domain.trade.entity.Trade;
 import org.example.backend.domain.trade.enums.BoardType;
 import org.example.backend.domain.trade.enums.TradeStatus;
 import org.example.backend.domain.trade.repository.TradeRepository;
-import org.example.backend.global.LoginUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -52,23 +50,24 @@ public class TradeControllerTest {
     private MemberRepository memberRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
     private AuthTokenService authTokenService;
 
     @Autowired
     private TradeRepository tradeRepository;
 
     private static final String API_PATH = "/api/market/secondhand";
-    private LoginUtil loginUtil;
     private String accessToken;
     private Member testMember;
 
     @BeforeEach
     void setUp() {
-        loginUtil = new LoginUtil(memberRepository, passwordEncoder, authTokenService);
-        testMember = loginUtil.createMember("test@test.com", "test1234", "테스트", "https://example.com/img1.jpg");
+        Member member = new Member(
+            "test@test.com",
+            "test1234",
+            "테스트",
+            "https://example.com/img1.jpg"
+        );
+        testMember = memberRepository.save(member);
         accessToken = authTokenService.genAccessToken(testMember);
     }
 
