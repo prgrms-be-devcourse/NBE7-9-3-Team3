@@ -2,7 +2,6 @@ package org.example.backend.domain.post.dto
 
 import org.example.backend.domain.post.entity.Post
 
-@JvmRecord
 data class PostResponseDto(
     val id: Long,
     val title: String,

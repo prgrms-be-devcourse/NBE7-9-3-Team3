@@ -3,7 +3,6 @@ package org.example.backend.domain.post.dto
 import org.example.backend.domain.post.entity.Post
 import java.time.LocalDateTime
 
-@JvmRecord
 data class PostReadResponseDto(
     val id: Long,
     val title: String,

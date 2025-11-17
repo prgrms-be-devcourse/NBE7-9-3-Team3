@@ -5,7 +5,6 @@ import org.example.backend.domain.postcomment.entity.PostComment
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
-import java.util.*
 
 interface PostCommentRepository : JpaRepository<PostComment, Long> {
     @Query("SELECT c FROM PostComment c JOIN FETCH c.post WHERE c.author.memberId = :memberId")
@@ -17,7 +16,7 @@ interface PostCommentRepository : JpaRepository<PostComment, Long> {
     ): List<PostComment>
 
     @Query("SELECT c FROM PostComment c JOIN FETCH c.author WHERE c.id = :id")
-    fun findByIdWithAuthor(@Param("id") id: Long): Optional<PostComment>
+    fun findByIdWithAuthor(@Param("id") id: Long): PostComment?
 
     @Query(
         ("SELECT c FROM PostComment c " +

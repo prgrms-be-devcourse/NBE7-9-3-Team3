@@ -3,16 +3,12 @@ package org.example.backend.domain.post.entity
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
-import lombok.Getter
-import lombok.NoArgsConstructor
 import org.example.backend.domain.like.entity.Like
 import org.example.backend.domain.member.entity.Member
 import org.example.backend.domain.post.dto.PostWriteRequestDto
 import org.example.backend.domain.postcomment.entity.PostComment
 import org.example.backend.global.jpa.entity.BaseEntity
 
-@NoArgsConstructor
-@Getter
 @Entity
 class Post(
 
