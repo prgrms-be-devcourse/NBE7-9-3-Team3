@@ -29,12 +29,12 @@ class MemberService(
         return memberRepository.findById(id).orElse(null)
     }
 
-    fun findByEmail(email: String?): Member? {
-        return memberRepository.findByEmail(email).orElse(null)
+    fun findByEmail(email: String): Member? {
+        return memberRepository.findByEmail(email)
     }
 
-    fun findByMemberId(memberId: Long?): Member? {
-        return memberRepository.findByMemberId(memberId).orElse(null)
+    fun findByMemberId(memberId: Long): Member? {
+        return memberRepository.findByMemberId(memberId)
     }
 
     // 멤버 존재하지 않음 확인
@@ -54,12 +54,12 @@ class MemberService(
     @Transactional
     fun create(email: String, password: String, nickname: String, profileImage: String?): Member {
         // 이메일 중복 체크
-        if (memberRepository.findByEmail(email).isPresent) {
+        if (memberRepository.findByEmail(email) != null) {
             throw BusinessException(ErrorCode.MEMBER_EMAIL_DUPLICATE)
         }
 
         // 닉네임 중복 체크
-        if (memberRepository.findByNickname(nickname).isPresent) {
+        if (memberRepository.findByNickname(nickname) != null) {
             throw BusinessException(ErrorCode.MEMBER_NICKNAME_DUPLICATE)
         }
 
@@ -90,7 +90,7 @@ class MemberService(
 
     fun login(request: MemberLoginRequestDto): ApiResponse<MemberLoginResponseDto> {
         val member: Member = memberRepository.findByEmail(request.email)
-            .orElseThrow { BusinessException(ErrorCode.MEMBER_NOT_FOUND) }
+            ?: throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
 
         if (!passwordEncoder.matches(request.password, member.password)) {
             throw BusinessException(ErrorCode.MEMBER_PASSWORD_MISMATCH)
@@ -117,7 +117,7 @@ class MemberService(
     ): ApiResponse<MemberEditResponseDto> {
         // 현재 로그인한 사용자 조회
         val member: Member = memberRepository.findByMemberId(this.currentMemberId)
-            .orElseThrow { BusinessException(ErrorCode.MEMBER_NOT_FOUND) }
+            ?: throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
 
         // 현재 비밀번호 재확인
         if (!passwordEncoder.matches(request.currentPassword, member.password)) {
@@ -130,14 +130,16 @@ class MemberService(
 
         // 이메일 중복 체크 (현재 사용자와 다른 이메일인 경우)
         if (emailChanged) {
-            if (memberRepository.findByEmail(request.email).isPresent) {
+            if (memberRepository.findByEmail(request.email) != null) {
                 throw BusinessException(ErrorCode.MEMBER_EMAIL_DUPLICATE)
             }
         }
 
         // 닉네임 중복 체크 (현재 사용자와 다른 닉네임인 경우)
         if (nicknameChanged) {
-            if (memberRepository.findByNickname(request.nickname).isPresent) {
+            val nickname =
+                request.nickname ?: throw BusinessException(ErrorCode.MEMBER_NICKNAME_DUPLICATE)
+            if (memberRepository.findByNickname(nickname) != null) {
                 throw BusinessException(ErrorCode.MEMBER_NICKNAME_DUPLICATE)
             }
         }
@@ -178,7 +180,7 @@ class MemberService(
     fun myPage(): ApiResponse<MemberResponseDto> {
         // 현재 로그인한 사용자 조회
         val member: Member = memberRepository.findByMemberId(this.currentMemberId)
-            .orElseThrow { BusinessException(ErrorCode.MEMBER_NOT_FOUND) }
+            ?: throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
         val memberId = member.memberId ?: throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
         val followerCount = followRepository.countByFolloweeMemberId(memberId)
         val followingCount = followRepository.countByFollowerMemberId(memberId)
@@ -190,7 +192,7 @@ class MemberService(
     fun updateProfileImage(profileImageUrl: String?): ApiResponse<MemberEditResponseDto> {
         // 현재 로그인한 사용자 조회
         val member: Member = memberRepository.findByMemberId(this.currentMemberId)
-            .orElseThrow { BusinessException(ErrorCode.MEMBER_NOT_FOUND) }
+            ?: throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
 
         val oldImageUrl = member.profileImage
 

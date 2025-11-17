@@ -42,8 +42,11 @@ public class LoginUtil {
 
     // 이메일로 저장된 Member 엔티티를 조회하는 메서드
     public Member getMemberByEmail(String email) {
-        return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+        Member member = memberRepository.findByEmail(email);
+        if (member == null) {
+            throw new BusinessException(ErrorCode.MEMBER_NOT_FOUND);
+        }
+        return member;
     }
 }
 
