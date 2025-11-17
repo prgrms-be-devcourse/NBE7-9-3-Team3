@@ -30,6 +30,7 @@ public class AquariumService {
   private final FishRepository fishRepository;
 
   public long countTest() {
+      String test = "test";
     return aquariumRepository.count();
   }
 
