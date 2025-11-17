@@ -1,5 +1,6 @@
-package org.example.backend.global.image;
+package org.example.backend.global.image
 
-record PresignedUrlRequest(String fileName, String directory) {
-
-}
+data class PresignedUrlRequest(
+    @JvmField val fileName: String,
+    @JvmField val directory: String?
+)

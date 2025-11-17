@@ -1,5 +1,6 @@
-package org.example.backend.global.image;
+package org.example.backend.global.image
 
-record PresignedUrlResponse(String presignedUrl, String fileUrl) {
-
-}
+data class PresignedUrlResponse(
+    @JvmField val presignedUrl: String,
+    @JvmField val fileUrl: String
+)

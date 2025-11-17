@@ -124,6 +124,8 @@ public class ImageServiceTest {
             .hasFieldOrPropertyWithValue("errorCode", ErrorCode.IMAGE_URL_INVALID);
     }
 
+    // TODO: Kotlin null safety로 인해 컴파일 타임에 null 전달 불가
+    //  테스트 Kotlin 마이그레이션 시 ImageService.deleteFile을 non-null로 변경하고 이 테스트 제거
     @Test
     @DisplayName("t6: 단일 파일 삭제 실패 - null URL")
     void t6() {
@@ -179,6 +181,8 @@ public class ImageServiceTest {
         verify(s3Client, never()).deleteObjects(any(DeleteObjectsRequest.class));
     }
 
+    // TODO: Kotlin null safety로 인해 컴파일 타임에 null 전달 불가
+    //  테스트 Kotlin 마이그레이션 시 ImageService.deleteFiles를 non-null로 변경하고 이 테스트 제거
     @Test
     @DisplayName("t10: 다중 파일 삭제 - null 리스트")
     void t10() {
