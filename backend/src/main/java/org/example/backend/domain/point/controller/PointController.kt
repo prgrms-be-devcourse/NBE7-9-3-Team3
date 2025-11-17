@@ -22,6 +22,7 @@ class PointController(
         @PathVariable amount: Long,
         @AuthenticationPrincipal userDetails: CustomUserDetails
     ): ApiResponse<Void> {
+        // userDetails.id 접근이 nullable
         val memberId = userDetails.id ?: throw BusinessException(ErrorCode.POINT_MEMBER_NOT_FOUND)
         pointService.chargePoint(memberId, amount)
         return ApiResponse.ok("포인트 충전 완료")
