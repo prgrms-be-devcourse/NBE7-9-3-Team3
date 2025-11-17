@@ -342,7 +342,7 @@ class BaseInitData(
             val selectedImage = fishImages[(i + tradeNum - 1) % fishImages.size]
 
             val trade = Trade(
-                member,
+                member!!,
                 BoardType.FISH,
                 title,
                 content,
@@ -400,7 +400,7 @@ class BaseInitData(
             val selectedImage = secondhandImages[(i + tradeNum - 1) % secondhandImages.size]
 
             val trade = Trade(
-                member,
+                member!!,
                 BoardType.SECONDHAND,
                 title,
                 content,
