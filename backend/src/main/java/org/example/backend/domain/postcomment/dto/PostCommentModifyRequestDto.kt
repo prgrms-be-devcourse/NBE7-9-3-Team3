@@ -1,5 +1,7 @@
-package org.example.backend.domain.postcomment.dto;
+package org.example.backend.domain.postcomment.dto
 
-public record PostCommentModifyRequestDto(
-    String content
-) {}
+@JvmRecord
+data class PostCommentModifyRequestDto(
+    @JvmField
+    val content: String
+)

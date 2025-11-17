@@ -1,40 +1,35 @@
-package org.example.backend.domain.postcomment.entity;
+package org.example.backend.domain.postcomment.entity
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.example.backend.domain.member.entity.Member;
-import org.example.backend.domain.post.entity.Post;
-import org.example.backend.global.jpa.entity.BaseEntity;
+import jakarta.persistence.Entity
+import jakarta.persistence.FetchType
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
+import jakarta.validation.constraints.NotBlank
+import lombok.Getter
+import lombok.NoArgsConstructor
+import org.example.backend.domain.member.entity.Member
+import org.example.backend.domain.post.entity.Post
+import org.example.backend.global.jpa.entity.BaseEntity
 
 @Entity
 @NoArgsConstructor
 @Getter
-public class PostComment extends BaseEntity {
+class PostComment(
 
-    @NotBlank(message = "댓글 내용은 필수입니다.")
-    private String content;
+    @field:NotBlank(message = "댓글 내용은 필수입니다.")
+    var content: String,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", nullable = false)
-    private Post post;
+    @field:JoinColumn(name = "post_id", nullable = false)
+    @field:ManyToOne(fetch = FetchType.LAZY)
+    var post: Post,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member author;
+    @field:JoinColumn(name = "member_id", nullable = false)
+    @field:ManyToOne(fetch = FetchType.LAZY)
+    var author: Member
+) : BaseEntity() {
 
-    public PostComment(String content, Post post, Member member) {
-        this.content = content;
-        this.post = post;
-        this.author = member;
+    fun modifyContent(content: String) {
+        this.content = content
+
     }
-
-    public void modifyContent(String content) {
-        this.content = content;
-    }
-
 }

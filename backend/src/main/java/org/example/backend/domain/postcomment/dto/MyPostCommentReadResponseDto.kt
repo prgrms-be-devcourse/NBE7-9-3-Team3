@@ -1,13 +1,13 @@
-package org.example.backend.domain.postcomment.dto;
+package org.example.backend.domain.postcomment.dto
 
-import org.example.backend.domain.post.entity.Post.BoardType;
-import org.example.backend.domain.post.entity.Post.Category;
+import org.example.backend.domain.post.entity.Post
 
-public record MyPostCommentReadResponseDto(
-    Long id,
-    Long postId,
-    String postTitle,
-    String content,
-    BoardType boardType,
-    Category category
-) {}
+@JvmRecord
+data class MyPostCommentReadResponseDto(
+    val id: Long,
+    val postId: Long,
+    val postTitle: String,
+    val content: String,
+    val boardType: Post.BoardType,
+    val category: Post.Category?
+)

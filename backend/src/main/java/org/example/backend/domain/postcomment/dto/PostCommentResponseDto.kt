@@ -1,19 +1,18 @@
-package org.example.backend.domain.postcomment.dto;
+package org.example.backend.domain.postcomment.dto
 
-import org.example.backend.domain.postcomment.entity.PostComment;
+import org.example.backend.domain.postcomment.entity.PostComment
 
-public record PostCommentResponseDto(
-    Long id,
-    Long postId,
-    String content,
-    String nickname
+@JvmRecord
+data class PostCommentResponseDto(
+    val id: Long,
+    val postId: Long,
+    val content: String,
+    val nickname: String
 ) {
-    public PostCommentResponseDto(PostComment postComment) {
-        this(
-            postComment.getId(),
-            postComment.getPost().getId(),
-            postComment.getContent(),
-            postComment.getAuthor().getNickname()
-        );
-    }
+    constructor(postComment: PostComment) : this(
+        postComment.id,
+        postComment.post.id,
+        postComment.content,
+        postComment.author.nickname
+    )
 }

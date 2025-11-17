@@ -1,26 +1,29 @@
-package org.example.backend.domain.postcomment.repository;
+package org.example.backend.domain.postcomment.repository
 
-import java.util.List;
-import java.util.Optional;
-import org.example.backend.domain.post.entity.Post.BoardType;
-import org.example.backend.domain.postcomment.entity.PostComment;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import org.example.backend.domain.post.entity.Post
+import org.example.backend.domain.postcomment.entity.PostComment
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
+import java.util.*
 
-public interface PostCommentRepository extends JpaRepository<PostComment, Long> {
-
+interface PostCommentRepository : JpaRepository<PostComment, Long> {
     @Query("SELECT c FROM PostComment c JOIN FETCH c.post WHERE c.author.memberId = :memberId")
-    List<PostComment> findByAuthor_MemberIdWithPost(@Param("memberId") Long memberId);
+    fun findByAuthor_MemberIdWithPost(@Param("memberId") memberId: Long): List<PostComment>
 
-    List<PostComment> findByAuthor_MemberIdAndPost_BoardType(Long memberId, BoardType boardType);
+    fun findByAuthor_MemberIdAndPost_BoardType(
+        memberId: Long,
+        boardType: Post.BoardType
+    ): List<PostComment>
 
     @Query("SELECT c FROM PostComment c JOIN FETCH c.author WHERE c.id = :id")
-    Optional<PostComment> findByIdWithAuthor(@Param("id") Long id);
+    fun findByIdWithAuthor(@Param("id") id: Long): Optional<PostComment>
 
-    @Query("SELECT c FROM PostComment c " +
-        "JOIN FETCH c.author " +
-        "WHERE c.post.id = :postId " +
-        "ORDER BY c.createDate DESC, c.id DESC")
-    List<PostComment> findByPostIdWithAuthor(@Param("postId") Long postId);
+    @Query(
+        ("SELECT c FROM PostComment c " +
+                "JOIN FETCH c.author " +
+                "WHERE c.post.id = :postId " +
+                "ORDER BY c.createDate DESC, c.id DESC")
+    )
+    fun findByPostIdWithAuthor(@Param("postId") postId: Long): List<PostComment>
 }

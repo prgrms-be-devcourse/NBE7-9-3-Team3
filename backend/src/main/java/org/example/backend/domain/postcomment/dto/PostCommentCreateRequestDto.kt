@@ -1,10 +1,14 @@
-package org.example.backend.domain.postcomment.dto;
+package org.example.backend.domain.postcomment.dto
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank
 
-public record PostCommentCreateRequestDto(
+@JvmRecord
+data class PostCommentCreateRequestDto(
 
-    @NotBlank(message = "댓글 내용은 필수입니다.")
-    String content,
-    Long postId
-) {}
+    @JvmField
+    @field:NotBlank(message = "댓글 내용은 필수입니다.")
+    val content: String,
+
+    @JvmField
+    val postId: Long
+)
