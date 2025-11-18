@@ -1,223 +1,237 @@
-package org.example.backend.global.image.service;
+package org.example.backend.global.image.service
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.example.backend.global.exception.BusinessException
+import org.example.backend.global.exception.ErrorCode
+import org.example.backend.global.image.ImageService
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.ArgumentMatchers
+import org.mockito.InjectMocks
+import org.mockito.Mock
+import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+import org.springframework.test.util.ReflectionTestUtils
+import software.amazon.awssdk.services.s3.S3Client
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest
+import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest
+import software.amazon.awssdk.services.s3.presigner.S3Presigner
+import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest
+import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest
+import java.net.URL
 
-import java.net.URL;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import org.example.backend.global.exception.BusinessException;
-import org.example.backend.global.exception.ErrorCode;
-import org.example.backend.global.image.ImageService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest;
-import software.amazon.awssdk.services.s3.presigner.S3Presigner;
-import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
-import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
-
-@ExtendWith(MockitoExtension.class)
-public class ImageServiceTest {
+@ExtendWith(MockitoExtension::class)
+class ImageServiceTest {
+    @Mock
+    private lateinit var s3Client: S3Client
 
     @Mock
-    private S3Client s3Client;
-
-    @Mock
-    private S3Presigner s3Presigner;
+    private lateinit var s3Presigner: S3Presigner
 
     @InjectMocks
-    private ImageService imageService;
-
-    private static final String BUCKET_NAME = "test-bucket";
-    private static final String REGION = "ap-northeast-2";
+    private lateinit var imageService: ImageService
 
     @BeforeEach
-    void setUp() {
-        ReflectionTestUtils.setField(imageService, "bucket", BUCKET_NAME);
-        ReflectionTestUtils.setField(imageService, "region", REGION);
+    fun setUp() {
+        ReflectionTestUtils.setField(imageService, "bucket", BUCKET_NAME)
+        ReflectionTestUtils.setField(imageService, "region", REGION)
     }
 
     // ========== Presigned URL 생성 테스트 ==========
     @Test
     @DisplayName("t1: Presigned URL 생성 성공")
-    void t1() throws Exception {
+    fun t1() {
         // given
-        String fileName = "test-image.jpg";
-        String directory = "trades";
+        val fileName = "test-image.jpg"
+        val directory = "trades"
 
-        PresignedPutObjectRequest mockPresignedRequest = mock(PresignedPutObjectRequest.class);
-        when(mockPresignedRequest.url()).thenReturn(new URL("https://test-bucket.s3.amazonaws.com/presigned-url"));
-        when(s3Presigner.presignPutObject(any(PutObjectPresignRequest.class))).thenReturn(mockPresignedRequest);
+        val mockPresignedRequest = mock<PresignedPutObjectRequest>()
+        whenever(mockPresignedRequest.url())
+            .thenReturn(URL("https://test-bucket.s3.amazonaws.com/presigned-url"))
+        whenever(s3Presigner.presignPutObject(anyOrNull<PutObjectPresignRequest>()))
+            .thenReturn(mockPresignedRequest)
 
         // when
-        Object response = imageService.createPresignedUrl(fileName, directory);
+        val response = imageService.createPresignedUrl(fileName, directory)
 
         // then
-        assertThat(response).isNotNull();
-        assertThat(response.toString()).contains("presignedUrl");
-        assertThat(response.toString()).contains("fileUrl");
+        assertThat(response).isNotNull()
+        assertThat(response.toString()).contains("presignedUrl")
+        assertThat(response.toString()).contains("fileUrl")
     }
 
     // ========== 파일 URL 생성 테스트 ==========
     @Test
     @DisplayName("t2: S3 파일 URL 생성 검증")
-    void t2() {
+    fun t2() {
         // given
-        String key = "trades/abc123.jpg";
+        val key = "trades/abc123.jpg"
 
         // when
-        String fileUrl = imageService.getFileUrl(key);
+        val fileUrl = imageService.getFileUrl(key)
 
         // then
-        assertThat(fileUrl).isEqualTo("https://test-bucket.s3.ap-northeast-2.amazonaws.com/trades/abc123.jpg");
+        assertThat(fileUrl)
+            .isEqualTo("https://test-bucket.s3.ap-northeast-2.amazonaws.com/trades/abc123.jpg")
     }
 
     // ========== 단일 파일 삭제 테스트 ==========
     @Test
     @DisplayName("t3: 단일 파일 삭제 성공")
-    void t3() {
+    fun t3() {
         // given
-        String fileUrl = "https://test-bucket.s3.ap-northeast-2.amazonaws.com/trades/abc123.jpg";
+        val fileUrl = "https://test-bucket.s3.ap-northeast-2.amazonaws.com/trades/abc123.jpg"
 
         // when
-        imageService.deleteFile(fileUrl);
+        imageService.deleteFile(fileUrl)
 
         // then
-        verify(s3Client).deleteObject(any(DeleteObjectRequest.class));
+        verify(s3Client).deleteObject(anyOrNull<DeleteObjectRequest>())
     }
 
     @Test
     @DisplayName("t4: 단일 파일 삭제 실패 - 잘못된 URL 형식")
-    void t4() {
+    fun t4() {
         // given
-        String invalidUrl = "https://invalid-url.com/image.jpg";
+        val invalidUrl = "https://invalid-url.com/image.jpg"
 
         // when & then
-        assertThatThrownBy(() -> imageService.deleteFile(invalidUrl))
-            .isInstanceOf(BusinessException.class)
-            .hasFieldOrPropertyWithValue("errorCode", ErrorCode.IMAGE_URL_NOT_ALLOWED);
+        assertThatThrownBy { imageService.deleteFile(invalidUrl) }
+            .isInstanceOf(BusinessException::class.java)
+            .hasFieldOrPropertyWithValue("errorCode", ErrorCode.IMAGE_URL_NOT_ALLOWED)
     }
 
     @Test
     @DisplayName("t5: 단일 파일 삭제 실패 - 빈 URL")
-    void t5() {
+    fun t5() {
         // given
-        String emptyUrl = "";
+        val emptyUrl = ""
 
         // when & then
-        assertThatThrownBy(() -> imageService.deleteFile(emptyUrl))
-            .isInstanceOf(BusinessException.class)
-            .hasFieldOrPropertyWithValue("errorCode", ErrorCode.IMAGE_URL_INVALID);
+        assertThatThrownBy {
+            imageService.deleteFile(emptyUrl)
+        }
+            .isInstanceOf(BusinessException::class.java)
+            .hasFieldOrPropertyWithValue("errorCode", ErrorCode.IMAGE_URL_INVALID)
     }
 
     @Test
     @DisplayName("t6: 단일 파일 삭제 실패 - 다른 버킷 URL")
-    void t6() {
+    fun t6() {
         // given
-        String otherBucketUrl = "https://other-bucket.s3.ap-northeast-2.amazonaws.com/image.jpg";
+        val otherBucketUrl = "https://other-bucket.s3.ap-northeast-2.amazonaws.com/image.jpg"
 
         // when & then
-        assertThatThrownBy(() -> imageService.deleteFile(otherBucketUrl))
-            .isInstanceOf(BusinessException.class)
-            .hasFieldOrPropertyWithValue("errorCode", ErrorCode.IMAGE_URL_NOT_ALLOWED);
+        assertThatThrownBy {
+            imageService.deleteFile(otherBucketUrl)
+        }
+            .isInstanceOf(BusinessException::class.java)
+            .hasFieldOrPropertyWithValue("errorCode", ErrorCode.IMAGE_URL_NOT_ALLOWED)
     }
 
     // ========== 다중 파일 삭제 테스트 ==========
     @Test
     @DisplayName("t7: 다중 파일 삭제 성공")
-    void t7() {
+    fun t7() {
         // given
-        List<String> fileUrls = Arrays.asList(
+        val fileUrls = listOf(
             "https://test-bucket.s3.ap-northeast-2.amazonaws.com/trades/abc123.jpg",
             "https://test-bucket.s3.ap-northeast-2.amazonaws.com/trades/def456.jpg",
             "https://test-bucket.s3.ap-northeast-2.amazonaws.com/trades/ghi789.jpg"
-        );
+        )
 
         // when
-        imageService.deleteFiles(fileUrls);
+        imageService.deleteFiles(fileUrls)
 
         // then
-        verify(s3Client).deleteObjects(any(DeleteObjectsRequest.class));
+        verify(s3Client).deleteObjects(ArgumentMatchers.any(DeleteObjectsRequest::class.java))
     }
 
     @Test
     @DisplayName("t8: 다중 파일 삭제 - 빈 리스트")
-    void t8() {
+    fun t8() {
         // given
-        List<String> emptyList = Collections.emptyList();
+        val emptyList = emptyList<String>()
 
         // when
-        imageService.deleteFiles(emptyList);
+        imageService.deleteFiles(emptyList)
 
         // then
-        verify(s3Client, never()).deleteObjects(any(DeleteObjectsRequest.class));
+        verify(s3Client, never()).deleteObjects(ArgumentMatchers.any(DeleteObjectsRequest::class.java))
     }
 
     @Test
     @DisplayName("t9: 다중 파일 삭제 실패 - 잘못된 URL 포함")
-    void t9() {
+    fun t9() {
         // given
-        List<String> fileUrls = Arrays.asList(
+        val fileUrls = listOf(
             "https://test-bucket.s3.ap-northeast-2.amazonaws.com/trades/abc123.jpg",
             "https://invalid-url.com/image.jpg",  // 잘못된 URL
             "https://test-bucket.s3.ap-northeast-2.amazonaws.com/trades/ghi789.jpg"
-        );
+        )
 
         // when & then
-        assertThatThrownBy(() -> imageService.deleteFiles(fileUrls))
-            .isInstanceOf(BusinessException.class)
-            .hasFieldOrPropertyWithValue("errorCode", ErrorCode.IMAGE_URL_NOT_ALLOWED);
+        assertThatThrownBy {
+            imageService.deleteFiles(fileUrls)
+        }
+            .isInstanceOf(BusinessException::class.java)
+            .hasFieldOrPropertyWithValue("errorCode", ErrorCode.IMAGE_URL_NOT_ALLOWED)
     }
 
     // ========== URL 검증 추가 테스트 ==========
     @Test
     @DisplayName("t10: URL 검증 - 다른 리전")
-    void t10() {
+    fun t10() {
         // given
-        String differentRegionUrl = "https://test-bucket.s3.us-east-1.amazonaws.com/image.jpg";
+        val differentRegionUrl = "https://test-bucket.s3.us-east-1.amazonaws.com/image.jpg"
 
         // when & then
-        assertThatThrownBy(() -> imageService.deleteFile(differentRegionUrl))
-            .isInstanceOf(BusinessException.class)
-            .hasFieldOrPropertyWithValue("errorCode", ErrorCode.IMAGE_URL_NOT_ALLOWED);
+        assertThatThrownBy {
+            imageService.deleteFile(differentRegionUrl)
+        }
+            .isInstanceOf(BusinessException::class.java)
+            .hasFieldOrPropertyWithValue("errorCode", ErrorCode.IMAGE_URL_NOT_ALLOWED)
     }
 
     @Test
     @DisplayName("t11: URL 검증 - HTTP 프로토콜 (HTTPS 아님)")
-    void t11() {
+    fun t11() {
         // given
-        String httpUrl = "http://test-bucket.s3.ap-northeast-2.amazonaws.com/image.jpg";
+        val httpUrl = "http://test-bucket.s3.ap-northeast-2.amazonaws.com/image.jpg"
 
         // when & then
-        assertThatThrownBy(() -> imageService.deleteFile(httpUrl))
-            .isInstanceOf(BusinessException.class)
-            .hasFieldOrPropertyWithValue("errorCode", ErrorCode.IMAGE_URL_NOT_ALLOWED);
+        assertThatThrownBy {
+            imageService.deleteFile(httpUrl)
+        }
+            .isInstanceOf(BusinessException::class.java)
+            .hasFieldOrPropertyWithValue("errorCode", ErrorCode.IMAGE_URL_NOT_ALLOWED)
     }
 
     @Test
     @DisplayName("t12: URL 검증 - 공백 문자열")
-    void t12() {
+    fun t12() {
         // given
-        String blankUrl = "   ";
+        val blankUrl = "   "
 
         // when & then
-        assertThatThrownBy(() -> imageService.deleteFile(blankUrl))
-            .isInstanceOf(BusinessException.class)
-            .hasFieldOrPropertyWithValue("errorCode", ErrorCode.IMAGE_URL_INVALID);
+        assertThatThrownBy {
+            imageService.deleteFile(blankUrl)
+        }
+            .isInstanceOf(BusinessException::class.java)
+            .hasFieldOrPropertyWithValue("errorCode", ErrorCode.IMAGE_URL_INVALID)
+    }
+
+    companion object {
+        private const val BUCKET_NAME = "test-bucket"
+        private const val REGION = "ap-northeast-2"
     }
 }
 
