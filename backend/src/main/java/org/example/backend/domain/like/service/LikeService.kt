@@ -9,6 +9,7 @@ import org.example.backend.domain.post.entity.Post
 import org.example.backend.domain.post.repository.PostRepository
 import org.example.backend.global.exception.BusinessException
 import org.example.backend.global.exception.ErrorCode
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -22,11 +23,11 @@ class LikeService(
     @Transactional
     fun toggleLike(postId: Long, memberId: Long): Map<String, Any> {
 
-        val member = memberRepository.findById(memberId)
-            .orElseThrow { BusinessException(ErrorCode.NOT_FOUND_DATA) }
+        val member = memberRepository.findByIdOrNull(memberId)
+            ?:throw BusinessException(ErrorCode.NOT_FOUND_DATA)
 
-        val post = postRepository.findById(postId)
-            .orElseThrow { BusinessException(ErrorCode.NOT_FOUND_DATA) }
+        val post = postRepository.findByIdOrNull(postId)
+            ?:throw BusinessException(ErrorCode.NOT_FOUND_DATA)
 
         val existingLike = likeRepository.findByMemberAndPost(member, post)
 
@@ -45,12 +46,12 @@ class LikeService(
 
 
     fun getLikedPosts(memberId: Long): List<PostLikeResponseDto> {
-        val member = memberRepository.findById(memberId)
-            .orElseThrow { BusinessException(ErrorCode.NOT_FOUND_DATA) }
+        val member = memberRepository.findByIdOrNull(memberId)
+            ?: throw BusinessException(ErrorCode.NOT_FOUND_DATA)
 
         return likeRepository.findAllByMember(member).map{ like ->
-                val post = postRepository.findById(like.post.id)
-                    .orElseThrow { BusinessException(ErrorCode.NOT_FOUND_DATA) }
+                val post = postRepository.findByIdOrNull(like.post.id)
+                    ?:throw BusinessException(ErrorCode.NOT_FOUND_DATA)
                 PostLikeResponseDto(post.id, post.title)
             }
     }
