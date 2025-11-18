@@ -99,7 +99,7 @@ class TradeCommentControllerTest {
         """.trimIndent()
 
         mvc.perform(
-            post("/api/market/secondhand/${testTrade.tradeId}/comments")
+            post("$API_PATH/${testTrade.tradeId}/comments")
                 .header("Authorization", "Bearer $accessToken")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
@@ -125,7 +125,7 @@ class TradeCommentControllerTest {
         """.trimIndent()
 
         mvc.perform(
-            post("/api/market/secondhand/${testTrade.tradeId}/comments")
+            post("$API_PATH/${testTrade.tradeId}/comments")
                 .header("Authorization", "Bearer $accessToken")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
@@ -145,7 +145,7 @@ class TradeCommentControllerTest {
         """.trimIndent()
 
         mvc.perform(
-            post("/api/market/secondhand/${testTrade.tradeId}/comments")
+            post("$API_PATH/${testTrade.tradeId}/comments")
                 .header("Authorization", "Bearer $accessToken")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
@@ -165,7 +165,7 @@ class TradeCommentControllerTest {
         """.trimIndent()
 
         mvc.perform(
-            post("/api/market/secondhand/${testTrade.tradeId}/comments")
+            post("$API_PATH/${testTrade.tradeId}/comments")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
         ).andDo(print())
@@ -188,7 +188,7 @@ class TradeCommentControllerTest {
 
         // when & then
         mvc.perform(
-            get("/api/market/secondhand/${testTrade.tradeId}/comments")
+            get("$API_PATH/${testTrade.tradeId}/comments")
                 .header("Authorization", "Bearer $accessToken")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andDo(print())
@@ -208,7 +208,7 @@ class TradeCommentControllerTest {
         // given: 댓글이 없는 상태
         // when & then
         mvc.perform(
-            get("/api/market/secondhand/${testTrade.tradeId}/comments")
+            get("$API_PATH/${testTrade.tradeId}/comments")
                 .header("Authorization", "Bearer $accessToken")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andDo(print())
@@ -247,7 +247,7 @@ class TradeCommentControllerTest {
 
         // when & then
         mvc.perform(
-            get("/api/market/secondhand/${testTrade.tradeId}/comments")
+            get("$API_PATH/${testTrade.tradeId}/comments")
                 .header("Authorization", "Bearer $accessToken")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andDo(print())
@@ -281,7 +281,7 @@ class TradeCommentControllerTest {
 
         // then
         mvc.perform(
-            put("/api/market/secondhand/${testTrade.tradeId}/comments/${savedComment.commentId}")
+            put("$API_PATH/${testTrade.tradeId}/comments/${savedComment.commentId}")
                 .header("Authorization", "Bearer $accessToken")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
@@ -322,7 +322,7 @@ class TradeCommentControllerTest {
 
         // then: 권한 없음 에러
         mvc.perform(
-            put("/api/market/secondhand/${testTrade.tradeId}/comments/${savedComment.commentId}")
+            put("$API_PATH/${testTrade.tradeId}/comments/${savedComment.commentId}")
                 .header("Authorization", "Bearer $accessToken")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
@@ -346,7 +346,7 @@ class TradeCommentControllerTest {
         """.trimIndent()
 
         mvc.perform(
-            put("/api/market/secondhand/${testTrade.tradeId}/comments/$nonExistentId")
+            put("$API_PATH/${testTrade.tradeId}/comments/$nonExistentId")
                 .header("Authorization", "Bearer $accessToken")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
@@ -376,7 +376,7 @@ class TradeCommentControllerTest {
 
         // then: 유효성 검증 에러
         mvc.perform(
-            put("/api/market/secondhand/${testTrade.tradeId}/comments/${savedComment.commentId}")
+            put("$API_PATH/${testTrade.tradeId}/comments/${savedComment.commentId}")
                 .header("Authorization", "Bearer $accessToken")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
@@ -398,7 +398,7 @@ class TradeCommentControllerTest {
 
         // when & then: 댓글 삭제
         mvc.perform(
-            delete("/api/market/secondhand/${testTrade.tradeId}/comments/${savedComment.commentId}")
+            delete("$API_PATH/${testTrade.tradeId}/comments/${savedComment.commentId}")
                 .header("Authorization", "Bearer $accessToken")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andDo(print())
@@ -427,7 +427,7 @@ class TradeCommentControllerTest {
 
         // when & then: 내 토큰으로 다른 사람의 댓글 삭제 시도시 권한 없음 에러
         mvc.perform(
-            delete("/api/market/secondhand/${testTrade.tradeId}/comments/${savedComment.commentId}")
+            delete("$API_PATH/${testTrade.tradeId}/comments/${savedComment.commentId}")
                 .header("Authorization", "Bearer $accessToken")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andDo(print())
@@ -442,7 +442,7 @@ class TradeCommentControllerTest {
 
         // when & then
         mvc.perform(
-            delete("/api/market/secondhand/${testTrade.tradeId}/comments/$nonExistentId")
+            delete("$API_PATH/${testTrade.tradeId}/comments/$nonExistentId")
                 .header("Authorization", "Bearer $accessToken")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andDo(print())
@@ -462,10 +462,14 @@ class TradeCommentControllerTest {
 
         // when & then: Authorization 헤더 없이 삭제 시도시 인증 에러
         mvc.perform(
-            delete("/api/market/secondhand/${testTrade.tradeId}/comments/${savedComment.commentId}")
+            delete("$API_PATH/${testTrade.tradeId}/comments/${savedComment.commentId}")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andDo(print())
             .andExpect(status().is4xxClientError())
+    }
+
+    companion object {
+        private const val API_PATH = "/api/market/secondhand"
     }
 }
 
