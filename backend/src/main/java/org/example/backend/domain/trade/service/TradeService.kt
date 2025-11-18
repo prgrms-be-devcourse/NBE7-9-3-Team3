@@ -1,6 +1,5 @@
 package org.example.backend.domain.trade.service
 
-import org.example.backend.domain.member.entity.Member
 import org.example.backend.domain.member.repository.MemberRepository
 import org.example.backend.domain.trade.dto.*
 import org.example.backend.domain.trade.entity.Trade
@@ -13,17 +12,6 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-
-// Member가 Java+Lombok일 때 임시로 사용하는 확장 함수
-// TODO : Member가 Kotlin으로 마이그레이션되면 삭제 예정
-private fun Member.getMemberIdValue(): Long {
-    return try {
-        val method = this::class.java.getMethod("getMemberId")
-        method.invoke(this) as Long
-    } catch (e: Exception) {
-        throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
-    }
-}
 
 @Service
 @Transactional(readOnly = true)
@@ -142,8 +130,7 @@ class TradeService(
     }
 
     private fun validateTradeOwner(trade: Trade, memberId: Long) {
-//        if (trade.member.memberId != memberId) {
-        if (trade.member.getMemberIdValue() != memberId) {    // TODO: Member 엔티티 코틀린 변환 이후 변경하기
+        if (trade.member.memberId != memberId) {
             throw BusinessException(ErrorCode.TRADE_OWNER_MISMATCH)
         }
     }

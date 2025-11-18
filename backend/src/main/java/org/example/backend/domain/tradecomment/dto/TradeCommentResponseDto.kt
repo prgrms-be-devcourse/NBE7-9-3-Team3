@@ -14,8 +14,8 @@ data class TradeCommentResponseDto(
     companion object {
         fun from(comment: TradeComment) = TradeCommentResponseDto(
             commentId = comment.commentId,
-            memberId = 1L,  // TODO: comment.member.memberId
-            memberNickname = "테스트",  // TODO: comment.member.nickname
+            memberId = comment.member.memberId!!,
+            memberNickname = comment.member.nickname,
             tradeId = comment.trade.tradeId,
             comment = comment.content,
             createDate = comment.createDate
