@@ -22,8 +22,8 @@ data class TradeResponseDto(
         fun from(trade: Trade): TradeResponseDto {
             return TradeResponseDto(
                 tradeId = trade.tradeId,
-                memberId = 1L,  // TODO: trade.member.memberId
-                memberNickname = "TODO",    // TODO: trade.member.nickname
+                memberId = trade.member.memberId!!,
+                memberNickname = trade.member.nickname,
                 boardType = trade.boardType,
                 title = trade.title,
                 description = trade.description,
