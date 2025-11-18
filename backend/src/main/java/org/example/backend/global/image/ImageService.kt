@@ -56,7 +56,7 @@ class ImageService(
     /** S3 객체 키 생성 (디렉토리/UUID.확장자)  */
     private fun generateKey(fileName: String, directory: String?): String {
         val extension = getFileExtension(fileName)
-        val uuid: String = UUID.randomUUID().toString()
+        val uuid = UUID.randomUUID().toString()
 
         return if (directory.isNullOrBlank()) {
             "$uuid.$extension"
@@ -67,17 +67,12 @@ class ImageService(
 
     /** S3 객체의 공개 접근 URL 생성  */
     fun getFileUrl(key: String): String {
-        return String.format("https://%s.s3.%s.amazonaws.com/%s", bucket, region, key)
+        return String.format("https://$bucket.s3.$region.amazonaws.com/$key")
     }
 
     /**
      * S3에서 단일 파일 삭제
      * @param fileUrl 삭제할 파일의 S3 URL
-     *
-     * TODO : 테스트 Kotlin 마이그레이션 시
-     *  - nullable(String?) -> non-null(String)로 변경
-     *  - validateS3Url도 non-null로 변경
-     *  - ImageServiceTest의 T6, T10 테스트 제거 또는 수정
      */
     fun deleteFile(fileUrl: String) {
         val key = extractNameFromUrl(fileUrl)
@@ -132,8 +127,8 @@ class ImageService(
     }
 
     /** S3 URL 형식 및 버킷 검증  */
-    private fun validateS3Url(fileUrl: String?) {
-        if (fileUrl.isNullOrBlank()) {
+    private fun validateS3Url(fileUrl: String) {
+        if (fileUrl.isBlank()) {
             throw BusinessException(ErrorCode.IMAGE_URL_INVALID)
         }
 
