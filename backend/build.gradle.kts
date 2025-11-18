@@ -5,6 +5,7 @@ plugins {
     kotlin("plugin.jpa") version "1.9.25"
     id("org.springframework.boot") version "3.5.6"
     id("io.spring.dependency-management") version "1.1.7"
+    kotlin("kapt") version "1.9.25"
 }
 
 group = "org.example"
@@ -62,6 +63,9 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation(platform("software.amazon.awssdk:bom:2.20.26"))
     implementation("software.amazon.awssdk:s3")
+
+    implementation("io.github.openfeign.querydsl:querydsl-jpa:7.1")
+    kapt("io.github.openfeign.querydsl:querydsl-apt:7.1:jpa")
 }
 
 tasks.withType<Test> {
