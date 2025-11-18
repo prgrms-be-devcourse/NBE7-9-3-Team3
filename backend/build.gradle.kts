@@ -63,6 +63,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation(platform("software.amazon.awssdk:bom:2.20.26"))
     implementation("software.amazon.awssdk:s3")
+
 }
 
 tasks.withType<Test> {

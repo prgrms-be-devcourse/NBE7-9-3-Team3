@@ -220,12 +220,15 @@ class BaseInitData(
 
         // 모든 게시글을 개별적으로 생성하여 완전히 섞기
         createShuffledItems(5, ItemCreator { i: Int, postNum: Int, member: Member? ->
+
+            if (member == null) return@ItemCreator
+
             val title = showoffTitles[(i + postNum - 1) % showoffTitles.size] + " " + postNum
             val content = showoffContents[(i + postNum - 1) % showoffContents.size] +
                     " (작성자: test" + i + ")"
 
             // 자랑게시판용 이미지들 (물고기/어항 관련)
-            val showoffImages = arrayOf<String>(
+            val showoffImages = arrayOf(
                 "https://images.unsplash.com/photo-1535591273668-578e31182c4f?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8JUVCJUFDJUJDJUVBJUIzJUEwJUVBJUI4JUIwfGVufDB8fDB8fHww&fm=jpg&q=60&w=3000",
                 "https://t1.daumcdn.net/news/202211/30/nongmin/20221130163646676iqlt.png",
                 "https://marketplace.canva.com/XdJTM/MAGyo8XdJTM/1/tl/canva-adorable-cartoon-blue-fish-illustration-MAGyo8XdJTM.png",
@@ -283,6 +286,9 @@ class BaseInitData(
 
         // 모든 게시글을 개별적으로 생성하여 완전히 섞기
         createShuffledItems(5, ItemCreator { i: Int, postNum: Int, member: Member? ->
+
+            if (member == null) return@ItemCreator
+
             val title = questionTitles[(i + postNum - 1) % questionTitles.size] + " " + postNum
             val content = questionContents[(i + postNum - 1) % questionContents.size] +
                     " (작성자: test" + i + ")"
@@ -292,7 +298,7 @@ class BaseInitData(
                 title,
                 content,
                 Post.BoardType.QUESTION,
-                null,  // 질문게시판은 이미지 없음
+                listOf(),  // 질문게시판은 이미지 없음
                 null
             )
 
