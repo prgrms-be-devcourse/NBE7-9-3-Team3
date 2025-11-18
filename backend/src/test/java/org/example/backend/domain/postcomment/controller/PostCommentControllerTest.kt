@@ -64,9 +64,8 @@ class PostCommentControllerTest {
     fun setUp() {
 
         //id 초기화
-        em.createNativeQuery("ALTER TABLE post ALTER COLUMN id RESTART WITH 1").executeUpdate()
-        em.createNativeQuery("ALTER TABLE post_comment ALTER COLUMN id RESTART WITH 1")
-            .executeUpdate()
+        em.createNativeQuery("ALTER TABLE post AUTO_INCREMENT = 1").executeUpdate()
+        em.createNativeQuery("ALTER TABLE post_comment AUTO_INCREMENT = 1").executeUpdate()
 
         // 테스트 멤버 생성
         val loginUtil = LoginUtil(memberRepository, passwordEncoder, authTokenService)

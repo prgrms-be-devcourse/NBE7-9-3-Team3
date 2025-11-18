@@ -16,18 +16,8 @@ class TestContainerConfig {
     만약 static이 아니라면, 메소드 단위로 컨테이너 생성/종료
      */
     companion object {
-
-        // 컨테이너 선언
         @Container
-        val mysql: MySQLContainer<*> = MySQLContainer("mysql:8.0.33")
-            .withDatabaseName("test_db")
-            .withUsername("test")
-            .withPassword("test")
-
-        // 컨테이너 실행
-        init {
-            mysql.start()
-        }
+        val mysql: MySQLContainer<*> = MySQLContainer("mysql:8.0.33").apply { start() }
 
         @DynamicPropertySource
         fun registerMySQLProperties(registry: DynamicPropertyRegistry) {

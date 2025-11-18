@@ -81,7 +81,7 @@ class PostControllerTest {
 
     //id 초기화
     private fun clearDatabase() {
-        em.createNativeQuery("ALTER TABLE post ALTER COLUMN id RESTART WITH 1").executeUpdate()
+        em.createNativeQuery("ALTER TABLE post AUTO_INCREMENT = 1").executeUpdate()
     }
 
     // 테스트 멤버 생성
