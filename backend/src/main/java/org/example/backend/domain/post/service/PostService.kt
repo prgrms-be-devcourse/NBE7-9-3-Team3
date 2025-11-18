@@ -25,13 +25,14 @@ class PostService(
 ) {
 
     fun findById(id: Long): Post {
-        return postRepository.findByIdOrNull(id)?:throw BusinessException(ErrorCode.NOT_FOUND_DATA)
+        return postRepository.findByIdOrNull(id)
+            ?: throw BusinessException(ErrorCode.NOT_FOUND_DATA)
     }
 
     @Transactional
     fun delete(id: Long, member: Member) {
         val post = postRepository.findByIdWithAuthorAndImages(id)
-            ?:throw BusinessException(ErrorCode.NOT_FOUND_DATA)
+            ?: throw BusinessException(ErrorCode.NOT_FOUND_DATA)
 
         if (post.author.memberId != member.memberId) {
             throw BusinessException(ErrorCode.FORBIDDEN_ACCESS)
@@ -68,7 +69,7 @@ class PostService(
     @Transactional
     fun modify(id: Long, reqBody: PostModifyRequestDto, member: Member): PostResponseDto {
         val post = postRepository.findByIdWithAuthorAndImages(id)
-            ?:throw BusinessException(ErrorCode.NOT_FOUND_DATA)
+            ?: throw BusinessException(ErrorCode.NOT_FOUND_DATA)
 
         // 작성자 검증
         if (post.author.memberId != member.memberId) {
@@ -79,20 +80,20 @@ class PostService(
         post.updateContent(reqBody.content)
 
         // 새 이미지 URL이 있고, 기존과 다를 때만 교체
-        reqBody.imageUrls?.let { newImageUrls ->
+        val newImageUrls = reqBody.imageUrls
 
-            val oldImageUrls = post.images.map { it.imageUrl }
-            val toDelete = oldImageUrls.filter { it !in newImageUrls }
+        val oldImageUrls = post.images.map { it.imageUrl }
+        val toDelete = oldImageUrls.filter { it !in newImageUrls }
 
-            if (toDelete.isNotEmpty()) {
-                imageService.deleteFiles(toDelete)
-            }
-
-            post.deleteImageUrls()
-            newImageUrls.forEach { url ->
-                post.addImage(PostImage(url, post))
-            }
+        if (toDelete.isNotEmpty()) {
+            imageService.deleteFiles(toDelete)
         }
+
+        post.deleteImageUrls()
+        newImageUrls.forEach { url ->
+            post.addImage(PostImage(url, post))
+        }
+
 
         postRepository.save(post)
         return PostResponseDto(post)
@@ -137,7 +138,7 @@ class PostService(
         }
 
         val postDtos = postPage.content
-            .map{ post ->
+            .map { post ->
 
                 val liked = likedPostIds.contains(post.id)
                 val following = followingIds.contains(post.author.memberId)
@@ -150,7 +151,7 @@ class PostService(
                     post.content,
                     post.author.nickname,
                     post.createDate,
-                    post.images.map{it.imageUrl},
+                    post.images.map { it.imageUrl },
                     post.likeCount,
                     liked,
                     following,
@@ -166,7 +167,7 @@ class PostService(
     @Transactional(readOnly = true)
     fun getPostById(id: Long, member: Member): PostReadResponseDto {
         val post = postRepository.findByIdWithAuthorAndImages(id)
-            ?:throw BusinessException(ErrorCode.NOT_FOUND_DATA)
+            ?: throw BusinessException(ErrorCode.NOT_FOUND_DATA)
 
         if (post.displaying == Post.Displaying.PRIVATE && post.author.memberId != member.memberId) {
             throw BusinessException(ErrorCode.POST_FORBIDDEN_ACCESS) // 비공개글
@@ -199,13 +200,13 @@ class PostService(
     fun getMyPosts(boardType: Post.BoardType, id: Long): List<MyPostReadResponseDto> {
         val posts = postRepository.findMyPostsWithAuthor(boardType, id)
 
-        return posts.map{ post ->
-                MyPostReadResponseDto(
-                    post.id,
-                    post.title,
-                    post.displaying
-                )
-            }
+        return posts.map { post ->
+            MyPostReadResponseDto(
+                post.id,
+                post.title,
+                post.displaying
+            )
+        }
 
     }
 }
