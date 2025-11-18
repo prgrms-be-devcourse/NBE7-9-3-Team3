@@ -32,7 +32,7 @@ class PostRepositoryImpl(
                 keyword?.let {
                     qPost.title.containsIgnoreCase(it)
                         .or(qPost.content.containsIgnoreCase(it))
-                        .or(qPost.author.nickname.containsIgnoreCase(it))
+                        .or(qAuthor.nickname.containsIgnoreCase(it))
                 },
                 category?.takeIf { it != Post.Category.ALL }?.let { qPost.category.eq(it) },
                 authorIds?.takeIf { it.isNotEmpty() }?.let { qPost.author.memberId.`in`(it) }
@@ -49,6 +49,7 @@ class PostRepositoryImpl(
         return PageableExecutionUtils.getPage(content, pageable) {
             queryFactory.select(qPost.count())
                 .from(qPost)
+                .join(qPost.author, qAuthor)
                 .where(
                     qPost.boardType.eq(boardType),
                     qPost.displaying.eq(displaying),
