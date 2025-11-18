@@ -6,11 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
+import org.testcontainers.junit.jupiter.Testcontainers
 import javax.sql.DataSource
 
 @SpringBootTest
 @ActiveProfiles("test")
-@Import(TestContainerConfig::class)
+@Testcontainers
 class TestContainerCheck {
 
     @Autowired

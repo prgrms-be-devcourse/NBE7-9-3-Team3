@@ -1,6 +1,5 @@
 package org.example.backend.config
 
-import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
@@ -8,7 +7,6 @@ import org.testcontainers.containers.MySQLContainer
 import org.testcontainers.junit.jupiter.Container
 import java.util.function.Supplier
 
-@TestConfiguration
 class TestContainerConfig {
 
     /*
@@ -16,6 +14,7 @@ class TestContainerConfig {
     만약 static이 아니라면, 메소드 단위로 컨테이너 생성/종료
      */
     companion object {
+        @Container
         val mysql: MySQLContainer<*> = MySQLContainer("mysql:8.0.33").apply { start() }
 
         @DynamicPropertySource
