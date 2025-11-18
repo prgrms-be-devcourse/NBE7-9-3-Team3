@@ -78,3 +78,8 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         freeCompilerArgs = listOf("-Xjsr305=strict")
     }
 }
+
+kapt {
+    // 컴파일 classpath 탐색을 하지 않도록 설정
+    includeCompileClasspath = false
+}
