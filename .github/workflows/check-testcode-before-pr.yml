@@ -23,6 +23,10 @@ jobs:
           distribution: temurin
           java-version: 21
 
+      # Docker Buildx 설정 (Testcontainers 호환성 향상) !!
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       # 도커 mysql 이미지 캐시
       - name: Cache Docker image for Testcontainers
         id: docker-cache
@@ -49,6 +53,13 @@ jobs:
           docker pull mysql:8.0.33
           docker save mysql:8.0.33 -o /tmp/mysql-image.tar
 
+      # Testcontainers용 Ryuk 이미지도 미리 Pull !!
+      - name: Pull Testcontainers Ryuk image
+        run: |
+          echo "Pulling Testcontainers Ryuk image..."
+          docker pull testcontainers/ryuk:0.5.1 || docker pull testcontainers/ryuk:latest
+          docker images | grep ryuk
+      
       # Gradle 캐시
       - name: Cache Gradle packages
         uses: actions/cache@v4
@@ -84,6 +95,25 @@ jobs:
         if: steps.skip-check.outputs.skip == 'false'
         working-directory: ./backend
         run: chmod +x gradlew
+
+      # Testcontainers 환경 설정 !!
+      - name: Setup Testcontainers environment
+        if: steps.skip-check.outputs.skip == 'false'
+        run: |
+          # Docker 소켓 권한 설정
+          sudo chmod 666 /var/run/docker.sock
+          
+          # Testcontainers 설정 파일 생성
+          mkdir -p ~/.testcontainers
+          cat > ~/.testcontainers/testcontainers.properties << EOF
+          docker.client.strategy=org.testcontainers.dockerclient.UnixSocketClientProviderStrategy
+          testcontainers.reuse.enable=false
+          checks.disable=false
+          ryuk.container.privileged=true
+          EOF
+          
+          echo "=== Testcontainers Config ==="
+          cat ~/.testcontainers/testcontainers.properties
 
       # 테스트 실행
       - name: Run tests
