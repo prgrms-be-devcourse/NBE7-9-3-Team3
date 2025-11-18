@@ -11,6 +11,10 @@ import java.util.function.Supplier
 @TestConfiguration
 class TestContainerConfig {
 
+    /*
+    static(companion object) 선언을 통해, 클래스 단위로 컨테이너 생성/종료
+    만약 static이 아니라면, 메소드 단위로 컨테이너 생성/종료
+     */
     companion object {
 
         // 컨테이너 선언
