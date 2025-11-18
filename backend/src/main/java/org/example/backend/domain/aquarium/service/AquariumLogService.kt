@@ -33,11 +33,19 @@ class AquariumLogService(
     override fun getParentNotFoundErrorCode(): ErrorCode = ErrorCode.AQUARIUM_NOT_FOUND
 
     override fun createEntity(requestDto: AquariumLogRequestDto, aquarium: Aquarium): AquariumLog {
+        // @NotNull validation이 통과했으므로 null이 아님
+        val temperature = requestDto.temperature 
+            ?: throw BusinessException(ErrorCode.INVALID_INPUT_VALUE)
+        val ph = requestDto.ph 
+            ?: throw BusinessException(ErrorCode.INVALID_INPUT_VALUE)
+        val logDate = requestDto.logDate 
+            ?: throw BusinessException(ErrorCode.INVALID_INPUT_VALUE)
+        
         return AquariumLog(
             aquarium = aquarium,
-            temperature = requestDto.temperature,
-            ph = requestDto.ph,
-            logDate = requestDto.logDate
+            temperature = temperature,
+            ph = ph,
+            logDate = logDate
         )
     }
 
@@ -46,10 +54,18 @@ class AquariumLogService(
     }
 
     override fun updateEntity(entity: AquariumLog, requestDto: AquariumLogRequestDto, aquarium: Aquarium) {
+        // @NotNull validation이 통과했으므로 null이 아님
+        val temperature = requestDto.temperature 
+            ?: throw BusinessException(ErrorCode.INVALID_INPUT_VALUE)
+        val ph = requestDto.ph 
+            ?: throw BusinessException(ErrorCode.INVALID_INPUT_VALUE)
+        val logDate = requestDto.logDate 
+            ?: throw BusinessException(ErrorCode.INVALID_INPUT_VALUE)
+        
         entity.aquarium = aquarium
-        entity.temperature = requestDto.temperature
-        entity.ph = requestDto.ph
-        entity.logDate = requestDto.logDate
+        entity.temperature = temperature
+        entity.ph = ph
+        entity.logDate = logDate
     }
 
     override fun findByParentId(parentId: Long): List<AquariumLog> {
@@ -63,7 +79,9 @@ class AquariumLogService(
      */
     @Transactional
     fun createLog(requestDto: AquariumLogRequestDto): AquariumLogResponseDto {
-        return createLog(requestDto, requestDto.aquariumId)
+        val aquariumId = requestDto.aquariumId 
+            ?: throw BusinessException(ErrorCode.INVALID_INPUT_VALUE)
+        return createLog(requestDto, aquariumId)
     }
 
     /**
@@ -83,7 +101,9 @@ class AquariumLogService(
      */
     @Transactional
     fun updateLog(logId: Long, requestDto: AquariumLogRequestDto): AquariumLogResponseDto {
-        return updateLog(logId, requestDto, requestDto.aquariumId)
+        val aquariumId = requestDto.aquariumId 
+            ?: throw BusinessException(ErrorCode.INVALID_INPUT_VALUE)
+        return updateLog(logId, requestDto, aquariumId)
     }
 
     /**
