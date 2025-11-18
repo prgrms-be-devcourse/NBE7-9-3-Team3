@@ -117,9 +117,9 @@ public class ImageControllerTest {
                 .content(requestBody)
         ).andDo(print());
 
-        // validation이 없으면 500 에러 발생
+        // Kotlin data class는 필수 파라미터 누락 시 400 에러 발생
         result
-            .andExpect(status().is5xxServerError());
+            .andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -161,9 +161,9 @@ public class ImageControllerTest {
                 .content(requestBody)
         ).andDo(print());
 
-        // validation이 없으면 500 에러 발생 가능
+        // Kotlin data class는 필수 파라미터 누락 시 400 에러 발생
         result
-            .andExpect(status().is5xxServerError());
+            .andExpect(status().is4xxClientError());
     }
 
     @Test

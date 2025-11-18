@@ -60,7 +60,7 @@ public class EmailService {
             .replace("{{cycleDate}}", String.valueOf(aquarium.getCycleDate()))
             .replace("{{nextDate}}", aquarium.getNextDate() != null ? 
                 aquarium.getNextDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : "미설정")
-            .replace("{{aquariumId}}", aquarium.getId().toString());
+            .replace("{{aquariumId}}", String.valueOf(aquarium.getId()));
     }
     
     /**
