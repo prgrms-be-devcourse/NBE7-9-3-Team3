@@ -1,5 +1,6 @@
 package org.example.backend.domain.aquarium.controller
 
+import jakarta.validation.Valid
 import org.example.backend.domain.aquarium.dto.AquariumLogRequestDto
 import org.example.backend.domain.aquarium.dto.AquariumLogResponseDto
 import org.example.backend.domain.aquarium.service.AquariumLogService
@@ -19,7 +20,7 @@ class AquariumLogController(
     @PostMapping
     override fun createLog(
         @PathVariable aquariumId: Long,
-        @RequestBody requestDto: AquariumLogRequestDto
+        @Valid @RequestBody requestDto: AquariumLogRequestDto
     ): ApiResponse<AquariumLogResponseDto> {
         requestDto.aquariumId = aquariumId
         val responseDto = aquariumLogService.createLog(requestDto)
@@ -38,7 +39,7 @@ class AquariumLogController(
     override fun updateLog(
         @PathVariable aquariumId: Long,
         @PathVariable logId: Long,
-        @RequestBody requestDto: AquariumLogRequestDto
+        @Valid @RequestBody requestDto: AquariumLogRequestDto
     ): ApiResponse<AquariumLogResponseDto> {
         requestDto.aquariumId = aquariumId
         val responseDto = aquariumLogService.updateLog(logId, requestDto)

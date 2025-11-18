@@ -1,18 +1,23 @@
 package org.example.backend.domain.aquarium.dto
 
+import jakarta.validation.constraints.NotNull
 import java.time.LocalDateTime
 
 /**
  * 어항 로그 생성/수정 요청 DTO
  * 
- * @param aquariumId 어항 ID
+ * @param aquariumId 어항 ID (PathVariable에서 받아 설정됨)
  * @param temperature 온도
  * @param ph pH 값
- * @param logDate 기록 일시 (null일 경우 현재 시간으로 설정)
+ * @param logDate 기록 일시
  */
 data class AquariumLogRequestDto(
-    var aquariumId: Long? = null,
-    var temperature: Double? = null,
-    var ph: Double? = null,
-    var logDate: LocalDateTime? = null
+    @field:NotNull
+    var aquariumId: Long,
+    @field:NotNull
+    var temperature: Double,
+    @field:NotNull
+    var ph: Double,
+    @field:NotNull
+    var logDate: LocalDateTime
 )

@@ -12,7 +12,6 @@ import org.example.backend.global.exception.ErrorCode
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
 
 /**
  * 어항 로그 서비스
@@ -38,7 +37,7 @@ class AquariumLogService(
             aquarium = aquarium,
             temperature = requestDto.temperature,
             ph = requestDto.ph,
-            logDate = requestDto.logDate ?: LocalDateTime.now()
+            logDate = requestDto.logDate
         )
     }
 
@@ -50,7 +49,7 @@ class AquariumLogService(
         entity.aquarium = aquarium
         entity.temperature = requestDto.temperature
         entity.ph = requestDto.ph
-        entity.logDate = requestDto.logDate ?: LocalDateTime.now()
+        entity.logDate = requestDto.logDate
     }
 
     override fun findByParentId(parentId: Long): List<AquariumLog> {
@@ -64,9 +63,7 @@ class AquariumLogService(
      */
     @Transactional
     fun createLog(requestDto: AquariumLogRequestDto): AquariumLogResponseDto {
-        val aquariumId = requestDto.aquariumId
-            ?: throw BusinessException(ErrorCode.AQUARIUM_NOT_FOUND)
-        return createLog(requestDto, aquariumId)
+        return createLog(requestDto, requestDto.aquariumId)
     }
 
     /**
@@ -86,9 +83,7 @@ class AquariumLogService(
      */
     @Transactional
     fun updateLog(logId: Long, requestDto: AquariumLogRequestDto): AquariumLogResponseDto {
-        val aquariumId = requestDto.aquariumId
-            ?: throw BusinessException(ErrorCode.AQUARIUM_NOT_FOUND)
-        return updateLog(logId, requestDto, aquariumId)
+        return updateLog(logId, requestDto, requestDto.aquariumId)
     }
 
     /**
