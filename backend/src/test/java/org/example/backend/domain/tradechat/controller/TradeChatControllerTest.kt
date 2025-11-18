@@ -57,7 +57,7 @@ class TradeChatControllerTest {
         loginUtil = LoginUtil(memberRepository, passwordEncoder, authTokenService)
         pointUtil = PointUtil(tradeRepository, memberRepository, passwordEncoder)
 
-        jwtToken = loginUtil!!.createMemberAndGetToken(
+        jwtToken = loginUtil.createMemberAndGetToken(
             "point@test.com",
             "test1234",
             "point",
@@ -89,13 +89,13 @@ class TradeChatControllerTest {
         val trade = pointUtil.createTrade(seller, 5000L)
 
         // 채팅방 생성
-        val room = tradeChatRoomRepository.save<TradeChatRoom>(
-            TradeChatRoom.builder()
-                .trade(trade)
-                .sellerId(seller)
-                .buyerId(buyer)
-                .status(ChatStatus.ONGOING)
-                .build()
+        val room = tradeChatRoomRepository.save(
+            TradeChatRoom.create(
+                trade = trade,
+                seller = seller,
+                buyer = buyer,
+                status = ChatStatus.ONGOING
+            )
         )
         val roomId = room.id
 
@@ -128,13 +128,13 @@ class TradeChatControllerTest {
         val other = loginUtil.getMemberByEmail("other@test.com")
 
         val trade = pointUtil.createTrade(seller, 5000L)
-        val room = tradeChatRoomRepository.save<TradeChatRoom>(
-            TradeChatRoom.builder()
-                .trade(trade)
-                .sellerId(seller)
-                .buyerId(buyer)
-                .status(ChatStatus.ONGOING)
-                .build()
+        val room = tradeChatRoomRepository.save(
+            TradeChatRoom.create(
+                trade = trade,
+                seller = seller,
+                buyer = buyer,
+                status = ChatStatus.ONGOING
+            )
         )
         val roomId = room.id
 
@@ -155,13 +155,13 @@ class TradeChatControllerTest {
         val trade = pointUtil.createTrade(seller, 5000L)
 
         // 채팅방 생성
-        val room = tradeChatRoomRepository.save<TradeChatRoom>(
-            TradeChatRoom.builder()
-                .trade(trade)
-                .sellerId(seller)
-                .buyerId(buyer)
-                .status(ChatStatus.ONGOING)
-                .build()
+        val room = tradeChatRoomRepository.save(
+            TradeChatRoom.create(
+                trade = trade,
+                seller = seller,
+                buyer = buyer,
+                status = ChatStatus.ONGOING
+            )
         )
         val roomId = room.id
 
@@ -191,13 +191,13 @@ class TradeChatControllerTest {
         val other = loginUtil.getMemberByEmail("other@test.com")
 
         val trade = pointUtil.createTrade(seller, 5000L)
-        val room = tradeChatRoomRepository.save<TradeChatRoom>(
-            TradeChatRoom.builder()
-                .trade(trade)
-                .sellerId(seller)
-                .buyerId(buyer)
-                .status(ChatStatus.ONGOING)
-                .build()
+        val room = tradeChatRoomRepository.save(
+            TradeChatRoom.create(
+                trade = trade,
+                seller = seller,
+                buyer = buyer,
+                status = ChatStatus.ONGOING
+            )
         )
         val roomId = room.id
 
@@ -218,13 +218,13 @@ class TradeChatControllerTest {
         val trade = pointUtil.createTrade(seller, 5000L)
 
         // 채팅방 생성
-        val room = tradeChatRoomRepository.save<TradeChatRoom>(
-            TradeChatRoom.builder()
-                .trade(trade)
-                .sellerId(seller)
-                .buyerId(buyer)
-                .status(ChatStatus.ONGOING)
-                .build()
+        val room = tradeChatRoomRepository.save(
+            TradeChatRoom.create(
+                trade = trade,
+                seller = seller,
+                buyer = buyer,
+                status = ChatStatus.ONGOING
+            )
         )
 
         mvc.perform(
