@@ -34,13 +34,12 @@ class FishLogService(
     override fun getParentNotFoundErrorCode(): ErrorCode = ErrorCode.FISH_NOT_FOUND
 
     override fun createEntity(requestDto: FishLogRequestDto, fish: Fish): FishLog {
-        val status = requestDto.status 
-            ?: throw BusinessException(ErrorCode.INVALID_INPUT_VALUE)
+        // @NotBlank validation이 통과했으므로 status는 non-nullable
         val logDate = requestDto.logDate ?: LocalDateTime.now()
         
         return FishLog(
             fish = fish,
-            status = status,
+            status = requestDto.status,
             logDate = logDate
         )
     }
@@ -50,12 +49,11 @@ class FishLogService(
     }
 
     override fun updateEntity(entity: FishLog, requestDto: FishLogRequestDto, fish: Fish) {
-        val status = requestDto.status 
-            ?: throw BusinessException(ErrorCode.INVALID_INPUT_VALUE)
+        // @NotBlank validation이 통과했으므로 status는 non-nullable
         val logDate = requestDto.logDate ?: LocalDateTime.now()
         
         entity.fish = fish
-        entity.status = status
+        entity.status = requestDto.status
         entity.logDate = logDate
     }
 

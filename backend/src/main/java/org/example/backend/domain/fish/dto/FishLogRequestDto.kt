@@ -1,6 +1,6 @@
 package org.example.backend.domain.fish.dto
 
-import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.NotBlank
 import java.time.LocalDateTime
 
 /**
@@ -12,7 +12,7 @@ import java.time.LocalDateTime
  */
 data class FishLogRequestDto(
     var fishId: Long? = null,
-    @field:NotNull(message = "status는 필수입니다")
-    var status: String? = null,
+    @field:NotBlank(message = "status는 필수입니다")
+    var status: String,
     var logDate: LocalDateTime? = null
 )
