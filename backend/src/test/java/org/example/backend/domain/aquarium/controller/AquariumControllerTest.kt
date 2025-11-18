@@ -62,8 +62,6 @@ class AquariumControllerTest {
             ""
         )
         testMember = loginUtil.getMemberByEmail("aquarium@test.com")
-
-        aquariumRepository.deleteAll()
     }
 
     @Test

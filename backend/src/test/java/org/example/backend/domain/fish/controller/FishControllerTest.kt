@@ -65,8 +65,6 @@ class FishControllerTest {
         // 어항 생성
         testAquarium = Aquarium(testMember, "test")
         aquariumRepository.save<Aquarium>(testAquarium)
-
-        fishRepository.deleteAll()
     }
 
     @Test
