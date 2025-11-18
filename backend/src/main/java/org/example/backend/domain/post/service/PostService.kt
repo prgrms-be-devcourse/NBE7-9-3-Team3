@@ -30,7 +30,7 @@ class PostService(
     @Transactional
     fun delete(id: Long, member: Member) {
         val post = postRepository.findByIdWithAuthorAndImages(id)
-            .orElseThrow { BusinessException(ErrorCode.NOT_FOUND_DATA) }
+            ?:throw BusinessException(ErrorCode.NOT_FOUND_DATA)
 
         if (post.author.memberId != member.memberId) {
             throw BusinessException(ErrorCode.FORBIDDEN_ACCESS)
@@ -67,7 +67,7 @@ class PostService(
     @Transactional
     fun modify(id: Long, reqBody: PostModifyRequestDto, member: Member): PostResponseDto {
         val post = postRepository.findByIdWithAuthorAndImages(id)
-            .orElseThrow{ BusinessException(ErrorCode.NOT_FOUND_DATA) }
+            ?:throw BusinessException(ErrorCode.NOT_FOUND_DATA)
 
         // 작성자 검증
         if (post.author.memberId != member.memberId) {
@@ -165,7 +165,7 @@ class PostService(
     @Transactional(readOnly = true)
     fun getPostById(id: Long, member: Member): PostReadResponseDto {
         val post = postRepository.findByIdWithAuthorAndImages(id)
-            .orElseThrow { BusinessException(ErrorCode.NOT_FOUND_DATA) }
+            ?:throw BusinessException(ErrorCode.NOT_FOUND_DATA)
 
         if (post.displaying == Post.Displaying.PRIVATE && post.author.memberId != member.memberId) {
             throw BusinessException(ErrorCode.POST_FORBIDDEN_ACCESS) // 비공개글
