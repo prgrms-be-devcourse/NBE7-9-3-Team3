@@ -84,7 +84,7 @@ class AquariumLogServiceTest {
         assertThat(responseDto.ph).isEqualTo(7.0)
         assertThat(responseDto.logDate).isNotNull
 
-        val savedLog = aquariumLogRepository.findById(responseDto.logId ?: throw IllegalStateException("logId is null"))
+        val savedLog = aquariumLogRepository.findById(responseDto.logId)
             .orElseThrow { IllegalStateException("Log not found") }
         assertThat(savedLog.temperature).isEqualTo(25.5)
         assertThat(savedLog.ph).isEqualTo(7.0)
@@ -175,7 +175,8 @@ class AquariumLogServiceTest {
             logDate = newLogDate
         )
 
-        val logId = existingLog.logId ?: throw IllegalStateException("logId is null")
+        val logId = existingLog.logId
+        if (logId == 0L) throw IllegalStateException("logId is 0")
         val responseDto = aquariumLogService.updateLog(logId, updateDto)
 
         assertThat(responseDto.temperature).isEqualTo(27.0)
@@ -207,7 +208,8 @@ class AquariumLogServiceTest {
             logDate = LocalDateTime.now()
         )
 
-        val logId = existingLog.logId ?: throw IllegalStateException("logId is null")
+        val logId = existingLog.logId
+        if (logId == 0L) throw IllegalStateException("logId is 0")
         val responseDto = aquariumLogService.updateLog(logId, updateDto)
 
         assertThat(responseDto.temperature).isNull()
@@ -249,7 +251,8 @@ class AquariumLogServiceTest {
             logDate = LocalDateTime.now()
         )
 
-        val logId = existingLog.logId ?: throw IllegalStateException("logId is null")
+        val logId = existingLog.logId
+        if (logId == 0L) throw IllegalStateException("logId is 0")
         assertThatThrownBy { aquariumLogService.updateLog(logId, updateDto) }
             .isInstanceOf(BusinessException::class.java)
             .hasFieldOrPropertyWithValue("errorCode", ErrorCode.AQUARIUM_NOT_FOUND)
@@ -265,7 +268,8 @@ class AquariumLogServiceTest {
             logDate = LocalDateTime.now()
         )
         aquariumLogRepository.save(log)
-        val logId = log.logId ?: throw IllegalStateException("logId is null")
+        val logId = log.logId
+        if (logId == 0L) throw IllegalStateException("logId is 0")
 
         aquariumLogService.deleteLog(logId)
 

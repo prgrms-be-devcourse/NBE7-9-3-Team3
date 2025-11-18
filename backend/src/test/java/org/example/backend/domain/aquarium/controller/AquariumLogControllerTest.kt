@@ -92,8 +92,8 @@ class AquariumLogControllerTest {
     }
 
     @Test
-    @DisplayName("어항 로그 생성 API - temperature와 ph 없이 생성")
-    fun createLog_WithoutTemperatureAndPh_Success() {
+    @DisplayName("어항 로그 생성 API - 필수 필드 검증 실패")
+    fun createLog_Fail_WhenRequiredFieldsMissing() {
         val requestBody = """
                 {
                   "logDate": "2024-01-01T10:00:00"
@@ -105,9 +105,7 @@ class AquariumLogControllerTest {
                 .header("Authorization", "Bearer $jwtToken")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.msg").value("어항 기록이 생성되었습니다."))
-            .andExpect(jsonPath("$.data.aquariumId").value(id))
+            .andExpect(status().isBadRequest)
     }
 
     @Test
@@ -171,7 +169,8 @@ class AquariumLogControllerTest {
                 """.trimIndent()
 
         val id = aquariumId ?: throw IllegalStateException("aquariumId is null")
-        val logId = existingLog.logId ?: throw IllegalStateException("logId is null")
+        val logId = existingLog.logId
+        if (logId == 0L) throw IllegalStateException("logId is 0")
         mvc.perform(put("/api/aquarium/{aquariumId}/aquariumLog/{logId}", id, logId)
                 .header("Authorization", "Bearer $jwtToken")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -184,8 +183,8 @@ class AquariumLogControllerTest {
     }
 
     @Test
-    @DisplayName("어항 로그 수정 API - temperature와 ph를 null로 변경")
-    fun updateLog_WithNullValues_Success() {
+    @DisplayName("어항 로그 수정 API - 필수 필드 검증 실패")
+    fun updateLog_Fail_WhenRequiredFieldsMissing() {
         val existingLog = AquariumLog(
             aquarium = testAquarium,
             temperature = 25.0,
@@ -196,22 +195,18 @@ class AquariumLogControllerTest {
 
         val requestBody = """
                 {
-                  "temperature": null,
-                  "ph": null,
                   "logDate": "2024-01-02T10:00:00"
                 }
                 """.trimIndent()
 
         val id = aquariumId ?: throw IllegalStateException("aquariumId is null")
-        val logId = existingLog.logId ?: throw IllegalStateException("logId is null")
+        val logId = existingLog.logId
+        if (logId == 0L) throw IllegalStateException("logId is 0")
         mvc.perform(put("/api/aquarium/{aquariumId}/aquariumLog/{logId}", id, logId)
                 .header("Authorization", "Bearer $jwtToken")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.msg").value("어항 기록이 수정되었습니다."))
-            .andExpect(jsonPath("$.data.temperature").isEmpty)
-            .andExpect(jsonPath("$.data.ph").isEmpty)
+            .andExpect(status().isBadRequest)
     }
 
     @Test
@@ -226,7 +221,8 @@ class AquariumLogControllerTest {
         aquariumLogRepository.save(log)
 
         val id = aquariumId ?: throw IllegalStateException("aquariumId is null")
-        val logId = log.logId ?: throw IllegalStateException("logId is null")
+        val logId = log.logId
+        if (logId == 0L) throw IllegalStateException("logId is 0")
         mvc.perform(delete("/api/aquarium/{aquariumId}/aquariumLog/{logId}", id, logId)
                 .header("Authorization", "Bearer $jwtToken"))
             .andExpect(status().isOk)
