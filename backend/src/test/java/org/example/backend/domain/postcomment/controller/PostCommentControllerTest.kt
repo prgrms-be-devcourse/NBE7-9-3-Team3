@@ -62,10 +62,8 @@ class PostCommentControllerTest {
 
     @BeforeEach
     fun setUp() {
-        // DB 초기화
-        postRepository.deleteAll()
-        memberRepository.deleteAll()
-        postCommentRepository.deleteAll()
+
+        //id 초기화
         em.createNativeQuery("ALTER TABLE post ALTER COLUMN id RESTART WITH 1").executeUpdate()
         em.createNativeQuery("ALTER TABLE post_comment ALTER COLUMN id RESTART WITH 1")
             .executeUpdate()
