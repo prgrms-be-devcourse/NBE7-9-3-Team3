@@ -69,7 +69,6 @@ class FishControllerTest {
 
     @Test
     @DisplayName("t1: 물고기 생성")
-    @Throws(Exception::class)
     fun createFish() {
         mvc.perform(
             MockMvcRequestBuilders.post("/api/aquarium/{aquariumId}/fish", testAquarium.id)
@@ -91,7 +90,6 @@ class FishControllerTest {
 
     @Test
     @DisplayName("t2: 물고기 생성 실패 - 존재하지 않는 어항")
-    @Throws(Exception::class)
     fun createFishFail() {
         mvc.perform(
             MockMvcRequestBuilders.post("/api/aquarium/{aquariumId}/fish", 0)
@@ -109,7 +107,6 @@ class FishControllerTest {
 
     @Test
     @DisplayName("t3: 물고기 다건 조회")
-    @Throws(Exception::class)
     fun getFishes() {
         val fish = Fish(testAquarium, "test", "test")
         fishRepository.save<Fish>(fish)
@@ -129,7 +126,6 @@ class FishControllerTest {
 
     @Test
     @DisplayName("t4: 물고기 종, 이름 수정")
-    @Throws(Exception::class)
     fun updateFish() {
         val fish = Fish(testAquarium, "test", "test")
         fishRepository.save<Fish>(fish)
@@ -154,7 +150,6 @@ class FishControllerTest {
 
     @Test
     @DisplayName("t5: 물고기 종, 이름 수정 실패 - 존재하지 않는 어항")
-    @Throws(Exception::class)
     fun updateFishFail1() {
         mvc.perform(
             MockMvcRequestBuilders.put("/api/aquarium/{aquariumId}/fish/{fishId}", 0, 0)
@@ -172,7 +167,6 @@ class FishControllerTest {
 
     @Test
     @DisplayName("t6: 물고기 종, 이름 수정 실패 - 존재하지 않는 물고기")
-    @Throws(Exception::class)
     fun updateFishFail2() {
         mvc.perform(
             MockMvcRequestBuilders.put("/api/aquarium/{aquariumId}/fish/{fishId}", testAquarium.id, 0)
@@ -190,7 +184,6 @@ class FishControllerTest {
 
     @Test
     @DisplayName("t7: 물고기 삭제")
-    @Throws(Exception::class)
     fun deleteFish() {
         val fish = Fish(testAquarium, "test", "test")
         fishRepository.save<Fish>(fish)
@@ -205,7 +198,6 @@ class FishControllerTest {
 
     @Test
     @DisplayName("t8: 물고기 삭제 실패 - 존재하지 않는 물고기 삭제")
-    @Throws(Exception::class)
     fun deleteFishFail() {
         mvc.perform(
             MockMvcRequestBuilders.delete("/api/aquarium/{aquariumId}/fish/{fishId}", testAquarium.id, 1)

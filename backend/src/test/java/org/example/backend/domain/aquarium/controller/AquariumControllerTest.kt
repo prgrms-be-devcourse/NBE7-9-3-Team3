@@ -52,7 +52,6 @@ class AquariumControllerTest {
     private lateinit var jwtToken: String // 테스트시 사용할 jwt 토큰
 
     @BeforeEach
-    @Throws(Exception::class)
     fun setUp() {
         val loginUtil = LoginUtil(memberRepository, passwordEncoder, authTokenService)
 
@@ -66,7 +65,6 @@ class AquariumControllerTest {
 
     @Test
     @DisplayName("t1: 어항 생성")
-    @Throws(Exception::class)
     fun createAquarium() {
         mvc.perform(
             MockMvcRequestBuilders.post("/api/aquarium")
@@ -88,7 +86,6 @@ class AquariumControllerTest {
 
     @Test
     @DisplayName("t2: 어항 다건 조회")
-    @Throws(Exception::class)
     fun getAquariums() {
         val aquarium = aquariumRepository.save<Aquarium>(Aquarium(testMember, "test"))
 
@@ -110,7 +107,6 @@ class AquariumControllerTest {
 
     @Test
     @DisplayName("t3: 어항 단건 조회")
-    @Throws(Exception::class)
     fun getAquarium() {
         val aquarium = aquariumRepository.save<Aquarium>(Aquarium(testMember, "test"))
 
@@ -126,7 +122,6 @@ class AquariumControllerTest {
 
     @Test
     @DisplayName("t4: 어항 단건 조회 실패 - 존재하지 않는 어항 조회")
-    @Throws(Exception::class)
     fun getAquariumFail() {
         mvc.perform(
             MockMvcRequestBuilders.get("/api/aquarium/{id}", 1)
@@ -137,7 +132,6 @@ class AquariumControllerTest {
 
     @Test
     @DisplayName("t5: 어항 이름 수정")
-    @Throws(Exception::class)
     fun updateAquariumName() {
         val aquarium = aquariumRepository.save<Aquarium>(Aquarium(testMember, "test"))
 
@@ -175,7 +169,6 @@ class AquariumControllerTest {
 
     @Test
     @DisplayName("t6: 어항 이름 수정 실패 - 존재하지 않는 어항 수정")
-    @Throws(Exception::class)
     fun updateAquariumNameFail() {
         mvc.perform(
             MockMvcRequestBuilders.put("/api/aquarium/{id}", 1)
@@ -193,7 +186,6 @@ class AquariumControllerTest {
 
     @Test
     @DisplayName("t7: 삭제 전, 어항 속 물고기 존재 여부 확인")
-    @Throws(Exception::class)
     fun checkFishInAquarium() {
         val aquarium = aquariumRepository.save<Aquarium>(Aquarium(testMember, "test"))
 
@@ -221,7 +213,6 @@ class AquariumControllerTest {
 
     @Test
     @DisplayName("t8: 어항 속 물고기들을 '내가 키운 물고기' 어항으로 이동")
-    @Throws(Exception::class)
     fun moveFishToOwnedAquarium() {
         val aquarium = aquariumRepository.save<Aquarium>(Aquarium(testMember, "test"))
         val fish = Fish(aquarium, "test", "test")
@@ -238,7 +229,6 @@ class AquariumControllerTest {
 
     @Test
     @DisplayName("t9: 빈 어항 삭제")
-    @Throws(Exception::class)
     fun deleteAquarium() {
         val aquarium = aquariumRepository.save<Aquarium>(Aquarium(testMember, "test"))
 
@@ -252,7 +242,6 @@ class AquariumControllerTest {
 
     @Test
     @DisplayName("t10: 어항 관리 알림 주기 설정")
-    @Throws(Exception::class)
     fun scheduleSetting() {
         val aquarium = aquariumRepository.save<Aquarium>(Aquarium(testMember, "test"))
 
