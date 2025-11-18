@@ -29,14 +29,13 @@ class TradeChatService(
     fun sendMessage(roomId: Long, request: TradeChatMessageDto, memberId: Long) {
         val room = chatRoomRepository.findById(roomId)
             .orElseThrow { BusinessException(ErrorCode.TRADE_CHAT_ROOM_NOT_FOUND) }
-
         val sender = memberRepository.findById(memberId)
             .orElseThrow { BusinessException(ErrorCode.TRADE_CHAT_SENDER_NOT_FOUND) }
 
         val message = TradeChatMessage.create(room, sender, request.content)
         val savedMessage = chatMessageRepository.save(message)
-
         val messageDto = TradeChatMessageDto.from(savedMessage)
+
         messagingTemplate.convertAndSend("/receive/$roomId", messageDto)
     }
 
