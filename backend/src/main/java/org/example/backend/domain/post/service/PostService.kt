@@ -122,21 +122,18 @@ class PostService(
 
         val postPage: Page<Post> = when {
 
-            // 자랑게시판 팔로우한 사용자 것만 가져오기
-            filterType == FilterType.FOLLOWING -> postRepository.searchPosts(
-                boardType, Post.Displaying.PUBLIC, null,category,followingIds, pageable
+            filterType == FilterType.FOLLOWING -> postRepository.findByBoardTypeAndDisplayingWithAuthorAndImagesAndIds(
+                boardType, Post.Displaying.PUBLIC, followingIds, pageable
             )
 
-            // 키워드 없음 + 카테고리 전체
-            keyword.isNullOrBlank() && (category == Post.Category.ALL) ->
-                postRepository.searchPosts(
-                    boardType, Post.Displaying.PUBLIC, null,category,null,pageable
+            keyword.isNullOrBlank() && (category == null || category == Post.Category.ALL) ->
+                postRepository.findByBoardTypeAndDisplayingWithAuthorAndImages(
+                    boardType, Post.Displaying.PUBLIC, pageable
                 )
 
-            // 그외 (질문게시판에서 키워드 있음, 카테고리는 ALL FISH AQUARIUM)
             else ->
-                postRepository.searchPosts(
-                    boardType, Post.Displaying.PUBLIC, keyword, category, null,pageable
+                postRepository.searchByBoardTypeAndDisplayingAndKeywordAndCategoryWithAuthorAndImages(
+                    boardType, Post.Displaying.PUBLIC, keyword, category, pageable
                 )
         }
 
