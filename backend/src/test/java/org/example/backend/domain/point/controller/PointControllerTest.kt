@@ -181,7 +181,7 @@ class PointControllerTest {
         testMember.updatePoints(3000L)
         memberRepository.save(testMember)
 
-        val requestBody = pointUtil.purchaseRequest(ㅏㅓㅏㅣ
+        val requestBody = pointUtil.purchaseRequest(
             seller.memberId,
             trade.price,
             trade.tradeId
