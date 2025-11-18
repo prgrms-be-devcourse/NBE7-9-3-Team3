@@ -122,18 +122,18 @@ class PostService(
 
         val postPage: Page<Post> = when {
 
-            filterType == FilterType.FOLLOWING -> postRepository.findByBoardTypeAndDisplayingWithAuthorAndImagesAndIds(
-                boardType, Post.Displaying.PUBLIC, followingIds, pageable
+            filterType == FilterType.FOLLOWING -> postRepository.searchPosts(
+                boardType, Post.Displaying.PUBLIC, null,null,followingIds, pageable
             )
 
             keyword.isNullOrBlank() && (category == null || category == Post.Category.ALL) ->
-                postRepository.findByBoardTypeAndDisplayingWithAuthorAndImages(
-                    boardType, Post.Displaying.PUBLIC, pageable
+                postRepository.searchPosts(
+                    boardType, Post.Displaying.PUBLIC, null,null,null,pageable
                 )
 
             else ->
-                postRepository.searchByBoardTypeAndDisplayingAndKeywordAndCategoryWithAuthorAndImages(
-                    boardType, Post.Displaying.PUBLIC, keyword, category, pageable
+                postRepository.searchPosts(
+                    boardType, Post.Displaying.PUBLIC, keyword, category, null,pageable
                 )
         }
 
