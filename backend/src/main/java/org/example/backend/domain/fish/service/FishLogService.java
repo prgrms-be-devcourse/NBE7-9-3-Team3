@@ -66,7 +66,7 @@ public class FishLogService extends AbstractLogService<FishLog, FishLogRequestDt
     }
 
     @Override
-    protected List<FishLog> findByParentId(Long parentId) {
+    protected List<FishLog> findByParentId(long parentId) {
         return fishLogRepository.findByFishId(parentId);
     }
 
