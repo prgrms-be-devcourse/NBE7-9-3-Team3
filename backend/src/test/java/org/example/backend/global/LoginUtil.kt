@@ -16,7 +16,7 @@ class LoginUtil(
     // 회원을 생성하고 Member 엔티티를 반환하는 메서드
     fun createMember(
         email: String,
-        password: String?,
+        password: String,
         nickname: String,
         profileImage: String?
     ): Member {
@@ -32,7 +32,7 @@ class LoginUtil(
     // 회원을 생성하고 JWT 토큰을 반환하는 메서드
     fun createMemberAndGetToken(
         email: String,
-        password: String?,
+        password: String,
         nickname: String,
         profileImage: String?
     ): String {
