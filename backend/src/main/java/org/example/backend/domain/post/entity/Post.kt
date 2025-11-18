@@ -8,6 +8,7 @@ import org.example.backend.domain.member.entity.Member
 import org.example.backend.domain.post.dto.PostWriteRequestDto
 import org.example.backend.domain.postcomment.entity.PostComment
 import org.example.backend.global.jpa.entity.BaseEntity
+import org.hibernate.annotations.BatchSize
 
 @Entity
 class Post(
@@ -43,6 +44,7 @@ class Post(
     private val comments: MutableList<PostComment> = mutableListOf()
 
     @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @BatchSize(size = 10)
     val images: MutableList<PostImage> = mutableListOf()
 
     @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
