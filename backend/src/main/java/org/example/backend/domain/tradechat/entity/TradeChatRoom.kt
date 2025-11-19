@@ -33,7 +33,6 @@ class TradeChatRoom private constructor(
         private set
 
     companion object {
-        @JvmStatic
         fun create(
             trade: Trade,
             seller: Member,

@@ -11,7 +11,6 @@ data class PointHistoryResponseDto(
     val afterPoint: Long
 ) {
     companion object {
-        @JvmStatic
         fun from(point: Point): PointHistoryResponseDto {
             return PointHistoryResponseDto(
                 point.type,

@@ -29,7 +29,6 @@ class Point private constructor( // 해당 클래스만 접근 가능한 생성�
     var logId: Long = 0L
 
     companion object {
-        @JvmStatic
         fun create(member: Member, amount: Long, afterPoint: Long) = Point(
             member = member,
             type = TransactionType.CHARGE,
@@ -37,7 +36,6 @@ class Point private constructor( // 해당 클래스만 접근 가능한 생성�
             afterPoint = afterPoint
         )
 
-        @JvmStatic
         fun createPurchase(member: Member, amount: Long, afterPoint: Long) = Point(
             member = member,
             type = TransactionType.PURCHASE,
@@ -45,7 +43,6 @@ class Point private constructor( // 해당 클래스만 접근 가능한 생성�
             afterPoint = afterPoint
         )
 
-        @JvmStatic
         fun createSale(member: Member, amount: Long, afterPoint: Long) = Point(
             member = member,
             type = TransactionType.SALE,
