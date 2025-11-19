@@ -28,7 +28,6 @@ class TradeChatMessage private constructor(
 
     companion object {
         // 메세지 채팅 생성
-        @JvmStatic
         fun create(chatRoom: TradeChatRoom, sender: Member, content: String): TradeChatMessage =
             TradeChatMessage(
                 chatRoom = chatRoom,

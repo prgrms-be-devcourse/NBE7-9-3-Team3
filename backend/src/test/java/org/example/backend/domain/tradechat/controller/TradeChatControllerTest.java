@@ -92,7 +92,7 @@ public class TradeChatControllerTest {
 
         // 채팅방 생성
         TradeChatRoom room = tradeChatRoomRepository.save(
-                TradeChatRoom.create(trade, seller, buyer, ChatStatus.ONGOING)
+                TradeChatRoom.Companion.create(trade, seller, buyer, ChatStatus.ONGOING)
         );
         Long roomId = room.getId();
 
@@ -124,7 +124,7 @@ public class TradeChatControllerTest {
 
         Trade trade = pointUtil.createTrade(seller, 5000L);
         TradeChatRoom room = tradeChatRoomRepository.save(
-                TradeChatRoom.create(trade, seller, buyer, ChatStatus.ONGOING)
+                TradeChatRoom.Companion.create(trade, seller, buyer, ChatStatus.ONGOING)
         );
         Long roomId = room.getId();
 
@@ -144,7 +144,7 @@ public class TradeChatControllerTest {
 
         // 채팅방 생성
         TradeChatRoom room = tradeChatRoomRepository.save(
-                TradeChatRoom.create(trade, seller, buyer, ChatStatus.ONGOING)
+                TradeChatRoom.Companion.create(trade, seller, buyer, ChatStatus.ONGOING)
         );
         Long roomId = room.getId();
 
@@ -173,7 +173,7 @@ public class TradeChatControllerTest {
 
         Trade trade = pointUtil.createTrade(seller, 5000L);
         TradeChatRoom room = tradeChatRoomRepository.save(
-                TradeChatRoom.create(trade, seller, buyer, ChatStatus.ONGOING)
+                TradeChatRoom.Companion.create(trade, seller, buyer, ChatStatus.ONGOING)
         );
         Long roomId = room.getId();
 
@@ -193,7 +193,7 @@ public class TradeChatControllerTest {
 
         // 채팅방 생성
         TradeChatRoom room = tradeChatRoomRepository.save(
-                TradeChatRoom.create(trade, seller, buyer, ChatStatus.ONGOING)
+                TradeChatRoom.Companion.create(trade, seller, buyer, ChatStatus.ONGOING)
         );
 
         mvc.perform(get("/api/chat/rooms/me")

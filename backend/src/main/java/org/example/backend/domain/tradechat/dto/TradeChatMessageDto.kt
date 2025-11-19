@@ -3,7 +3,6 @@ package org.example.backend.domain.tradechat.dto
 import org.example.backend.domain.tradechat.entity.TradeChatMessage
 import java.time.LocalDateTime
 
-@JvmRecord
 data class TradeChatMessageDto(
     val messageId: Long,
     val senderId: Long?,
@@ -12,7 +11,6 @@ data class TradeChatMessageDto(
     val sendDate: LocalDateTime
 ) {
     companion object {
-        @JvmStatic
         fun from(message: TradeChatMessage): TradeChatMessageDto {
             return TradeChatMessageDto(
                 message.id,

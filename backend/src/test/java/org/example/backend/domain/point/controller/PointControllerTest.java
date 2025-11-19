@@ -82,7 +82,7 @@ public class PointControllerTest {
     @Test
     @DisplayName("t2: 포인트 내역 조회 성공")
     void t2() throws Exception {
-        pointRepository.save(Point.create(testMember, 5000L, 5000L));
+        pointRepository.save(Point.Companion.create(testMember, 5000L, 5000L));
 
         mvc.perform(get("/api/points/members/history")
                         .header("Authorization", "Bearer " + jwtToken))
