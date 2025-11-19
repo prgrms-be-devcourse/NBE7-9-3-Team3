@@ -19,7 +19,9 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.transaction.annotation.Transactional
 import org.mockito.Mockito.*
-import org.mockito.ArgumentMatchers.any
+import org.mockito.kotlin.any
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import java.time.LocalDateTime
 
 @Import(TestContainerConfig::class)
@@ -65,11 +67,11 @@ class AquariumNotificationServiceTest {
     fun sendDailyAquariumReminders_NoAquariums() {
         testAquarium.changeSchedule(7, LocalDateTime.now().minusDays(7), LocalDateTime.now().plusDays(7))
         aquariumRepository.save(testAquarium)
-        doNothing().`when`(emailService).sendAquariumReminderEmail(any(Aquarium::class.java))
+        doNothing().`when`(emailService).sendAquariumReminderEmail(any())
 
         notificationService.sendDailyAquariumReminders()
 
-        verify(emailService, never()).sendAquariumReminderEmail(any(Aquarium::class.java))
+        verify(emailService, never()).sendAquariumReminderEmail(any())
     }
 
     @Test
@@ -77,11 +79,11 @@ class AquariumNotificationServiceTest {
     fun sendDailyAquariumReminders_WithAquariums() {
         testAquarium.changeSchedule(7, LocalDateTime.now().minusDays(7), LocalDateTime.now().minusDays(1))
         aquariumRepository.save(testAquarium)
-        doNothing().`when`(emailService).sendAquariumReminderEmail(any(Aquarium::class.java))
+        doNothing().`when`(emailService).sendAquariumReminderEmail(any())
 
         notificationService.sendDailyAquariumReminders()
 
-        verify(emailService, times(1)).sendAquariumReminderEmail(any(Aquarium::class.java))
+        verify(emailService, times(1)).sendAquariumReminderEmail(any())
         val updatedAquarium = aquariumRepository.findById(testAquarium.id).orElseThrow()
         assertNotNull(updatedAquarium.nextDate)
         updatedAquarium.nextDate?.let {
@@ -100,11 +102,11 @@ class AquariumNotificationServiceTest {
         aquarium2.changeSchedule(14, LocalDateTime.now().minusDays(14), LocalDateTime.now().minusDays(1))
         aquariumRepository.save(aquarium2)
 
-        doNothing().`when`(emailService).sendAquariumReminderEmail(any(Aquarium::class.java))
+        doNothing().`when`(emailService).sendAquariumReminderEmail(any())
 
         notificationService.sendDailyAquariumReminders()
 
-        verify(emailService, times(2)).sendAquariumReminderEmail(any(Aquarium::class.java))
+        verify(emailService, times(2)).sendAquariumReminderEmail(any())
         val updatedAquarium1 = aquariumRepository.findById(aquarium1.id).orElseThrow()
         val updatedAquarium2 = aquariumRepository.findById(aquarium2.id).orElseThrow()
         assertNotNull(updatedAquarium1.nextDate)
@@ -124,11 +126,11 @@ class AquariumNotificationServiceTest {
         
         doThrow(RuntimeException("이메일 발송 실패"))
             .doNothing()
-            .`when`(emailService).sendAquariumReminderEmail(any(Aquarium::class.java))
+            .`when`(emailService).sendAquariumReminderEmail(any())
 
         notificationService.sendDailyAquariumReminders()
 
-        verify(emailService, times(2)).sendAquariumReminderEmail(any(Aquarium::class.java))
+        verify(emailService, times(2)).sendAquariumReminderEmail(any())
         val updatedAquarium2 = aquariumRepository.findById(aquarium2.id).orElseThrow()
         assertNotNull(updatedAquarium2.nextDate)
     }
@@ -137,11 +139,11 @@ class AquariumNotificationServiceTest {
     @DisplayName("테스트 알림 발송 - 성공")
     fun sendTestNotification_Success() {
         val aquariumId = testAquarium.id
-        doNothing().`when`(emailService).sendAquariumReminderEmail(any(Aquarium::class.java))
+        doNothing().`when`(emailService).sendAquariumReminderEmail(any())
 
         notificationService.sendTestNotification(aquariumId)
 
-        verify(emailService, times(1)).sendAquariumReminderEmail(any(Aquarium::class.java))
+        verify(emailService, times(1)).sendAquariumReminderEmail(any())
     }
 
     @Test
@@ -154,7 +156,7 @@ class AquariumNotificationServiceTest {
         }
 
         assertEquals("어항을 찾을 수 없습니다. ID: $aquariumId", exception.message)
-        verify(emailService, never()).sendAquariumReminderEmail(any(Aquarium::class.java))
+        verify(emailService, never()).sendAquariumReminderEmail(any())
     }
 
     @Test
@@ -170,7 +172,7 @@ class AquariumNotificationServiceTest {
         }
 
         assertEquals("알림이 비활성화된 어항입니다. 관리주기를 설정해주세요.", exception.message)
-        verify(emailService, never()).sendAquariumReminderEmail(any(Aquarium::class.java))
+        verify(emailService, never()).sendAquariumReminderEmail(any())
     }
 
     @Test
@@ -178,11 +180,11 @@ class AquariumNotificationServiceTest {
     fun sendAllNotifications_Success() {
         testAquarium.changeSchedule(7, LocalDateTime.now().minusDays(7), LocalDateTime.now().minusDays(1))
         aquariumRepository.save(testAquarium)
-        doNothing().`when`(emailService).sendAquariumReminderEmail(any(Aquarium::class.java))
+        doNothing().`when`(emailService).sendAquariumReminderEmail(any())
 
         notificationService.sendAllNotifications()
 
-        verify(emailService, times(1)).sendAquariumReminderEmail(any(Aquarium::class.java))
+        verify(emailService, times(1)).sendAquariumReminderEmail(any())
     }
 
     @Test
