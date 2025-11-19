@@ -19,9 +19,6 @@ data class MemberJoinResponseDto(
     )
 
     companion object {
-        @JvmStatic
-        fun from(member: Member): MemberJoinResponseDto {
-            return MemberJoinResponseDto(member)
-        }
+        fun from(member: Member): MemberJoinResponseDto = MemberJoinResponseDto(member)
     }
 }

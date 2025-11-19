@@ -56,7 +56,7 @@ springdoc:
 custom:
   jwt:
     secretPattern: ${JWT_SECRET_KEY:defaultSecretKey123456789012345678901234567890}  # 환경 변수 또는 기본값 사용
-    expireSeconds: "#{10}"  # 액세스 토큰 만료 시간 (24시간)
+    expireSeconds: "#{60*60*24}"  # 액세스 토큰 만료 시간 (24시간)
     refreshExpireSeconds: "#{60*60*24*7}"  # 리프레시 토큰 만료 시간 (7일)
 
 cloud:
