@@ -1,6 +1,5 @@
 package org.example.backend.domain.trade.controller
 
-import org.example.backend.config.TestContainerConfig
 import org.example.backend.domain.member.entity.Member
 import org.example.backend.domain.member.repository.MemberRepository
 import org.example.backend.domain.member.service.AuthTokenService
@@ -23,11 +22,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.transaction.annotation.Transactional
+import org.testcontainers.junit.jupiter.Testcontainers
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.presigner.S3Presigner
 import java.time.LocalDateTime
 
-@Import(TestContainerConfig::class)
+@Testcontainers
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc

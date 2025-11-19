@@ -2,7 +2,6 @@ package org.example.backend.domain.postcomment.controller
 
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
-import org.example.backend.config.TestContainerConfig
 import org.example.backend.domain.member.entity.Member
 import org.example.backend.domain.member.repository.MemberRepository
 import org.example.backend.domain.member.service.AuthTokenService
@@ -28,8 +27,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.transaction.annotation.Transactional
+import org.testcontainers.junit.jupiter.Testcontainers
 
-@Import(TestContainerConfig::class)
+@Testcontainers
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
@@ -64,9 +64,8 @@ class PostCommentControllerTest {
     fun setUp() {
 
         //id 초기화
-        em.createNativeQuery("ALTER TABLE post ALTER COLUMN id RESTART WITH 1").executeUpdate()
-        em.createNativeQuery("ALTER TABLE post_comment ALTER COLUMN id RESTART WITH 1")
-            .executeUpdate()
+        em.createNativeQuery("ALTER TABLE post AUTO_INCREMENT = 1").executeUpdate()
+        em.createNativeQuery("ALTER TABLE post_comment AUTO_INCREMENT = 1").executeUpdate()
 
         // 테스트 멤버 생성
         val loginUtil = LoginUtil(memberRepository, passwordEncoder, authTokenService)

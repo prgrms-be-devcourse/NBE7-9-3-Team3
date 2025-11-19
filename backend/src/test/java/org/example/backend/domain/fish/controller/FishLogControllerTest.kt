@@ -25,10 +25,12 @@ import java.time.LocalDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import org.testcontainers.junit.jupiter.Testcontainers
 
 /**
  * 물고기 로그 컨트롤러 테스트
  */
+@Testcontainers
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc

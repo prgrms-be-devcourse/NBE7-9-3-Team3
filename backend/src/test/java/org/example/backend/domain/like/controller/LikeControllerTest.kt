@@ -2,7 +2,6 @@ package org.example.backend.domain.like.controller
 
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
-import org.example.backend.config.TestContainerConfig
 import org.example.backend.domain.like.entity.Like
 import org.example.backend.domain.like.repository.LikeRepository
 import org.example.backend.domain.member.entity.Member
@@ -12,6 +11,7 @@ import org.example.backend.domain.post.dto.PostWriteRequestDto
 import org.example.backend.domain.post.entity.Post
 import org.example.backend.domain.post.entity.PostImage
 import org.example.backend.domain.post.repository.PostRepository
+import org.example.backend.domain.postcomment.repository.PostCommentRepository
 import org.example.backend.global.LoginUtil
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -28,8 +28,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.transaction.annotation.Transactional
+import org.testcontainers.junit.jupiter.Testcontainers
 
-@Import(TestContainerConfig::class)
+@Testcontainers
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
@@ -55,6 +56,9 @@ class LikeControllerTest {
     private lateinit var postRepository: PostRepository
 
     @Autowired
+    private lateinit var postCommentRepository: PostCommentRepository
+
+    @Autowired
     private lateinit var likeRepository: LikeRepository
 
     @PersistenceContext
@@ -63,10 +67,9 @@ class LikeControllerTest {
     @BeforeEach
     fun setUp() {
         //id 초기화
-        em.createNativeQuery("ALTER TABLE likes ALTER COLUMN id RESTART WITH 1").executeUpdate()
-        em.createNativeQuery("ALTER TABLE post ALTER COLUMN id RESTART WITH 1").executeUpdate()
-        em.createNativeQuery("ALTER TABLE post_comment ALTER COLUMN id RESTART WITH 1")
-            .executeUpdate()
+        em.createNativeQuery("ALTER TABLE likes AUTO_INCREMENT = 1").executeUpdate()
+        em.createNativeQuery("ALTER TABLE post AUTO_INCREMENT = 1").executeUpdate()
+        em.createNativeQuery("ALTER TABLE post_comment AUTO_INCREMENT = 1").executeUpdate()
 
         // 테스트 멤버 생성
         val loginUtil = LoginUtil(memberRepository, passwordEncoder, authTokenService)
