@@ -5,7 +5,6 @@ import org.example.backend.domain.tradechat.entity.ChatStatus
 import org.example.backend.domain.tradechat.entity.TradeChatRoom
 import java.time.LocalDateTime
 
-@JvmRecord
 data class TradeChatRoomDto(
     val roomId: Long,
     val tradeId: Long,
@@ -19,7 +18,6 @@ data class TradeChatRoomDto(
     val status: ChatStatus
 ) {
     companion object {
-        @JvmStatic
         fun from(room: TradeChatRoom): TradeChatRoomDto {
             return TradeChatRoomDto(
                 room.id,
