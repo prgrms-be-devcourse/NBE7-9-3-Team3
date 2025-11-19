@@ -23,32 +23,40 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      # 도커 mysql 이미지 캐시
+      # 도커 mysql 및 redis 이미지 캐시
       - name: Cache Docker image for Testcontainers
         id: docker-cache
         uses: actions/cache@v4
         with:
           path: |
             /tmp/mysql-image.tar
-          key: docker-image-mysql-8-0-33
+            /tmp/redis-image.tar
+          # redis가 추가되었으므로 key를 변경하여 새로운 캐시를 생성하도록 유도
+          key: docker-image-mysql-8-0-33-redis-latest
           restore-keys: docker-image-mysql-
 
       # GitHub Actions 두번째 실행부터는 캐시된 docker 이미지 load
-      # 즉, PR후 push가 발행한다면, 해당 로직 수행
       - name: Load cached Docker image (if exists)
         if: steps.docker-cache.outputs.cache-hit == 'true'
         run: |
-          echo "Loading cached Docker image..."
+          echo "Loading cached Docker images..."
           docker load -i /tmp/mysql-image.tar
+          docker load -i /tmp/redis-image.tar
 
-      # GitHhb Actions 최초 실행시, docker pull
+      # GitHub Actions 최초 실행시, docker pull (Cache Miss 상황)
       - name: Pull Docker image (first run only)
         if: steps.docker-cache.outputs.cache-hit != 'true'
         run: |
-          echo "Pulling MySQL docker image..."
+          echo "Pulling Docker images..."
+          
+          # MySQL Pull & Save
           docker pull mysql:8.0.33
           docker save mysql:8.0.33 -o /tmp/mysql-image.tar
-      
+          
+          # Redis Pull & Save (추가됨)
+          docker pull redis:latest
+          docker save redis:latest -o /tmp/redis-image.tar
+       
       # Gradle 캐시
       - name: Cache Gradle packages
         uses: actions/cache@v4
@@ -78,7 +86,7 @@ jobs:
       - name: Skip tests but mark as success
         if: steps.skip-check.outputs.skip == 'true'
         run: echo "✨ All commits contain 'test'. Marking workflow as SUCCESS without running tests."
-          
+           
       # 실행 권한 부여
       - name: Grant execute permission for gradlew
         if: steps.skip-check.outputs.skip == 'false'
