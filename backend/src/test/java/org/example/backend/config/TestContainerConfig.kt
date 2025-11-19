@@ -2,11 +2,16 @@ package org.example.backend.config
 
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Primary
+import org.springframework.data.redis.connection.RedisConnectionFactory
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
+import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.MySQLContainer
 import org.testcontainers.junit.jupiter.Container
-import java.util.function.Supplier
+import org.testcontainers.utility.DockerImageName
 
 @TestConfiguration
 class TestContainerConfig {
@@ -24,21 +29,48 @@ class TestContainerConfig {
             .withUsername("test")
             .withPassword("test")
 
+        @Container
+        val redis: GenericContainer<*> = GenericContainer(DockerImageName.parse("redis:7-alpine"))
+            .withExposedPorts(6379)
+
         // 컨테이너 실행
         init {
             mysql.start()
+            redis.start()
         }
 
         @DynamicPropertySource
+        @JvmStatic
         fun registerMySQLProperties(registry: DynamicPropertyRegistry) {
-            registry.add("spring.datasource.url", Supplier { mysql.jdbcUrl })
-            registry.add("spring.datasource.username", Supplier { mysql.username })
-            registry.add("spring.datasource.password", Supplier { mysql.password })
+            registry.add("spring.datasource.url") { mysql.jdbcUrl }
+            registry.add("spring.datasource.username") { mysql.username }
+            registry.add("spring.datasource.password") { mysql.password }
+        }
+
+        @DynamicPropertySource
+        @JvmStatic
+        fun registerRedisProperties(registry: DynamicPropertyRegistry) {
+            registry.add("spring.data.redis.host") { redis.host }
+            registry.add("spring.data.redis.port") { redis.getMappedPort(6379).toString() }
         }
     }
 
     @Bean
     fun mysqlContainer(): MySQLContainer<*> {
         return mysql
+    }
+
+    @Bean
+    fun redisContainer(): GenericContainer<*> {
+        return redis
+    }
+
+    @Bean
+    @Primary
+    fun testRedisConnectionFactory(): RedisConnectionFactory {
+        val redisConfig = RedisStandaloneConfiguration()
+        redisConfig.hostName = redis.host
+        redisConfig.port = redis.getMappedPort(6379)
+        return LettuceConnectionFactory(redisConfig)
     }
 }

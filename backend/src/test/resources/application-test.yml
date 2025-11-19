@@ -15,6 +15,7 @@ custom:
     secretPattern: "testSecretKey123456789012345678901234567890"  # 32자 이상의 시크릿 키
     expireSeconds: 86400  # 24시간
     shortExpireSeconds: 600  # 10분
+    refreshExpireSeconds: 604800  # 7일
 
 # 로깅 설정
 logging:

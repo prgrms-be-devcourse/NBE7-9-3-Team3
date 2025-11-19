@@ -1,5 +1,6 @@
 package org.example.backend.domain.member.controller
 
+import jakarta.servlet.http.Cookie
 import org.example.backend.config.TestContainerConfig
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional
 @AutoConfigureMockMvc
 @Transactional
 class MemberControllerTest {
+
     @Autowired
     private lateinit var mvc: MockMvc
 
@@ -121,9 +123,11 @@ class MemberControllerTest {
             .andExpect(MockMvcResultMatchers.jsonPath("$.data.nickname").value(nickname))
             .andReturn()
 
-        // accessToken 쿠키 확인
+        // accessToken과 refreshToken 쿠키 확인
         val accessTokenCookie = result.response.getCookie("accessToken")
+        val refreshTokenCookie = result.response.getCookie("refreshToken")
         requireNotNull(accessTokenCookie) { "accessToken 쿠키가 존재해야 합니다." }
+        requireNotNull(refreshTokenCookie) { "refreshToken 쿠키가 존재해야 합니다." }
     }
 
     @Test
@@ -325,9 +329,131 @@ class MemberControllerTest {
             .andExpect(MockMvcResultMatchers.jsonPath("$.msg").value("로그아웃에 성공했습니다."))
     }
 
-    /**
-     * 회원가입 및 로그인을 수행하고 JWT 토큰을 반환하는 헬퍼 메서드
-     */
+    @Test
+    @DisplayName("t9: 리프레시 토큰으로 토큰 갱신 성공")
+    fun t9() {
+        // 테스트 데이터 준비
+        val email = "refresh@test.com"
+        val password = "password123"
+        val nickname = "refreshuser"
+
+        // 회원가입
+        mvc.perform(
+            MockMvcRequestBuilders.post("/api/members/join")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
+                    {
+                        "email": "$email",
+                        "password": "$password",
+                        "nickname": "$nickname",
+                        "profileImage": null
+                    }
+                    """.trimIndent()
+                )
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk())
+
+        // 로그인
+        val loginResult = mvc.perform(
+            MockMvcRequestBuilders.post("/api/members/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
+                    {
+                        "email": "$email",
+                        "password": "$password"
+                    }
+                    """.trimIndent()
+                )
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andReturn()
+
+        val refreshTokenCookie = requireNotNull(loginResult.response.getCookie("refreshToken")) {
+            "refreshToken 쿠키가 존재해야 합니다."
+        }
+        val refreshToken = refreshTokenCookie.value
+
+        // 토큰 갱신 (쿠키로 리프레시 토큰 전송)
+        val result = mvc.perform(
+            MockMvcRequestBuilders.post("/api/members/refresh")
+                .cookie(refreshTokenCookie)
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.resultCode").value("200"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.msg").value("토큰이 갱신되었습니다."))
+            .andReturn()
+
+        // 새로운 토큰들이 쿠키에 설정되었는지 확인
+        val newAccessTokenCookie = result.response.getCookie("accessToken")
+        val newRefreshTokenCookie = result.response.getCookie("refreshToken")
+        requireNotNull(newAccessTokenCookie) { "새로운 accessToken 쿠키가 존재해야 합니다." }
+        requireNotNull(newRefreshTokenCookie) { "새로운 refreshToken 쿠키가 존재해야 합니다." }
+
+        // 새로운 refreshToken이 기존과 다른지 확인
+        val newRefreshToken = newRefreshTokenCookie.value
+        require(refreshToken != newRefreshToken) { "새로운 refreshToken은 기존과 달라야 합니다." }
+    }
+
+    @Test
+    @DisplayName("t10: 유효하지 않은 리프레시 토큰으로 갱신 시도 시 실패")
+    fun t10() {
+        // 유효하지 않은 리프레시 토큰 쿠키로 갱신 시도
+        val invalidCookie = Cookie("refreshToken", "invalid-refresh-token")
+        mvc.perform(
+            MockMvcRequestBuilders.post("/api/members/refresh")
+                .cookie(invalidCookie)
+        )
+            .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.resultCode").value("M006"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.msg").value("유효하지 않은 리프레시 토큰입니다."))
+    }
+
+    @Test
+    @DisplayName("t11: 로그아웃 후 리프레시 토큰으로 갱신 시도 시 실패")
+    fun t11() {
+        // 테스트 데이터 준비
+        val email = "logoutrefresh@test.com"
+        val password = "password123"
+        val jwtToken = createMemberAndGetToken(email, password, "logoutrefreshuser")
+        val loginResult = mvc.perform(
+            MockMvcRequestBuilders.post("/api/members/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
+                    {
+                        "email": "$email",
+                        "password": "$password"
+                    }
+                    """.trimIndent()
+                )
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andReturn()
+
+        val refreshTokenCookie = requireNotNull(loginResult.response.getCookie("refreshToken")) {
+            "refreshToken 쿠키가 존재해야 합니다."
+        }
+
+        // 로그아웃 (refreshToken 쿠키 포함)
+        mvc.perform(
+            MockMvcRequestBuilders.post("/api/members/logout")
+                .header("Authorization", "Bearer $jwtToken")
+                .cookie(refreshTokenCookie)
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk())
+
+        // 로그아웃 후 리프레시 토큰으로 갱신 시도 (실패해야 함 - 쿠키로 전송)
+        mvc.perform(
+            MockMvcRequestBuilders.post("/api/members/refresh")
+                .cookie(refreshTokenCookie)
+        )
+            .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.resultCode").value("M006"))
+    }
+
+    //회원가입 및 로그인을 수행하고 JWT 토큰을 반환하는 헬퍼 메서드
     private fun createMemberAndGetToken(
         email: String,
         password: String,
@@ -367,4 +493,5 @@ class MemberControllerTest {
         val accessTokenCookie = loginResult.response.getCookie("accessToken")
         return requireNotNull(accessTokenCookie?.value) { "accessToken 쿠키가 존재해야 합니다." }
     }
+
 }

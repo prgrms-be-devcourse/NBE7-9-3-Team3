@@ -26,21 +26,60 @@ class MemberController(
         @RequestBody request: @Valid MemberLoginRequestDto
     ): ApiResponse<MemberLoginResponseDto> {
         val result = memberService.login(request)
-        // JWT 토큰을 HttpOnly 쿠키로 설정
+        // 액세스 토큰과 리프레시 토큰을 쿠키로 설정
         result.data?.let {
             // 로그인한 사용자 정보로 토큰 생성
             val member = memberService.findByEmail(request.email)
                 ?: throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
             val accessToken = memberService.generateAccessToken(member)
+            val refreshToken = memberService.generateRefreshToken(member)
+
+            // 액세스 토큰과 리프레시 토큰을 쿠키로 설정 (HttpOnly)
             requestContext.setCookie("accessToken", accessToken)
+            requestContext.setCookie("refreshToken", refreshToken)
         }
-        return result
+        val responseWithoutRefreshToken = result.data?.let {
+            MemberLoginResponseDto(
+                memberId = it.memberId,
+                email = it.email,
+                nickname = it.nickname,
+                profileImage = it.profileImage,
+            )
+        }
+        return ApiResponse(result.resultCode, result.msg, responseWithoutRefreshToken)
     }
 
     @PostMapping("/logout")
     override fun logout(): ApiResponse<Void> {
+        // 리프레시 토큰 가져오기 (쿠키에서)
+        val refreshToken = requestContext.getCookieValue("refreshToken", "")
+
+        // 리프레시 토큰이 있으면 Redis에서 삭제
+        refreshToken?.takeIf { it.isNotEmpty() }?.let {
+            memberService.deleteRefreshToken(it)
+        }
+
+        // 액세스 토큰과 리프레시 토큰 쿠키 삭제
         requestContext.deleteCookie("accessToken")
+        requestContext.deleteCookie("refreshToken")
+        
         return ApiResponse.ok("로그아웃에 성공했습니다.")
+    }
+
+    @PostMapping("/refresh")
+    fun refreshToken(): ApiResponse<Void> {
+        // 리프레시 토큰을 쿠키에서 가져오기 (HttpOnly 쿠키이므로 JavaScript 접근 불가)
+        val refreshToken = requestContext.getCookieValue("refreshToken", "")
+            ?: throw BusinessException(ErrorCode.REFRESH_TOKEN_INVALID)
+
+        // 트랜잭션으로 토큰 갱신 처리
+        val (newAccessToken, newRefreshToken) = memberService.refreshToken(refreshToken)
+
+        // 새로운 토큰들을 쿠키로 설정
+        requestContext.setCookie("accessToken", newAccessToken)
+        requestContext.setCookie("refreshToken", newRefreshToken)
+
+        return ApiResponse.ok("토큰이 갱신되었습니다.")
     }
 
     @PutMapping("/me")

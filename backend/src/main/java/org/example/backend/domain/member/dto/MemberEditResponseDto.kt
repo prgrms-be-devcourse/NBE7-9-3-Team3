@@ -21,9 +21,7 @@ data class MemberEditResponseDto(
     )
 
     companion object {
-        @JvmStatic
-        fun from(member: Member, newAccessToken: String?): MemberEditResponseDto {
-            return MemberEditResponseDto(member, newAccessToken)
-        }
+        fun from(member: Member, newAccessToken: String?): MemberEditResponseDto =
+            MemberEditResponseDto(member, newAccessToken)
     }
 }

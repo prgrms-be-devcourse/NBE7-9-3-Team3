@@ -19,9 +19,15 @@ import org.springframework.transaction.annotation.Transactional
 @ActiveProfiles("test")
 @Transactional
 @TestPropertySource(
-    properties = ["custom.jwt.secretPattern=testSecretKey123456789012345678901234567890", "custom.jwt.expireSeconds=86400", "custom.jwt.shortExpireSeconds=600"]
+    properties = [
+        "custom.jwt.secretPattern=testSecretKey123456789012345678901234567890",
+        "custom.jwt.expireSeconds=86400",
+        "custom.jwt.shortExpireSeconds=600",
+        "custom.jwt.refreshExpireSeconds=604800"
+    ]
 )
 class AuthTokenServiceTest {
+
     @Autowired
     private lateinit var authTokenService: AuthTokenService
 
@@ -183,6 +189,121 @@ class AuthTokenServiceTest {
         Assertions.assertThat(accessPayload["id"]).isEqualTo(tempPayload["id"])
         Assertions.assertThat(accessPayload["email"]).isEqualTo(tempPayload["email"])
         Assertions.assertThat(accessPayload["nickname"]).isEqualTo(tempPayload["nickname"])
+    }
+
+    @Test
+    @DisplayName("t8: 리프레시 토큰 생성 성공")
+    fun t8() {
+        // given
+        val member = Member(
+            "refresh@test.com",
+            passwordEncoder.encode("password123"),
+            "refreshuser",
+            null
+        )
+        val savedMember = memberRepository.save(member)
+
+        // when
+        val refreshToken = authTokenService.genRefreshToken(savedMember)
+
+        // then
+        Assertions.assertThat(refreshToken).isNotNull()
+        Assertions.assertThat(refreshToken).isNotEmpty()
+
+        // Redis에 저장되었는지 확인
+        val memberId = authTokenService.validateRefreshToken(refreshToken)
+        Assertions.assertThat(memberId).isNotNull()
+        Assertions.assertThat(memberId).isEqualTo(savedMember.memberId)
+    }
+
+    @Test
+    @DisplayName("t9: 리프레시 토큰 검증 성공")
+    fun t9() {
+        // given
+        val member = Member(
+            "validate@test.com",
+            passwordEncoder.encode("password123"),
+            "validateuser",
+            null
+        )
+        val savedMember = memberRepository.save(member)
+        val refreshToken = authTokenService.genRefreshToken(savedMember)
+
+        // when
+        val memberId = authTokenService.validateRefreshToken(refreshToken)
+
+        // then
+        Assertions.assertThat(memberId).isNotNull()
+        Assertions.assertThat(memberId).isEqualTo(savedMember.memberId)
+    }
+
+    @Test
+    @DisplayName("t10: 유효하지 않은 리프레시 토큰 검증 시 null 반환")
+    fun t10() {
+        // given
+        val invalidRefreshToken = "invalid-refresh-token"
+
+        // when
+        val memberId = authTokenService.validateRefreshToken(invalidRefreshToken)
+
+        // then
+        Assertions.assertThat(memberId).isNull()
+    }
+
+    @Test
+    @DisplayName("t11: 리프레시 토큰 삭제 성공")
+    fun t11() {
+        // given
+        val member = Member(
+            "delete@test.com",
+            passwordEncoder.encode("password123"),
+            "deleteuser",
+            null
+        )
+        val savedMember = memberRepository.save(member)
+        val refreshToken = authTokenService.genRefreshToken(savedMember)
+
+        // 토큰이 존재하는지 확인
+        val memberIdBefore = authTokenService.validateRefreshToken(refreshToken)
+        Assertions.assertThat(memberIdBefore).isNotNull()
+
+        // when
+        authTokenService.deleteRefreshToken(refreshToken)
+
+        // then
+        val memberIdAfter = authTokenService.validateRefreshToken(refreshToken)
+        Assertions.assertThat(memberIdAfter).isNull()
+    }
+
+    @Test
+    @DisplayName("t12: 특정 회원의 모든 리프레시 토큰 삭제 성공")
+    fun t12() {
+        // given
+        val member = Member(
+            "deleteall@test.com",
+            passwordEncoder.encode("password123"),
+            "deletealluser",
+            null
+        )
+        val savedMember = memberRepository.save(member)
+
+        // 여러 리프레시 토큰 생성
+        val refreshToken1 = authTokenService.genRefreshToken(savedMember)
+        val refreshToken2 = authTokenService.genRefreshToken(savedMember)
+        val refreshToken3 = authTokenService.genRefreshToken(savedMember)
+
+        // 모든 토큰이 존재하는지 확인
+        Assertions.assertThat(authTokenService.validateRefreshToken(refreshToken1)).isNotNull()
+        Assertions.assertThat(authTokenService.validateRefreshToken(refreshToken2)).isNotNull()
+        Assertions.assertThat(authTokenService.validateRefreshToken(refreshToken3)).isNotNull()
+
+        // when
+        authTokenService.deleteAllRefreshTokensByMemberId(savedMember.memberId!!)
+
+        // then
+        Assertions.assertThat(authTokenService.validateRefreshToken(refreshToken1)).isNull()
+        Assertions.assertThat(authTokenService.validateRefreshToken(refreshToken2)).isNull()
+        Assertions.assertThat(authTokenService.validateRefreshToken(refreshToken3)).isNull()
     }
 }
 

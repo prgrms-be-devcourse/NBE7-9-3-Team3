@@ -100,14 +100,52 @@ class MemberService(
             member.memberId,
             member.email,
             member.nickname,
-            member.profileImage
+            member.profileImage,
         )
         return ok("로그인에 성공했습니다.", response)
+    }
+
+    //리프레시 토큰 검증 및 회원 조회
+    @Transactional
+    fun validateRefreshTokenAndGetMember(refreshToken: String): Member {
+        // 리프레시 토큰 검증
+        val memberId = authTokenService.validateRefreshToken(refreshToken)
+            ?: throw BusinessException(ErrorCode.REFRESH_TOKEN_INVALID)
+
+        // 회원 정보 조회
+        return memberRepository.findById(memberId)
+            .orElseThrow { BusinessException(ErrorCode.MEMBER_NOT_FOUND) }
+    }
+
+    //리프레시 토큰으로 새 토큰 발급 (트랜잭션 보장)
+    @Transactional
+    fun refreshToken(oldRefreshToken: String): Pair<String, String> {
+        // 리프레시 토큰 검증 및 회원 조회
+        val member = validateRefreshTokenAndGetMember(oldRefreshToken)
+
+        // 기존 리프레시 토큰 삭제 (토큰 재사용 방지)
+        deleteRefreshToken(oldRefreshToken)
+
+        // 새로운 액세스 토큰과 리프레시 토큰 생성
+        val newAccessToken = generateAccessToken(member)
+        val newRefreshToken = generateRefreshToken(member)
+
+        return Pair(newAccessToken, newRefreshToken)
     }
 
     // JWT 토큰을 별도로 생성하는 메서드
     fun generateAccessToken(member: Member): String {
         return authTokenService.genAccessToken(member)
+    }
+
+    //리프레시 토큰 생성
+    fun generateRefreshToken(member: Member): String {
+        return authTokenService.genRefreshToken(member)
+    }
+
+    //리프레시 토큰 삭제
+    fun deleteRefreshToken(refreshToken: String) {
+        authTokenService.deleteRefreshToken(refreshToken)
     }
 
     @Transactional
