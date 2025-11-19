@@ -72,15 +72,8 @@ class MemberController(
         val refreshToken = requestContext.getCookieValue("refreshToken", "")
             ?: throw BusinessException(ErrorCode.REFRESH_TOKEN_INVALID)
 
-        // 리프레시 토큰 검증 및 회원 조회
-        val member = memberService.validateRefreshTokenAndGetMember(refreshToken)
-
-        // 기존 리프레시 토큰 삭제 (토큰 재사용 방지)
-        memberService.deleteRefreshToken(refreshToken)
-
-        // 새로운 액세스 토큰과 리프레시 토큰 생성
-        val newAccessToken = memberService.generateAccessToken(member)
-        val newRefreshToken = memberService.generateRefreshToken(member)
+        // 트랜잭션으로 토큰 갱신 처리
+        val (newAccessToken, newRefreshToken) = memberService.refreshToken(refreshToken)
 
         // 새로운 토큰들을 쿠키로 설정
         requestContext.setCookie("accessToken", newAccessToken)
