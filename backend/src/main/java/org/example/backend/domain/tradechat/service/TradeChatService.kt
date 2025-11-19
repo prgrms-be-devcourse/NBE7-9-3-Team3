@@ -1,6 +1,5 @@
 package org.example.backend.domain.tradechat.service
 
-import jakarta.transaction.Transactional
 import org.example.backend.domain.member.repository.MemberRepository
 import org.example.backend.domain.trade.repository.TradeRepository
 import org.example.backend.domain.tradechat.dto.TradeChatMessageDto
@@ -14,6 +13,7 @@ import org.example.backend.global.exception.BusinessException
 import org.example.backend.global.exception.ErrorCode
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class TradeChatService(

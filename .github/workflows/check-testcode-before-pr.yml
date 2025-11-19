@@ -10,7 +10,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
+    
     steps:
       # PR 올린 레포지토리로 체크아웃
       - name: Checkout repository
@@ -48,7 +48,7 @@ jobs:
           echo "Pulling MySQL docker image..."
           docker pull mysql:8.0.33
           docker save mysql:8.0.33 -o /tmp/mysql-image.tar
-
+      
       # Gradle 캐시
       - name: Cache Gradle packages
         uses: actions/cache@v4

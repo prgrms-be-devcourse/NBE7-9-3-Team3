@@ -79,10 +79,8 @@ class PostControllerTest {
         createPosts(3)
     }
 
-    // DB 초기화
+    //id 초기화
     private fun clearDatabase() {
-        postRepository.deleteAll()
-        memberRepository.deleteAll()
         em.createNativeQuery("ALTER TABLE post ALTER COLUMN id RESTART WITH 1").executeUpdate()
     }
 
