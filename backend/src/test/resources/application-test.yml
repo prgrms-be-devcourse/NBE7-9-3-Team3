@@ -5,6 +5,13 @@ spring:
     username: test
     password: test
 
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
 # AWS 설정을 테스트용으로 모킹
 cloud:
   aws:
