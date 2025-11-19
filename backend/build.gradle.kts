@@ -52,6 +52,7 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.testcontainers:junit-jupiter:1.19.0")
     testImplementation("org.testcontainers:mysql:1.19.0")
+    testImplementation("org.testcontainers:redis:1.19.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.1.0")
     
     // Third-party
