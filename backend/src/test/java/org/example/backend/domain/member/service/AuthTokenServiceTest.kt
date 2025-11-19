@@ -1,7 +1,7 @@
 package org.example.backend.domain.member.service
 
 import org.assertj.core.api.Assertions
-import org.example.backend.config.TestContainerConfig
+
 import org.example.backend.domain.member.entity.Member
 import org.example.backend.domain.member.repository.MemberRepository
 import org.junit.jupiter.api.DisplayName
@@ -13,8 +13,9 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 import org.springframework.transaction.annotation.Transactional
+import org.testcontainers.junit.jupiter.Testcontainers
 
-@Import(TestContainerConfig::class)
+@Testcontainers
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional

@@ -1,6 +1,5 @@
 package org.example.backend.domain.fish.controller
 
-import org.example.backend.config.TestContainerConfig
 import org.example.backend.domain.aquarium.entity.Aquarium
 import org.example.backend.domain.aquarium.repository.AquariumRepository
 import org.example.backend.domain.fish.entity.Fish
@@ -22,8 +21,9 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.transaction.annotation.Transactional
+import org.testcontainers.junit.jupiter.Testcontainers
 
-@Import(TestContainerConfig::class)
+@Testcontainers
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc

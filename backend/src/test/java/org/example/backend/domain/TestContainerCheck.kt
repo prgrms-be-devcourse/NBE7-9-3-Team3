@@ -1,6 +1,5 @@
 package org.example.backend.domain
 
-import org.example.backend.config.TestContainerConfig
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -20,16 +19,12 @@ class TestContainerCheck {
     /**
      * == 테스트코드가 testcontainers를 사용하고 있는 지 검증하는 메소드 ==
      *
-     * 컨테이너가 동작하고 있는지,
      * 테스트코드가 사용하고 있는 DB가 무엇인지,
      * DB와 잘 연결되어 동작하고 있는지(테이블 확인을 통해) 검증
      */
     @Test
     fun `check tables in container`() {
         println("=======================")
-
-        // 컨테이너 상태 확인
-        println("Container running: ${TestContainerConfig.Companion.mysql.isRunning}")
 
         dataSource.connection.use { conn ->
             // 사용하고 있는 JDBC URL 확인

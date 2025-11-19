@@ -2,7 +2,6 @@ package org.example.backend.domain.like.controller
 
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
-import org.example.backend.config.TestContainerConfig
 import org.example.backend.domain.like.entity.Like
 import org.example.backend.domain.like.repository.LikeRepository
 import org.example.backend.domain.member.entity.Member
@@ -64,9 +63,14 @@ class LikeControllerTest {
     @BeforeEach
     fun setUp() {
         //id 초기화
-        em.createNativeQuery("ALTER TABLE likes AUTO_INCREMENT = 1").executeUpdate()
+        em.createNativeQuery("DELETE FROM likes").executeUpdate()
+        em.createNativeQuery("DELETE FROM post").executeUpdate()
+        em.createNativeQuery("DELETE FROM post_comment").executeUpdate()
+
         em.createNativeQuery("ALTER TABLE post AUTO_INCREMENT = 1").executeUpdate()
+        em.createNativeQuery("ALTER TABLE likes AUTO_INCREMENT = 1").executeUpdate()
         em.createNativeQuery("ALTER TABLE post_comment AUTO_INCREMENT = 1").executeUpdate()
+
 
         // 테스트 멤버 생성
         val loginUtil = LoginUtil(memberRepository, passwordEncoder, authTokenService)

@@ -1,6 +1,5 @@
 package org.example.backend.domain.follow.controller
 
-import org.example.backend.config.TestContainerConfig
 import org.example.backend.domain.member.repository.MemberRepository
 import org.example.backend.domain.member.service.AuthTokenService
 import org.example.backend.global.LoginUtil
@@ -17,8 +16,9 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.transaction.annotation.Transactional
+import org.testcontainers.junit.jupiter.Testcontainers
 
-@Import(TestContainerConfig::class)
+@Testcontainers
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc

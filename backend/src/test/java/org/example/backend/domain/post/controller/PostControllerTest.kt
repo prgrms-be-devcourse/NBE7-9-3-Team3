@@ -2,7 +2,6 @@ package org.example.backend.domain.post.controller
 
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
-import org.example.backend.config.TestContainerConfig
 import org.example.backend.domain.follow.entity.Follow
 import org.example.backend.domain.follow.repository.FollowRepository
 import org.example.backend.domain.member.entity.Member
@@ -82,6 +81,7 @@ class PostControllerTest {
 
     //id 초기화
     private fun clearDatabase() {
+        em.createNativeQuery("DELETE FROM post").executeUpdate()
         em.createNativeQuery("ALTER TABLE post AUTO_INCREMENT = 1").executeUpdate()
     }
 

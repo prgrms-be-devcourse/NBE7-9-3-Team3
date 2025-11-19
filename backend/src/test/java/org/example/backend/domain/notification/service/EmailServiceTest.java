@@ -6,7 +6,6 @@ import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
 
-import org.example.backend.config.TestContainerConfig;
 import org.example.backend.domain.aquarium.entity.Aquarium;
 import org.example.backend.domain.aquarium.repository.AquariumRepository;
 import org.example.backend.domain.member.entity.Member;
@@ -26,8 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.mail.javamail.JavaMailSender;
 
 import jakarta.mail.internet.MimeMessage;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
-@Import(TestContainerConfig.class)
+@Testcontainers
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional

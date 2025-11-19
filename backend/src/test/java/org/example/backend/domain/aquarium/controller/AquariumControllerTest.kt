@@ -1,6 +1,5 @@
 package org.example.backend.domain.aquarium.controller
 
-import org.example.backend.config.TestContainerConfig
 import org.example.backend.domain.aquarium.entity.Aquarium
 import org.example.backend.domain.aquarium.repository.AquariumRepository
 import org.example.backend.domain.fish.entity.Fish
@@ -125,7 +124,7 @@ class AquariumControllerTest {
     @DisplayName("t4: 어항 단건 조회 실패 - 존재하지 않는 어항 조회")
     fun getAquariumFail() {
         mvc.perform(
-            MockMvcRequestBuilders.get("/api/aquarium/{id}", 1)
+            MockMvcRequestBuilders.get("/api/aquarium/{id}", 100)
                 .header("Authorization", "Bearer " + jwtToken)
         )
             .andExpect(MockMvcResultMatchers.status().is4xxClientError())
@@ -172,7 +171,7 @@ class AquariumControllerTest {
     @DisplayName("t6: 어항 이름 수정 실패 - 존재하지 않는 어항 수정")
     fun updateAquariumNameFail() {
         mvc.perform(
-            MockMvcRequestBuilders.put("/api/aquarium/{id}", 1)
+            MockMvcRequestBuilders.put("/api/aquarium/{id}", 100)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
                     """
