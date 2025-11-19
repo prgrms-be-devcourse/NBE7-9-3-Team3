@@ -6,9 +6,9 @@ import java.time.LocalDateTime
 data class TradeChatMessageDto(
     val messageId: Long,
     val senderId: Long?,
-    val senderNickname: String,
+    val senderNickname: String?,
     val content: String,
-    val sendDate: LocalDateTime
+    val sendDate: LocalDateTime?
 ) {
     companion object {
         fun from(message: TradeChatMessage): TradeChatMessageDto {
