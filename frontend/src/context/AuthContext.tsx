@@ -116,14 +116,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }),
       });
 
-      if (data.data) {
-        setUser({
-          memberId: data.data.memberId,
-          email: data.data.email,
-          nickname: data.data.nickname,
-          profileImage: data.data.profileImage,
-        });
-      }
+      // 회원가입 성공 (자동 로그인하지 않음 - 사용자가 직접 로그인해야 함)
+      // setUser를 호출하지 않아서 로그인되지 않은 상태로 유지됨
     } catch (error) {
       console.error('Signup error:', error);
       throw error;

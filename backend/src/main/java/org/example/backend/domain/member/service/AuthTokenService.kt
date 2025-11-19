@@ -1,12 +1,16 @@
 package org.example.backend.domain.member.service
 
 import org.example.backend.domain.member.entity.Member
+import org.example.backend.global.redis.RefreshTokenRepository
 import org.example.backend.global.security.JwtUtil
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import java.util.*
 
 @Service
-class AuthTokenService {
+class AuthTokenService(
+    private val refreshTokenRepository: RefreshTokenRepository
+) {
     @Value("\${custom.jwt.secretPattern}")
     lateinit var secretPattern: String
 
@@ -15,6 +19,9 @@ class AuthTokenService {
 
     @Value("\${custom.jwt.shortExpireSeconds:600}") // 기본값 10분
     var shortExpireSeconds: Long = 0
+
+    @Value("\${custom.jwt.refreshExpireSeconds:604800}") // 기본값 7일 (초 단위)
+    var refreshExpireSeconds: Long = 604800
 
     fun genAccessToken(member: Member): String {
         return JwtUtil.toString(
@@ -39,6 +46,32 @@ class AuthTokenService {
                 "nickname" to member.nickname
             )
         )
+    }
+
+    //리프레시 토큰 생성 및 Redis에 저장
+    fun genRefreshToken(member: Member): String {
+        val memberId = member.memberId ?: throw IllegalStateException("Member ID is null")
+        val refreshToken = UUID.randomUUID().toString()
+
+        // Redis에 리프레시 토큰 저장 (memberId를 값으로 저장)
+        refreshTokenRepository.save(refreshToken, memberId, refreshExpireSeconds)
+
+        return refreshToken
+    }
+
+    //리프레시 토큰 검증
+    fun validateRefreshToken(refreshToken: String): Long? {
+        return refreshTokenRepository.findMemberIdByToken(refreshToken)
+    }
+
+    //리프레시 토큰 삭제 (로그아웃 시 사용)
+    fun deleteRefreshToken(refreshToken: String) {
+        refreshTokenRepository.delete(refreshToken)
+    }
+
+    //특정 회원의 모든 리프레시 토큰 삭제 (보안 강화용)
+    fun deleteAllRefreshTokensByMemberId(memberId: Long) {
+        refreshTokenRepository.deleteAllByMemberId(memberId)
     }
 
     fun payloadOrNull(jwt: String): Map<String, Any>? {

@@ -26,6 +26,8 @@ enum class ErrorCode(
     MEMBER_NICKNAME_DUPLICATE("M003", HttpStatus.CONFLICT, "이미 사용 중인 닉네임입니다."),
     MEMBER_PASSWORD_MISMATCH("M004", HttpStatus.UNAUTHORIZED, "현재 비밀번호가 일치하지 않습니다."),
     MEMBER_LOGIN_FAILED("M005", HttpStatus.UNAUTHORIZED, "로그인에 실패했습니다."),
+    REFRESH_TOKEN_INVALID("M006", HttpStatus.UNAUTHORIZED, "유효하지 않은 리프레시 토큰입니다."),
+    REFRESH_TOKEN_EXPIRED("M007", HttpStatus.UNAUTHORIZED, "리프레시 토큰이 만료되었습니다."),
 
     // ========== Trade 도메인 에러 ==========
     TRADE_NOT_FOUND("T001", HttpStatus.NOT_FOUND, "존재하지 않는 게시글입니다."),

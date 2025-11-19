@@ -24,6 +24,7 @@ export interface LoginResponse {
   email: string;
   nickname: string;
   profileImage?: string;
+  refreshToken?: string;  // 프론트엔드에서 localStorage에 저장
 }
 
 export interface SignupResponse {

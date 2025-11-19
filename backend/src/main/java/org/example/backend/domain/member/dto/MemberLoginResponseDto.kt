@@ -4,7 +4,7 @@ data class MemberLoginResponseDto(
     val memberId: Long?,
     val email: String,
     val nickname: String,
-    val profileImage: String?
+    val profileImage: String?,
 )
 
 

@@ -27,8 +27,13 @@ class SecurityConfig(private val customAuthenticationFilter: CustomAuthenticatio
             authorize
                 // H2 Console 경로 허용
                 .requestMatchers("/h2-console/**").permitAll()
-                // 회원가입, 로그인, 로그아웃 경로 허용
-                .requestMatchers("/api/members/join", "/api/members/login", "/api/members/logout")
+                // 회원가입, 로그인, 로그아웃, 토큰 갱신 경로 허용
+                .requestMatchers(
+                    "/api/members/join",
+                    "/api/members/login",
+                    "/api/members/logout",
+                    "/api/members/refresh"
+                )
                 .permitAll()
                 // WebSocket 경로 허용
                 .requestMatchers("/ws/**").permitAll()

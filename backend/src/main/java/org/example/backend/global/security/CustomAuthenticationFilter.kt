@@ -86,7 +86,8 @@ class CustomAuthenticationFilter(
         // 허용된 API 경로들
         if (listOf(
                 "/api/members/join",
-                "/api/members/login"
+                "/api/members/login",
+                "/api/members/refresh"
             ).contains(requestURI)
         ) {
             filterChain.doFilter(request, response)
