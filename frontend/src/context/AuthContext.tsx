@@ -37,6 +37,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // 컴포넌트 마운트 시 사용자 정보 확인
   useEffect(() => {
+    // 리다이렉트 플래그 제거 (메인 페이지 도착 시)
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('auth_redirecting');
+    }
     checkAuthStatus();
   }, []);
 
@@ -87,6 +91,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           nickname: data.data.nickname,
           profileImage: data.data.profileImage,
         });
+        // 로그인 성공 시 리다이렉트 플래그 제거
+        if (typeof window !== 'undefined') {
+          sessionStorage.removeItem('auth_redirecting');
+        }
       }
     } catch (error) {
       console.error('Login error:', error);

@@ -2,7 +2,6 @@
 async function refreshAccessToken(): Promise<boolean> {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-    // 쿠키(HttpOnly)에서 리프레시 토큰이 자동으로 전송됨 (JavaScript 접근 불가)
     const response = await fetch(`${baseUrl}/api/members/refresh`, {
       method: 'POST',
       headers: {
@@ -69,13 +68,41 @@ export function fetchApi(url: string, options?: RequestInit & { headers?: { [key
           );
         } else {
           // 리프레시 토큰도 만료된 경우
-          const contentType = res.headers.get('content-type');
-          if (contentType && contentType.includes('application/json')) {
-            const rsData = await res.json();
-            throw new Error(rsData.msg || "인증이 만료되었습니다. 다시 로그인해주세요.");
-          } else {
-            throw new Error("인증이 만료되었습니다. 다시 로그인해주세요.");
+          // /api/members/me 호출 시에는 리다이렉트하지 않음 (무한 루프 방지)
+          const isMeEndpoint = url === '/api/members/me';
+          
+          if (!isMeEndpoint) {
+            // 리다이렉트 플래그 확인 (무한 루프 방지)
+            if (typeof window !== 'undefined') {
+              const redirecting = sessionStorage.getItem('auth_redirecting');
+              if (redirecting === 'true') {
+                // 이미 리다이렉트 중이면 에러만 던짐
+                throw new Error("인증이 만료되었습니다. 다시 로그인해주세요.");
+              }
+              
+              // 리다이렉트 플래그 설정
+              sessionStorage.setItem('auth_redirecting', 'true');
+              
+              console.log('리프레시 토큰이 만료되어 로그아웃합니다.');
+              
+              // 로그아웃 API 호출 (실패해도 무시)
+              try {
+                await fetch(`${baseUrl}/api/members/logout`, {
+                  method: 'POST',
+                  credentials: 'include',
+                });
+              } catch (error) {
+                // 로그아웃 API 실패는 무시 (이미 토큰이 만료되었을 수 있음)
+                console.log('로그아웃 API 호출 실패 (무시됨)');
+              }
+              
+              // 메인 페이지로 리다이렉트
+              window.location.href = '/';
+            }
           }
+          
+          // 에러를 던져서 원래 요청이 실패하도록 함
+          throw new Error("인증이 만료되었습니다. 다시 로그인해주세요.");
         }
       }
       
