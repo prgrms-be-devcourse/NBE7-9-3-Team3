@@ -10,7 +10,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
+    
     steps:
       # PR 올린 레포지토리로 체크아웃
       - name: Checkout repository

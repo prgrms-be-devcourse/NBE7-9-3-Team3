@@ -7,13 +7,16 @@ import org.example.backend.domain.tradechat.dto.TradeChatRoomDto
 import org.example.backend.domain.tradechat.entity.ChatStatus
 import org.example.backend.domain.tradechat.entity.TradeChatMessage
 import org.example.backend.domain.tradechat.entity.TradeChatRoom
+import org.example.backend.domain.tradechat.event.TradeChatMessageEvent
 import org.example.backend.domain.tradechat.repository.TradeChatMessageRepository
 import org.example.backend.domain.tradechat.repository.TradeChatRoomRepository
 import org.example.backend.global.exception.BusinessException
 import org.example.backend.global.exception.ErrorCode
 import org.springframework.messaging.simp.SimpMessagingTemplate
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+
 
 @Service
 class TradeChatService(
@@ -21,7 +24,8 @@ class TradeChatService(
     private val chatMessageRepository: TradeChatMessageRepository,
     private val tradeRepository: TradeRepository,
     private val memberRepository: MemberRepository,
-    private val messagingTemplate: SimpMessagingTemplate
+    private val messagingTemplate: SimpMessagingTemplate,
+    private val eventPublisher: ApplicationEventPublisher
 ) {
 
     // 메시지 전송
@@ -36,7 +40,8 @@ class TradeChatService(
         val savedMessage = chatMessageRepository.save(message)
         val messageDto = TradeChatMessageDto.from(savedMessage)
 
-        messagingTemplate.convertAndSend("/receive/$roomId", messageDto)
+        // 트랜잭션 커밋 후 이벤트 발행
+        eventPublisher.publishEvent(TradeChatMessageEvent(roomId, messageDto))
     }
 
     // 로그인 사용자의 채팅방 목록 조회
