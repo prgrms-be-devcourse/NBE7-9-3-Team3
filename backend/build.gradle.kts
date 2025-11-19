@@ -52,6 +52,7 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.testcontainers:junit-jupiter:1.19.0")
     testImplementation("org.testcontainers:mysql:1.19.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.1.0")
     
     // Third-party
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
@@ -62,6 +63,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation(platform("software.amazon.awssdk:bom:2.20.26"))
     implementation("software.amazon.awssdk:s3")
+
 }
 
 tasks.withType<Test> {

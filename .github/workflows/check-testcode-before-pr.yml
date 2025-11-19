@@ -48,7 +48,7 @@ jobs:
           echo "Pulling MySQL docker image..."
           docker pull mysql:8.0.33
           docker save mysql:8.0.33 -o /tmp/mysql-image.tar
-
+      
       # Gradle 캐시
       - name: Cache Gradle packages
         uses: actions/cache@v4

@@ -1,6 +1,5 @@
 package org.example.backend.domain.tradecomment.service
 
-import org.example.backend.domain.member.entity.Member
 import org.example.backend.domain.member.repository.MemberRepository
 import org.example.backend.domain.trade.entity.Trade
 import org.example.backend.domain.trade.enums.BoardType
@@ -12,17 +11,6 @@ import org.example.backend.global.exception.BusinessException
 import org.example.backend.global.exception.ErrorCode
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-
-// Member가 Java+Lombok일 때 임시로 사용하는 확장 함수
-// TODO : Member가 Kotlin으로 마이그레이션되면 삭제 예정
-private fun Member.getMemberIdValue(): Long {
-    return try {
-        val method = this::class.java.getMethod("getMemberId")
-        method.invoke(this) as Long
-    } catch (e: Exception) {
-        throw BusinessException(ErrorCode.MEMBER_NOT_FOUND)
-    }
-}
 
 @Service
 @Transactional(readOnly = true)
@@ -97,7 +85,7 @@ class TradeCommentService(
     }
 
     private fun validateCommentOwner(comment: TradeComment, memberId: Long) {
-        if (comment.member.getMemberIdValue() != memberId) {
+        if (comment.member.memberId != memberId) {
             throw BusinessException(ErrorCode.TRADE_COMMENT_OWNER_MISMATCH)
         }
     }
