@@ -81,10 +81,12 @@ class PostControllerTest {
 
     //id 초기화
     private fun clearDatabase() {
-//        em.createNativeQuery("DELETE FROM post").executeUpdate()
-//        em.createNativeQuery("ALTER TABLE post AUTO_INCREMENT = 1").executeUpdate()
+        em.createNativeQuery("DELETE FROM post_comment").executeUpdate()
+        em.createNativeQuery("ALTER TABLE post_comment AUTO_INCREMENT = 1").executeUpdate()
 
-        postRepository.deleteAll()
+        em.createNativeQuery("DELETE FROM post").executeUpdate()
+        em.createNativeQuery("ALTER TABLE post AUTO_INCREMENT = 1").executeUpdate()
+
         em.flush()
     }
 

@@ -67,17 +67,14 @@ class LikeControllerTest {
     @BeforeEach
     fun setUp() {
         //id 초기화
-//        em.createNativeQuery("DELETE FROM likes").executeUpdate()
-//        em.createNativeQuery("DELETE FROM post").executeUpdate()
-//        em.createNativeQuery("DELETE FROM post_comment").executeUpdate()
-//
-//        em.createNativeQuery("ALTER TABLE likes AUTO_INCREMENT = 1").executeUpdate()
-//        em.createNativeQuery("ALTER TABLE post AUTO_INCREMENT = 1").executeUpdate()
-//        em.createNativeQuery("ALTER TABLE post_comment AUTO_INCREMENT = 1").executeUpdate()
+        em.createNativeQuery("DELETE FROM likes").executeUpdate()
+        em.createNativeQuery("DELETE FROM post_comment").executeUpdate()
+        em.createNativeQuery("DELETE FROM post").executeUpdate()
 
-        likeRepository.deleteAll()
-        postRepository.deleteAll()
-        postCommentRepository.deleteAll()
+        em.createNativeQuery("ALTER TABLE likes AUTO_INCREMENT = 1").executeUpdate()
+        em.createNativeQuery("ALTER TABLE post_comment AUTO_INCREMENT = 1").executeUpdate()
+        em.createNativeQuery("ALTER TABLE post AUTO_INCREMENT = 1").executeUpdate()
+
         em.flush()
 
 
