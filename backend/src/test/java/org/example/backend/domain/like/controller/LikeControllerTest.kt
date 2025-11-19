@@ -11,6 +11,7 @@ import org.example.backend.domain.post.dto.PostWriteRequestDto
 import org.example.backend.domain.post.entity.Post
 import org.example.backend.domain.post.entity.PostImage
 import org.example.backend.domain.post.repository.PostRepository
+import org.example.backend.domain.postcomment.repository.PostCommentRepository
 import org.example.backend.global.LoginUtil
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -55,6 +56,9 @@ class LikeControllerTest {
     private lateinit var postRepository: PostRepository
 
     @Autowired
+    private lateinit var postCommentRepository: PostCommentRepository
+
+    @Autowired
     private lateinit var likeRepository: LikeRepository
 
     @PersistenceContext
@@ -63,13 +67,18 @@ class LikeControllerTest {
     @BeforeEach
     fun setUp() {
         //id 초기화
-        em.createNativeQuery("DELETE FROM likes").executeUpdate()
-        em.createNativeQuery("DELETE FROM post").executeUpdate()
-        em.createNativeQuery("DELETE FROM post_comment").executeUpdate()
+//        em.createNativeQuery("DELETE FROM likes").executeUpdate()
+//        em.createNativeQuery("DELETE FROM post").executeUpdate()
+//        em.createNativeQuery("DELETE FROM post_comment").executeUpdate()
+//
+//        em.createNativeQuery("ALTER TABLE likes AUTO_INCREMENT = 1").executeUpdate()
+//        em.createNativeQuery("ALTER TABLE post AUTO_INCREMENT = 1").executeUpdate()
+//        em.createNativeQuery("ALTER TABLE post_comment AUTO_INCREMENT = 1").executeUpdate()
 
-        em.createNativeQuery("ALTER TABLE post AUTO_INCREMENT = 1").executeUpdate()
-        em.createNativeQuery("ALTER TABLE likes AUTO_INCREMENT = 1").executeUpdate()
-        em.createNativeQuery("ALTER TABLE post_comment AUTO_INCREMENT = 1").executeUpdate()
+        likeRepository.deleteAll()
+        postRepository.deleteAll()
+        postCommentRepository.deleteAll()
+        em.flush()
 
 
         // 테스트 멤버 생성
