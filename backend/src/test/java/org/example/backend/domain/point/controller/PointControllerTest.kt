@@ -125,7 +125,7 @@ class PointControllerTest {
         memberRepository.save<Member?>(testMember)
 
         val requestBody = pointUtil.purchaseRequest(
-            seller.memberId,
+            seller.memberId!!,
             trade.price,
             trade.tradeId
         )
@@ -155,7 +155,7 @@ class PointControllerTest {
         memberRepository.save<Member?>(testMember)
 
         val requestBody = pointUtil.purchaseRequest(
-            seller.memberId,
+            seller.memberId!!,
             trade.price,
             trade.tradeId
         )
@@ -182,7 +182,7 @@ class PointControllerTest {
         memberRepository.save(testMember)
 
         val requestBody = pointUtil.purchaseRequest(
-            seller.memberId,
+            seller.memberId!!,
             trade.price,
             trade.tradeId
         )
